@@ -1,0 +1,17 @@
+<%-  include('../partials/header_registrations.ejs') %>
+
+<div class="registration-form">
+  <form action="/recover/alter_password" method="post" accept-charset="utf-8">
+    <div class="form-icon">
+      <span><i class="icon icon-user"></i></span>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control item" name="email" placeholder="Informe seu email" required>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-block create-account">Solicitar</button>
+    </div>
+  </form>
+</div>
+
+<%-  include('../partials/footer_registrations.ejs') %>

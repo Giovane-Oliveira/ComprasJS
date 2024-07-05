@@ -1,0 +1,48 @@
+<%-  include('../partials/header_registrations.ejs') %>
+
+<div class="registration-form">
+  <form action="/recover/password" method="post" accept-charset="utf-8">
+    <div class="form-icon">
+      <span><i class="icon icon-user"></i></span>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control item" name="token" value="<%= token %>" hidden>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control item" name="email" value="<%= email %>" hidden>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control item" value="<%= email %>" disabled>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control item" id="senha" name="password" required placeholder="Informe a senha">
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control item" id="newsenha" name="newsenha" required placeholder="Repita sua senha">
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-block create-account" onclick="return validarSenha()">Alterar</button>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+
+    let senha = document.getElementById('senha');
+    let senhaC = document.getElementById('newsenha');
+
+    function validarSenha() {
+      if (senha.value != senhaC.value) {
+        senhaC.setCustomValidity("Senhas diferentes!");
+        senhaC.reportValidity();
+        return false;
+      } else {
+        senhaC.setCustomValidity("");
+        return true;
+      }
+    }
+
+    // verificar também quando o campo for modificado, para que a mensagem suma quando as senhas forem iguais
+    senhaC.addEventListener('input', validarSenha);
+  </script>
+</div>
+<%-  include('../partials/footer_registrations.ejs') %>

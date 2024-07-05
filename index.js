@@ -33,13 +33,25 @@ app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
     if (req.query.success) {
-        // Render the index page with a success message
+       
         res.render('users/login.ejs', { message: 'Registro efetuado com sucesso' });
       } else if (req.query.error) {
-        // Render the index page with an error message
+       
         res.render('users/login.ejs', { message: 'Este email já está registrado ou link inválido!' });
-      } else {
-        // Render the index page without a message
+      } else if (req.query.recover) {
+        
+        res.render('users/login.ejs', { message: 'Senha alterada com sucesso!' });
+      }else if (req.query.recover_error) {
+        
+        res.render('users/login.ejs', { message: 'Erro ao alterar a senha!' });
+      }else if (req.query.sendmail) {
+        
+        res.render('users/login.ejs', { message: 'Email de recuperação de senha enviado!' });
+      }else if (req.query.error_send_mail) {
+        
+        res.render('users/login.ejs', { message: 'Erro ao enviar email de recuperação de senha!' });
+      }else {
+        
         res.render('users/login.ejs', { message: '' });
       }
 });

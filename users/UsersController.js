@@ -8,7 +8,7 @@ const Employee = require('../employees/Employee')
 const Profile = require('../users/Profile')
 const Permissions = require('../users/Permission')
 const Token = require('../users/Token')
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const adminAuth = require('../middlewares/adminAuth');
 const nodemailer = require('nodemailer');
 
@@ -18,12 +18,10 @@ let transporter = nodemailer.createTransport({
     port: 587, // Substitua pela porta do seu servidor SMTP
     secure: false, // Use TLS ou SSL
     auth: {
-      user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
-      pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+        user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+        pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
     }
-  });
-
-
+});
 
 router.get('/registration', (req, res) => {
 
@@ -46,33 +44,54 @@ router.get('/login', (req, res) => {
 */
 
 router.post("/authenticate", (req, res) => {
-    
+
     var email = req.body?.email;
     var password = req.body?.password;
     console.log(email, password);
 
+
+
     User.findOne({ where: { login: email } }).then(user => {
         if (user != undefined) {
-        //Validar senha
-          var correct = bcrypt.compareSync(password, user.password); 
+            //Validar senha
+            var correct = bcrypt.compareSync(password, user.password);
 
-          if (correct) {
-            req.session.user = {
-                id: user.id,
-                email: user.email
-            }           
-            //res.json(req.session.user);
-            res.redirect("/dashboard");
-          } else {
-            res.redirect("/");
-          }
+            if (correct) {
 
-        } else {
+                //res.json(req.session.user);
 
-            res.redirect("/")
-            
+                Employee.findOne({
+                    where: {
+                        id: user.employee_id
+                    }
+                }).then(employee => {
+
+                    if (employee != undefined) {
+                        req.session.user = {
+                            id: user.id,
+                            name: employee.name,
+                            email: employee.email,
+                            cpf: employee.cpf,
+                            sector_id: employee.sector_id,
+                            unit_id: employee.unit_id
+                        }
+                        res.redirect("/dashboard");
+                    } else {
+                        res.redirect("/");
+                        return;
+                    }
+                }).catch(err => {
+                    res.redirect("/");
+                    return;
+                });
+
+            } else {
+                res.redirect("/");
+                return;
+            }
         }
     });
+
 });
 
 
@@ -84,7 +103,7 @@ router.get("/logout", (req, res) => {
 
 router.get('/registrations_token', adminAuth, (req, res) => {
 
-    res.render('registrationsToken/index.ejs', {token: ''});
+    res.render('registrationsToken/index.ejs', { token: '' });
 
 });
 
@@ -95,12 +114,12 @@ router.get('/dashboard', adminAuth, (req, res) => {
 });
 
 function generateToken(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  for (let i = 0; i < length; i++) {
-    token += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return token;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < length; i++) {
+        token += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return token;
 }
 
 router.post('/generate_token', adminAuth, async (req, res) => {
@@ -156,7 +175,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
             }); //financeiro
             break;
         default:
-            res.render('registrationsToken/index.ejs', {token: 'Erro ao gerar o token'});
+            res.render('registrationsToken/index.ejs', { token: 'Erro ao gerar o token' });
             break;
     }
 
@@ -164,20 +183,20 @@ router.post('/generate_token', adminAuth, async (req, res) => {
     let to = req.body.email;
     let subject = "Cadastro";
     let text = "Complete seu cadastro: \n" + "http://10.0.16.17:3000/registrations/" + token + "\n";
-    
+
     let mailOptions = {
         from,
         to,
         subject,
         text
-      };
-    
-      try {
+    };
+
+    try {
         await transporter.sendMail(mailOptions);
-        res.render('registrationsToken/index.ejs', {token: "Email enviado com sucesso!"});
-      } catch (error) {
-        res.render('registrationsToken/index.ejs', {token: "Erro ao enviar o email \n " + error});
-      } 
+        res.render('registrationsToken/index.ejs', { token: "Email enviado com sucesso!" });
+    } catch (error) {
+        res.render('registrationsToken/index.ejs', { token: "Erro ao enviar o email \n " + error });
+    }
 });
 
 
@@ -220,23 +239,142 @@ router.get('/registrations/:token', (req, res) => {
                 { financial: token }
             ]
         }
-    }).then( tipo => {
-    if(tipo == undefined){
+    }).then(tipo => {
+        if (tipo == undefined) {
 
-        console.log(profile);
-        res.redirect('/?error=true');
- 
-    }else{
+            console.log(profile);
+            res.redirect('/?error=true');
 
-        console.log(`Profile: ${profile} Token: ${token}`);
-        res.render('registrations/index', { profile: profile, token: token });
-        
-    }
-});  
+        } else {
+
+            console.log(`Profile: ${profile} Token: ${token}`);
+            res.render('registrations/index', { profile: profile, token: token });
+
+        }
+    });
 
 });
 
-router.post('/registration/create', async(req, res) => {
+router.get('/recover/sendmail', async (req, res) => {
+
+    res.render('registrations/sendmail');
+
+});
+
+router.post('/recover/password', async (req, res) => {
+
+    var email = req.body?.email;
+    var token = req.body?.token;
+    var password = req.body?.password;
+
+    console.log(email, token);
+
+    User.findOne({ where: { login: email } }).then(async user => {
+        if (user != undefined) {
+
+            User.update({
+                password: bcrypt.hashSync(password, 10)
+            }, {
+                where: {
+                    login: email
+                }
+            }).then(() => {
+
+                Token.destroy({
+                    where: {
+                        managers: token
+                    }
+                }).then(() => {
+                    res.redirect('/?recover=true');
+                    return;
+                }).catch(() => {
+                    res.redirect('/?recover_error=true');
+                    return;
+                });
+
+            }).catch(() => {
+                res.redirect('/?error=true');
+                return;
+            });
+        } else {
+            res.redirect('/?error=true');
+            return;
+        }
+    });
+
+});
+
+
+
+
+router.get('/recover/alter_password/:email/:token', async (req, res) => {
+
+    const token = req.params.token;
+    const email = req.params.email;
+    console.log(token, email);
+
+    Token.findOne({
+        where: {
+            managers: token
+        }
+    }).then((token) => {
+
+        if (token == undefined) {
+            res.redirect('/?error=true');
+            return;
+        } else {
+            res.render('registrations/recover', { email: email, token: token });
+            return;
+        }
+
+    }).catch(() => {
+        res.redirect('/?error=true');
+        return;
+    });
+
+
+});
+
+
+router.post('/recover/alter_password', async (req, res) => {
+    var email = req.body?.email;
+    const token = generateToken(5);
+    console.log(email);
+    User.findOne({ where: { login: req.body.email } }).then(async user => {
+
+        Token.create({
+            managers: token,
+            leaders: "",
+            directors: "",
+            purchases: "",
+            financial: "",
+        });
+
+        let from = "nao-responda@provida.med.br";
+        let to = email;
+        let subject = "Recuperação da Conta";
+        let text = "Altere sua senha: \n" + "http://10.0.16.17:3000/recover/alter_password/" + email + "/" + token + "\n";
+
+        let mailOptions = {
+            from,
+            to,
+            subject,
+            text
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            res.redirect('/?sendmail=true');
+            return;
+        } catch (error) {
+            res.redirect('/?error_send_mail=true');
+            return;
+        }
+    });
+
+});
+
+router.post('/registration/create', async (req, res) => {
 
     const name = req.body?.name;
     const email = req.body?.email;
@@ -345,7 +483,7 @@ router.post('/registration/create', async(req, res) => {
                 const newSector = await Sector.create({
                     description: sector
                 });
-        
+
                 // Create Unit
                 const newUnit = await Unit.create({
                     description: description,
@@ -355,7 +493,7 @@ router.post('/registration/create', async(req, res) => {
                     phone: phone,
                     sector_id: newSector.id // Use the newly created sector's ID
                 });
-        
+
                 // Create Employee
                 const newEmployee = await Employee.create({
                     name: name,
@@ -364,12 +502,12 @@ router.post('/registration/create', async(req, res) => {
                     unit_id: newUnit.id, // Use the newly created unit's ID
                     sector_id: newSector.id
                 });
-        
+
                 // Create Profile
                 const newProfile = await Profile.create({
                     description: profile
                 });
-        
+
                 // Create User
                 const newUser = await User.create({
                     login: email,
@@ -378,7 +516,7 @@ router.post('/registration/create', async(req, res) => {
                     profile_id: newProfile.id, // Use the newly created profile's ID
                     employee_id: newEmployee.id // Use the newly created employee's ID
                 });
-        
+
                 // Create Permissions
                 await Permissions.create({
                     open_request: open_request,
@@ -407,23 +545,23 @@ router.post('/registration/create', async(req, res) => {
                         ]
                     }
                 }
-            ).then(() => {
+                ).then(() => {
                     console.log('Tokens deleted successfully.');
                     res.redirect('/?success=true');
                     return;
-            }).catch((err) => {
+                }).catch((err) => {
                     console.log(err);
                 });
-        
+
             } catch (error) {
                 console.error('Error creating user:', error);
-                
+
             }
 
         } else {
 
-          res.redirect('/?error=true');
-          return;
+            res.redirect('/?error=true');
+            return;
 
         }
     }).catch((err) => {
