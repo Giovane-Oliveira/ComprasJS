@@ -1,5 +1,32 @@
 <%-  include('../partials/header.ejs') %>
 
-<h2>Cadastros</h2>
+<h2>Gerar Token</h2>
+
+<form action="/generate_token" method="post">
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="inputState">Tipo usuário:</label>
+      <select name="length" id="inputState" class="form-control" required>
+        <option value="" selected>Selecione</option>
+        <option value="5">Gerente</option>
+        <option value="6">Gestor</option>
+        <option value="7">Diretor</option>
+        <option value="8">Compras</option>
+        <option value="9">Finaceiro</option>
+      </select>
+    </div>
+  </div>
+  <input type="email" name="email" class="form-control" placeholder="Informe o email:" required>
+  <hr>
+  <button type="submit" class="btn btn-info">Gerar Token</button>
+</form>
+
+<hr>
+
+<% if (token) { %>
+<p><%= token %></p>
+<%}%>
+
+
 
 <%- include('../partials/footer.ejs') %>

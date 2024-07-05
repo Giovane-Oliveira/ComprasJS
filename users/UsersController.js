@@ -9,6 +9,21 @@ const Profile = require('../users/Profile')
 const Permissions = require('../users/Permission')
 const Token = require('../users/Token')
 const { Op } = require('sequelize');
+const adminAuth = require('../middlewares/adminAuth');
+const nodemailer = require('nodemailer');
+
+
+let transporter = nodemailer.createTransport({
+    host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
+    port: 587, // Substitua pela porta do seu servidor SMTP
+    secure: false, // Use TLS ou SSL
+    auth: {
+      user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+      pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+    }
+  });
+
+
 
 router.get('/registration', (req, res) => {
 
@@ -16,7 +31,7 @@ router.get('/registration', (req, res) => {
 
 });
 
-router.get('/users', (req, res) => {
+router.get('/users', adminAuth, (req, res) => {
 
     res.render('users/index.ejs');
 
@@ -27,19 +42,145 @@ router.get('/login', (req, res) => {
 
     res.render('users/login.ejs');
 
-});*/
+});
+*/
 
-router.get('/registrations_token', (req, res) => {
+router.post("/authenticate", (req, res) => {
+    
+    var email = req.body?.email;
+    var password = req.body?.password;
+    console.log(email, password);
 
-    res.render('registrationsToken/index.ejs');
+    User.findOne({ where: { login: email } }).then(user => {
+        if (user != undefined) {
+        //Validar senha
+          var correct = bcrypt.compareSync(password, user.password); 
+
+          if (correct) {
+            req.session.user = {
+                id: user.id,
+                email: user.email
+            }           
+            //res.json(req.session.user);
+            res.redirect("/dashboard");
+          } else {
+            res.redirect("/");
+          }
+
+        } else {
+
+            res.redirect("/")
+            
+        }
+    });
+});
+
+
+router.get("/logout", (req, res) => {
+    req.session.user = undefined;
+    res.redirect("/");
+});
+
+
+router.get('/registrations_token', adminAuth, (req, res) => {
+
+    res.render('registrationsToken/index.ejs', {token: ''});
 
 });
 
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', adminAuth, (req, res) => {
 
     res.render('dashboard/index.ejs');
 
 });
+
+function generateToken(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < length; i++) {
+    token += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return token;
+}
+
+router.post('/generate_token', adminAuth, async (req, res) => {
+    const tokenLength = req.body.length || 5; // Get length from query parameter
+    const token = generateToken(tokenLength);
+    console.log(`Generated token: ${token}`);
+
+    switch (token.length) {
+
+        case 5:
+            Token.create({
+                managers: token,
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: ""
+            }); //gerente
+            break;
+        case 6:
+            Token.create({
+                managers: "",
+                leaders: token,
+                directors: "",
+                purchases: "",
+                financial: ""
+            }); //gestores
+            break;
+        case 7:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: token,
+                purchases: "",
+                financial: ""
+            }); //diretores 
+            break;
+        case 8:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: token,
+                financial: ""
+            }); //compras
+            break;
+        case 9:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: token
+            }); //financeiro
+            break;
+        default:
+            res.render('registrationsToken/index.ejs', {token: 'Erro ao gerar o token'});
+            break;
+    }
+
+    let from = "nao-responda@provida.med.br";
+    let to = req.body.email;
+    let subject = "Cadastro";
+    let text = "Complete seu cadastro: \n" + "http://10.0.16.17:3000/registrations/" + token + "\n";
+    
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+      };
+    
+      try {
+        await transporter.sendMail(mailOptions);
+        res.render('registrationsToken/index.ejs', {token: "Email enviado com sucesso!"});
+      } catch (error) {
+        res.render('registrationsToken/index.ejs', {token: "Erro ao enviar o email \n " + error});
+      } 
+});
+
+
 
 router.get('/registrations/:token', (req, res) => {
 
@@ -288,9 +429,7 @@ router.post('/registration/create', async(req, res) => {
     }).catch((err) => {
         console.log(err);
     });
-
 });
-
 
 
 module.exports = router;

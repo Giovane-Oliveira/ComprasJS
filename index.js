@@ -7,8 +7,21 @@ const paymentsController = require('./payments/PaymentsController');
 const purchasesController = require('./purchaseAndServices/PurchasesController');
 const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
+const session = require('express-session'); // Import express-session
+
 
 app.set('view engine', 'ejs');
+
+// Sessions
+app.use(session({
+  secret: 'secret', //qualquer coisa além do secret
+  cookie: {
+      maxAge: 900000000 //ms   15min
+  },
+  //resave: false,
+  //saveUninitialized: true
+}));
+
 
 app.use(express.static('public'));
 
