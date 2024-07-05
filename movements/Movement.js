@@ -1,0 +1,48 @@
+const Sequelize = require('sequelize')
+const connection = require('../database/database')
+const Employee = require('../employees/Employee')
+const Payment = require('../payments/Payment')
+
+
+// Define the status enum values
+const Status = {
+    GESTOR: 'Em análise pelo gestor',
+    DIRETOR: 'Em análise pelo diretor', 
+    COMPRAS: 'Em análise pelo compras', // ANEXAR BOLETO
+    FINANCEIRO: 'Pagamento em andamento', // REALIZA PAGAMENTO E ANEXA O COMPROVANTE
+    REPROVADO: 'REPROVADO',
+    CANCELADO: 'CANCELADO',
+    FINALIZADO: 'APROVADO'
+    // Add more status values as needed
+  };
+
+const Movement = connection.define('Movement', {
+   date: {
+    type: Sequelize.DATE,
+    allowNull: false
+  },
+  status: {
+    type: Sequelize.ENUM(Object.values(Status)), // Use Sequelize.ENUM
+    allowNull: false,
+    defaultValue: Status.GESTOR // Set a default status
+  },
+
+});
+
+//1-1 user_id
+Movement.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
+
+//1-N
+Employee.hasMany(Movement, { foreignKey: 'employee_id', as: 'movement' });
+
+//1-1 user_id
+Movement.belongsTo(Payment, { foreignKey: 'payment_id', as: 'payment' });
+
+//1-N
+Payment.hasMany(Movement, { foreignKey: 'payment_id', as: 'movement' });
+
+
+//Movement.sync({ force: false })
+
+
+module.exports = Movement
