@@ -27,9 +27,8 @@ app.get('/', (req, res) => {
         res.render('users/login.ejs', { message: 'Este email já está registrado ou link inválido!' });
       } else {
         // Render the index page without a message
-        res.render('users/login.ejs');
+        res.render('users/login.ejs', { message: '' });
       }
-
 });
 
 connection
