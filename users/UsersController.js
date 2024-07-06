@@ -31,68 +31,101 @@ router.get('/registration', (req, res) => {
 
 router.get('/users', adminAuth, (req, res) => {
 
-    res.render('users/index.ejs');
+    res.render('users/index.ejs', {user: req.session.user});
 
 });
 
-/*
-router.get('/login', (req, res) => {
 
-    res.render('users/login.ejs');
 
-});
-*/
-
-router.post("/authenticate", (req, res) => {
+router.post("/authenticate", async(req, res) => {
 
     var email = req.body?.email;
     var password = req.body?.password;
     console.log(email, password);
 
 
+    try {
 
-    User.findOne({ where: { login: email } }).then(user => {
+        const user = await User.findOne({ where: { login: email } });
+
+        const profile = await Profile.findOne({ where: { id: user.profile_id } });
+
+        const employee = await Employee.findOne({ where: { id: user.employee_id } });
+
+        const permissions = await Permissions.findOne({ where: { user_id: user.id } });
+
+        const sector = await Sector.findOne({ where: { id: employee.sector_id } });
+
+        const unit = await Unit.findOne({ where: { sector_id: employee.sector_id } });
+
+
+        console.log(user, profile, employee, permissions, sector, unit);
+
+
+        if(profile == undefined){
+
+            console.log("Profile undefined");
+
+        }else if(employee == undefined){
+
+            console.log("Employee undefined");
+
+        }else if(permissions == undefined){
+
+            console.log("Permissions undefined");
+
+        }else if(sector == undefined){
+
+            console.log("Sector undefined");
+
+        }else if(unit == undefined){
+
+            console.log("Unit undefined");
+
+        }
+
+
         if (user != undefined) {
             //Validar senha
             var correct = bcrypt.compareSync(password, user.password);
 
             if (correct) {
 
-                //res.json(req.session.user);
+               req.session.user = {
 
-                Employee.findOne({
-                    where: {
-                        id: user.employee_id
-                    }
-                }).then(employee => {
+                user: user,
+                profile: profile,
+                employee: employee,
+                permissions: permissions,
+                sector: sector,
+                unit: unit
 
-                    if (employee != undefined) {
-                        req.session.user = {
-                            id: user.id,
-                            name: employee.name,
-                            email: employee.email,
-                            cpf: employee.cpf,
-                            sector_id: employee.sector_id,
-                            unit_id: employee.unit_id
-                        }
-                        res.redirect("/dashboard");
-                    } else {
-                        res.redirect("/");
-                        return;
-                    }
-                }).catch(err => {
-                    res.redirect("/");
-                    return;
-                });
+               }
+
+               res.redirect("/dashboard");
+               return;
+
 
             } else {
                 res.redirect("/");
                 return;
             }
+
+        } else {
+            res.redirect("/");
+            return;
         }
-    });
+
+
+    } catch (err) {
+
+        console.log(err);
+
+    }
 
 });
+
+
 
 
 router.get("/logout", (req, res) => {
@@ -103,13 +136,13 @@ router.get("/logout", (req, res) => {
 
 router.get('/registrations_token', adminAuth, (req, res) => {
 
-    res.render('registrationsToken/index.ejs', { token: '' });
+    res.render('registrationsToken/index.ejs', { token: '', user: req.session.user });
 
 });
 
 router.get('/dashboard', adminAuth, (req, res) => {
 
-    res.render('dashboard/index.ejs');
+    res.render('dashboard/index.ejs', {user: req.session.user});
 
 });
 

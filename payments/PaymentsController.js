@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get('/payments', (req, res) => {
 
-    res.render('payments/index.ejs');
+    res.render('payments/index.ejs', {user: req.session.user});
 
 });
 

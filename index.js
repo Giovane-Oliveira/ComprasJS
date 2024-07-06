@@ -8,6 +8,7 @@ const purchasesController = require('./purchaseAndServices/PurchasesController')
 const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
 const session = require('express-session'); // Import express-session
+const notificationUser = require('./middlewares/notification');
 
 
 app.set('view engine', 'ejs');
@@ -31,29 +32,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => {
-    if (req.query.success) {
-       
-        res.render('users/login.ejs', { message: 'Registro efetuado com sucesso' });
-      } else if (req.query.error) {
-       
-        res.render('users/login.ejs', { message: 'Este email já está registrado ou link inválido!' });
-      } else if (req.query.recover) {
-        
-        res.render('users/login.ejs', { message: 'Senha alterada com sucesso!' });
-      }else if (req.query.recover_error) {
-        
-        res.render('users/login.ejs', { message: 'Erro ao alterar a senha!' });
-      }else if (req.query.sendmail) {
-        
-        res.render('users/login.ejs', { message: 'Email de recuperação de senha enviado!' });
-      }else if (req.query.error_send_mail) {
-        
-        res.render('users/login.ejs', { message: 'Erro ao enviar email de recuperação de senha!' });
-      }else {
-        
-        res.render('users/login.ejs', { message: '' });
-      }
+app.get('/', notificationUser, (req, res) => {
+    
 });
 
 connection
@@ -67,10 +47,11 @@ connection
 
 
 //Controller
+app.use('/', usersController);
 app.use('/', suppliersController);
 app.use('/', paymentsController);
 app.use('/', purchasesController);
-app.use('/', usersController);
+
 
 // Model
 const Sector = require('./users/Sector');
