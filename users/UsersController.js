@@ -375,35 +375,44 @@ router.post('/recover/alter_password', async (req, res) => {
     console.log(email);
     User.findOne({ where: { login: req.body.email } }).then(async user => {
 
-        Token.create({
-            managers: token,
-            leaders: "",
-            directors: "",
-            purchases: "",
-            financial: "",
-        });
+        if (user != undefined) {
 
-        let from = "nao-responda@provida.med.br";
-        let to = email;
-        let subject = "Recuperação da Conta";
-        let text = "Altere sua senha: \n" + "http://10.0.16.17:3000/recover/alter_password/" + email + "/" + token + "\n";
-
-        let mailOptions = {
-            from,
-            to,
-            subject,
-            text
-        };
-
-        try {
-            await transporter.sendMail(mailOptions);
-            res.redirect('/?sendmail=true');
-            return;
-        } catch (error) {
+            Token.create({
+                managers: token,
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+            });
+    
+            let from = "nao-responda@provida.med.br";
+            let to = email;
+            let subject = "Recuperação da Conta";
+            let text = "Altere sua senha: \n" + "http://10.0.16.17:3000/recover/alter_password/" + email + "/" + token + "\n";
+    
+            let mailOptions = {
+                from,
+                to,
+                subject,
+                text
+            };
+    
+            try {
+                await transporter.sendMail(mailOptions);
+                res.redirect('/?sendmail=true');
+                return;
+            } catch (error) {
+                res.redirect('/?error_send_mail=true');
+                return;
+            }
+    
+        }else{
             res.redirect('/?error_send_mail=true');
-            return;
+                return;
         }
+
     });
+  
 
 });
 

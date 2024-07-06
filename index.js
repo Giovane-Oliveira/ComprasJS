@@ -58,14 +58,14 @@ const Sector = require('./users/Sector');
 const Unit = require('./users/Unit');
 const Employee = require('./employees/Employee');
 const Profile = require('./users/Profile');
+const Token = require('./users/Token');
+const Supplier = require('./suppliers/Supplier');
+const Purchase = require('./purchaseAndServices/Purchase')
+const Payment = require('./payments/Payment');
+const Movement = require('./movements/Movement');
+const File = require('./users/File');
 const User = require('./users/User');
 const Permission = require('./users/Permission');
-//const Purchase = require('./purchaseAndServices/Purchase')
-const Token = require('./users/Token');
-//const Supplier = require('./suppliers/Supplier');
-//const Payment = require('./payments/Payment');
-//const Movement = require('./movements/Movement');
-//const File = require('./users/File');
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');

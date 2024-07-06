@@ -35,4 +35,13 @@ Sector.hasMany(Unit, { foreignKey: 'sector_id', as: 'unit' });
 
 //Unit.sync({force : false})
 
+/*(async () => {
+    try {
+      await Unit.sync({ force: true }); // Force: true will drop and recreate tables
+      console.log('Table units created successfully!');
+    } catch (error) {
+      console.error('Unable to create table units:', error);
+    }
+  })();*/
+
 module.exports = Unit

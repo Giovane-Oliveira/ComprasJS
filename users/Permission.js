@@ -74,5 +74,14 @@ User.hasMany(Permission, { foreignKey: 'user_id', as: 'permission' });
 
 //Permission.sync({force: false})
 
+/*(async () => {
+    try {
+      await Permission.sync({ force: true }); // Force: true will drop and recreate tables
+      console.log('Table permissions created successfully!');
+    } catch (error) {
+      console.error('Unable to create table permissions:', error);
+    }
+  })();*/
+
 
 module.exports = Permission

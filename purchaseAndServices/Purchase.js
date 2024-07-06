@@ -64,5 +64,15 @@ Supplier.hasMany(Purchase, { foreignKey: 'supplier_id', as: 'purchase' });
 
 //Purchase.sync({ force: false })
 
+// Synchronize models with the database
+/*(async () => {
+  try {
+    await Purchase.sync({ force: true }); // Force: true will drop and recreate tables
+    console.log('Table purchases created successfully!');
+  } catch (error) {
+    console.error('Unable to create table purchases:', error);
+  }
+})();*/
+
 
 module.exports = Purchase

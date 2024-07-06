@@ -43,4 +43,14 @@ Employee.hasMany(User, { foreignKey: 'employee_id', as: 'user' });
 //User.sync({force: false})
 
 
+/*(async () => {
+    try {
+      await User.sync({ force: true }); // Force: true will drop and recreate tables
+      console.log('Table users created successfully!');
+    } catch (error) {
+      console.error('Unable to create table users:', error);
+    }
+  })();*/
+
+
 module.exports = User

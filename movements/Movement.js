@@ -44,5 +44,14 @@ Payment.hasMany(Movement, { foreignKey: 'payment_id', as: 'movement' });
 
 //Movement.sync({ force: false })
 
+/*(async () => {
+  try {
+    await Movement.sync({ force: true }); // Force: true will drop and recreate tables
+    console.log('Table movements created successfully!');
+  } catch (error) {
+    console.error('Unable to create table movements:', error);
+  }
+})();*/
+
 
 module.exports = Movement

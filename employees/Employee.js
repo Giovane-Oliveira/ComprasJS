@@ -43,5 +43,14 @@ Sector.hasMany(Employee, { foreignKey: 'sector_id', as: 'employee' });
 
 //Employee.sync({force: false})
 
+/*(async () => {
+    try {
+      await Employee.sync({ force: true }); // Force: true will drop and recreate tables
+      console.log('Tables employees created successfully!');
+    } catch (error) {
+      console.error('Unable to create table employees:', error);
+    }
+  })();*/
+
 
 module.exports = Employee

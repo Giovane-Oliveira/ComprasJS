@@ -29,4 +29,13 @@ const Token = connection.define('Token', {
 
 //Token.sync({force : false})
 
+/*(async () => {
+    try {
+      await Token.sync({ force: true }); // Force: true will drop and recreate tables
+      console.log('Table tokens created successfully!');
+    } catch (error) {
+      console.error('Unable to create table tokens:', error);
+    }
+  })();*/
+
 module.exports = Token

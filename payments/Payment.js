@@ -59,6 +59,15 @@ Supplier.hasMany(Payment, { foreignKey: 'supplier_id', as: 'payment' });
 
 
 //Payment.sync({ force: false })
+/*
+(async () => {
+  try {
+    await Payment.sync({ force: true }); // Force: true will drop and recreate tables
+    console.log('Tables payments created successfully!');
+  } catch (error) {
+    console.error('Unable to create table payments:', error);
+  }
+})();*/
 
 
 module.exports = Payment
