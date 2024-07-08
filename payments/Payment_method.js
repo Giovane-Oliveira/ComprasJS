@@ -2,11 +2,16 @@ const Sequelize = require('sequelize')
 const connection = require('../database/database')
 const Payment = require('../payments/Payment')
 
-
+const type_payment = {
+  BOLETO: 'Boleto',
+  AVISTA: 'Avista', 
+  DEPOSITO: 'Deposito', 
+  PIX: 'Pix'
+};
 
 const Payment_Method = connection.define('Payment_Method', {
    payment_method: {
-    type: Sequelize.TEXT,
+    type: Sequelize.ENUM(Object.values(type_payment)),
     allowNull: false
    },
   bank: {
@@ -18,6 +23,10 @@ const Payment_Method = connection.define('Payment_Method', {
     allowNull: true
   },
   currency_account: {
+    type: Sequelize.STRING,
+    allowNull: true
+  },
+  ticket: {
     type: Sequelize.STRING,
     allowNull: true
   },
@@ -37,7 +46,7 @@ const Payment_Method = connection.define('Payment_Method', {
     type: Sequelize.STRING,
     allowNull: true
   },
-  telefone: {
+  phone: {
     type: Sequelize.STRING,
     allowNull: true
   },
@@ -54,8 +63,8 @@ Payment.hasMany(Payment_Method, { foreignKey: 'payment_id', as: 'payment_method'
 
 
 //Payment.sync({ force: false })
-
-/*(async () => {
+/*
+(async () => {
   try {
     await Payment_Method.sync({ force: true }); // Force: true will drop and recreate tables
     console.log('Tables payments_method created successfully!');

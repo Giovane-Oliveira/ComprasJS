@@ -10,7 +10,6 @@ const usersController = require('./users/UsersController');
 const session = require('express-session'); // Import express-session
 const notificationUser = require('./middlewares/notification');
 
-
 app.set('view engine', 'ejs');
 
 // Sessions

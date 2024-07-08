@@ -1,11 +1,11 @@
 <%-  include('../partials/header.ejs') %>
 
 <h2 class='mb-4'>Autorização de Pagamentos Diversos</h2>
-<form id="guru" action="upload" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<form id="guru" action="/upload" method="post" enctype="multipart/form-data" accept-charset="utf-8">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="inputText">Fornecedor</label>
-      <select name="fornecedor" class="form-control" required>
+      <select name="supplier" class="form-control" required>
         <option value="" disabled="disabled" selected="selected" required>Selecione o Fornecedor</option>
         <option value='Fornecedor1'>Fornecedor1</option>
         <option value='Fornecedor1'>Fornecedor2</option>
@@ -15,30 +15,30 @@
     </div>
     <div class="form-group col-md-6">
       <label for="inputText">Empresa</label>
-      <select name="empresa" class="form-control" required>
+      <select name="employee" class="form-control" required>
         <option value="" disabled="disabled" selected="selected" required>Selecione a Empresa</option>
         <option value='Empresa1'>Empresa1</option>
-        <option value='Empresa1'>Empresa2</option>
-        <option value='Empresa1'>Empresa3</option>
-        <option value='Empresa1'>Empresa4</option>
+        <option value='Empresa2'>Empresa2</option>
+        <option value='Empresa3'>Empresa3</option>
+        <option value='Empresa4'>Empresa4</option>
       </select>
     </div>
   </div>
   <div class="form-group">
     <label for="exampleFormControlTextarea1">Descrição</label>
-    <textarea name="descricao" class="form-control" id="exampleFormControlTextarea1" rows="6" required placeholder="Descreva sobre o pagamento"></textarea>
+    <textarea name="description" class="form-control" id="exampleFormControlTextarea1" rows="6" required placeholder="Descreva sobre o pagamento"></textarea>
   </div>
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="inputEmail4">Vencimento</label>
-      <input name="vencimento" type="text" class="form-control" id="vencimento" required placeholder="Informe o vencimento">
+      <input name="expiration" type="text" class="form-control" id="vencimento" required placeholder="Informe o vencimento">
       <script>
         $("#vencimento").mask("00/00/0000");
       </script>
     </div>
     <div class="form-group col-md-6">
       <label for="inputText">Valor</label>
-      <input name="valor" type="text" class="form-control" id="valor" required placeholder="Informe o valor">
+      <input name="value" type="text" class="form-control" id="valor" required placeholder="Informe o valor">
       <script>
         $('#valor').maskMoney({
           prefix: 'R$ ',
@@ -55,8 +55,8 @@
     <select id="sl" class="form-control" id="exampleFormControlSelect1" required>
       <option value="">Selecione</option>
       <option value="Boleto">Boleto</option>
-      <option value="Á vista">Á vista</option>
-      <option value="Depósito">Depósito</option>
+      <option value="Avista">À vista</option>
+      <option value="Deposito">Depósito</option>
       <option value="Pix">Pix</option>
     </select>
   </div>
@@ -73,29 +73,29 @@
 
     $("#sl").on("change", function() {
       var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
-      if (valor == "Depósito") {
+      if (valor == "Deposito") {
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
-          "<input hidden name='deposito' type='text' class='form-control' id='inputEmail4' value='deposito'>\n" +
+          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Deposito'>\n" +
           "<div class='form-row'>\n" +
           "<div class='form-group col-md-3'>\n" +
           "<label for='inputEmail4'>Banco</label>\n" +
-          "<input name='banco' type='text' class='form-control' id='inputEmail4' required placeholder='Informe o Banco'>\n" +
+          "<input name='bank' type='text' class='form-control' id='inputEmail4' required placeholder='Informe o Banco'>\n" +
           "</div>\n" +
           "<div class='form-group col-md-3'>\n" +
           "<label for='inputText'>Agência</label>\n" +
-          "<input name='agencia' type='text' class='form-control' id='inputPassword4' data-mask='0000'  required placeholder='Informe a agência'>\n" +
+          "<input name='agency' type='text' class='form-control' id='inputPassword4' data-mask='0000'  required placeholder='Informe a agência'>\n" +
           "</div>\n" +
           "<div class='form-group col-md-3'>\n" +
           "<label for='inputText'>Conta Corrente</label>\n" +
-          "<input name='contacorrente' type='text' class='form-control' id='inputPassword4' data-mask='00000000-0' required placeholder='Informe a conta corrente'>\n" +
+          "<input name='currency_account' type='text' class='form-control' id='inputPassword4' data-mask='00000000-0' required placeholder='Informe a conta corrente'>\n" +
           "</div>\n" +
           "</div>\n";
 
       } else if (valor == "Pix") {
         document.getElementById("formadePagamento").innerHTML = "";
         document.getElementById("chavesPix").innerHTML = "" +
-          "<input hidden name='pix' type='text' class='form-control' id='inputEmail4' value='pix'>\n" +
+          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='pix'>\n" +
           "<div class='form-group'>\n" +
           "<label for='exampleFormControlSelect1'>Chaves Pix</label>\n" +
           "<select id='selectPix' class='form-control' id='exampleFormControlSelect1' required>\n" +
@@ -139,7 +139,7 @@
             document.getElementById("chavesPix").innerHTML = "" +
               "<div class='form-group col-md-3'>\n" +
               "<label for='inputText'>Telefone</label>\n" +
-              "<input name='telefone' type='text' class='form-control' id='inputPassword4' data-mask='(00) 0 0000-0000'  required placeholder='Informe o TELEFONE'>\n" +
+              "<input name='phone' type='text' class='form-control' id='inputPassword4' data-mask='(00) 0 0000-0000'  required placeholder='Informe o TELEFONE'>\n" +
               "</div>\n";
           } else {
 
@@ -153,9 +153,9 @@
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
 
-          "<input hidden name='boleto' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
+          "<input hidden name='ticket' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
 
-      } else if (valor == "Á vista") {
+      } else if (valor == "Avista") {
 
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
@@ -178,33 +178,12 @@
     </tr>
     <tr>
 
-      <td class='col-md-2'><input type="file" name="anexo1" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" required /></td>
+      <td class='col-md-2'><input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required /></td>
 
     </tr>
   </table>
   <br>
-  <button type="button" class="btn btn-secondary" onclick="adicionarParcela()">+ Anexo</button></td>
-
-  <script>
-    let count = 2;
-
-    function adicionarParcela() {
-
-      $('#principal').append("<tr><td class='col-md-2'><input type='file' name='anexo" + count + "' size='50' accept='image/jpeg,image/png,image/jpg,application/pdf' required /></td>" +
-        "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td>");
-      count++;
-
-    }
-
-    $('#principal').on('click', 'button', function() {
-
-      var td = $(this).parent();
-      var tr = $(td).parent();
-      count--;
-      tr.remove();
-
-    });
-  </script>
+  
 
   <button type="submit" class="btn btn-info">Enviar</button>
 </form>

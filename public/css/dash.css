@@ -5,7 +5,6 @@
   margin: 30px auto; /* Center the container */
   gap: 20px;
 }
-
 .card {
   width: 300px; /* Adjust width for 4 cards */
   height: auto;
