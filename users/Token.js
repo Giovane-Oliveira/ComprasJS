@@ -6,24 +6,28 @@ const Token = connection.define('Token', {
  
     managers: { //gerentes
         type: Sequelize.STRING(5),
-        allowNull: false
+        allowNull: true
     },
     leaders: { //Gestores
         type: Sequelize.STRING(6),
-        allowNull: false
+        allowNull: true
     },
     directors: { // Diretores
         type: Sequelize.STRING(7),
-        allowNull: false
+        allowNull: true
     },
     purchases: { // Compras
         type: Sequelize.STRING(8),
-        allowNull: false
+        allowNull: TransformStreamDefaultController
     },
     financial: { // Financeiro
         type: Sequelize.STRING(9),
-        allowNull: false
+        allowNull: true
     },
+    ti: { // T.I
+        type: Sequelize.STRING(10),
+        allowNull: true
+    }
     
 });
 

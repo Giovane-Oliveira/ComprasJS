@@ -1,0 +1,210 @@
+.card-container {
+  display: flex; /* Use flexbox for horizontal layout */
+  justify-content: space-between; /* Distribute cards evenly */
+  width: 80%; /* Adjust width as needed */
+  margin: 30px auto; /* Center the container */
+  gap: 20px;
+}
+
+.card {
+  width: 300px; /* Adjust width for 4 cards */
+  height: auto;
+  border: 1px solid #000;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  padding: 15px; /* Add padding around the image */
+  background-color: #f8f8f8;
+}
+.card img {
+  width: 100%; /* Make the image take up the full width of the card */
+  height: auto; /* Maintain aspect ratio by letting the height adjust automatically */
+  display: block; /* Ensure the image takes up the full width of its container */
+  margin: 0 auto; /* Center the image horizontally */
+}
+.card p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  text-align: left;
+  color: #000; /* Inherits the color from the parent element */
+  border: 1px solid #000;
+  padding: 15px 0px 15px 20px;
+  border-radius: 5px;
+}
+.card-number {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  margin-left: 46%;
+  background-color: #ffffff;
+  border-radius: 50px;
+  padding: 10px 15px 10px 15px;
+}
+.card a {
+  text-decoration: none; /* Removes the underline */
+}
+h3 {
+  margin-top: 80px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  text-align: center;
+}
+
+.content {
+  margin-left: 0px; /* Initial margin to accommodate the sidebar */
+  transition: margin-left 0.3s ease; /* Smooth transition for margin */
+}
+.sidebar.active ~ .content {
+  margin-left: 250px; /* Increase margin when sidebar is active */
+}
+.pendente {
+  background-color: #ffea07;
+}
+.pendente:hover {
+  background-color: #fff582;
+}
+.recusado {
+  background-color: #fa4040;
+}
+.recusado:hover {
+  background-color: #ff8282;
+}
+.aprovado {
+  background-color: #39e550;
+}
+.aprovado:hover {
+  background-color: #77ff89;
+}
+.request-list {
+  display: table;
+  margin: 0 auto;
+  width: 80%; /* Aumentar largura da tabela para melhor visibilidade */
+  border-collapse: collapse;
+  border: 2px solid #0f3b92; /* Ajustar cor da borda da tabela */
+  font-size: 1.2em;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1); /* Adicionar sombra para destacar a tabela */
+}
+
+.request-list li {
+  display: table-row;
+  border-bottom: 1px solid #ddd;
+}
+
+.request-list li:nth-child(even) {
+  /* Adicionar estilo zebrado */
+  background-color: #f5f5f5;
+}
+
+.request-title,
+.request-status,
+.request-date {
+  display: table-cell;
+  padding: 20px; /* Aumentar o espaçamento interno das células */
+  text-align: left;
+  letter-spacing: -0.5px;
+  vertical-align: middle;
+}
+
+.request-title {
+  width: 40%;
+  font-weight: 600; /* Deixar o título da solicitação um pouco mais evidente */
+}
+
+.request-status {
+  width: 15%;
+  padding: 0;
+}
+
+.request-date {
+  width: 15%;
+}
+
+.request-list li:first-child {
+  /* Ajustar estilo do cabeçalho */
+  background-color: #0f3b92; /* Cor de fundo do cabeçalho */
+  color: #ffffff; /* Cor do texto do cabeçalho */
+  font-weight: bold;
+}
+
+.request-button {
+  display: block;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  width: 80%; /* Ajustar largura do botão */
+  background-color: #0f3b92;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px auto;
+  transition: background-color 0.3s ease; /* Adicionar transição suave ao botão */
+}
+
+.request-button:hover {
+  background-color: #0061c9; /* Cor do botão ao passar o mouse */
+}
+@media screen and (max-width: 768px) {
+  .card {
+    width: 90%;
+    align-content: center;
+  }
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .card-number {
+    margin-left: 35%;
+  }
+  .request-list {
+    width: 90%;
+    border: none; /* Remove a borda da tabela */
+    box-shadow: none; /* Remove a sombra da tabela */
+  }
+
+  .request-list li {
+    display: block; /* Cada linha da tabela se torna um bloco */
+    border: 1px solid #ddd; /* Adiciona borda inferior a cada linha */
+    margin-bottom: 10px; /* Adiciona espaçamento entre as linhas */
+    border-radius: 5px; /* Arredonda as bordas das linhas */
+    overflow: hidden; /* Impede que o conteúdo ultrapasse a borda arredondada */
+  }
+
+  .request-list li:first-child {
+    display: none; /* Oculta a primeira linha da tabela em telas menores */
+  }
+
+  .request-list li:nth-child(even) {
+    background-color: transparent; /* Remove o estilo zebrado */
+  }
+
+  .request-title,
+  .request-status,
+  .request-date {
+    display: block; /* Cada célula da tabela se torna um bloco */
+    padding: 10px 15px; /* Ajusta o espaçamento interno das células */
+    text-align: left;
+    width: auto; /* Ajusta a largura automaticamente */
+    border-bottom: 1px solid #eee; /* Adiciona uma linha sutil entre as células */
+  }
+
+  .request-title {
+    font-weight: bold; /* Destaca o título da solicitação */
+  }
+
+  .request-status,
+  .request-date {
+    font-size: 0.9em; /* Diminui o tamanho da fonte do status e data */
+    color: #555; /* Define uma cor mais clara para o status e data */
+  }
+
+  .request-list li:last-child .request-title,
+  .request-list li:last-child .request-status,
+  .request-list li:last-child .request-date {
+    border-bottom: none; /* Remove a borda inferior da última célula */
+  }
+
+  .request-list a {
+    display: block; /* Transforma cada linha em um link clicável */
+    color: inherit; /* Herda a cor do texto da linha */
+    text-decoration: none; /* Remove a decoração de link */
+    color: #ffffff;
+  }
+}

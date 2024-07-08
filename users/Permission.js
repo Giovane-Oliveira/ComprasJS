@@ -49,6 +49,11 @@ const Permission = connection.define('Permission', {
         type: Sequelize.INTEGER,
         allowNull: false,
         default: 0
+    },
+    user_registration: { //cadastro de usuário
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        default: 0
     }
 });
 
@@ -73,8 +78,8 @@ User.hasMany(Permission, { foreignKey: 'user_id', as: 'permission' });
 
 
 //Permission.sync({force: false})
-
-/*(async () => {
+/*
+(async () => {
     try {
       await Permission.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table permissions created successfully!');

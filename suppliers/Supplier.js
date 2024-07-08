@@ -8,7 +8,7 @@ const Status = {
 
 const Supplier = connection.define('Supplier', {
     cnpj: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
     },
     name: {

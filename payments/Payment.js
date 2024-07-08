@@ -28,7 +28,7 @@ const Payment = connection.define('Payment', {
     type: Sequelize.FLOAT,
     allowNull: false
   },
-  expeiration_date: {
+  expiration_date: {
     type: Sequelize.DATE,
     allowNull: false
   },
@@ -59,7 +59,7 @@ Supplier.hasMany(Payment, { foreignKey: 'supplier_id', as: 'payment' });
 
 
 //Payment.sync({ force: false })
-/*
+
 (async () => {
   try {
     await Payment.sync({ force: true }); // Force: true will drop and recreate tables
@@ -67,7 +67,7 @@ Supplier.hasMany(Payment, { foreignKey: 'supplier_id', as: 'payment' });
   } catch (error) {
     console.error('Unable to create table payments:', error);
   }
-})();*/
+})();
 
 
 module.exports = Payment

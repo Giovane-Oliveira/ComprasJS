@@ -66,6 +66,8 @@ const Movement = require('./movements/Movement');
 const File = require('./users/File');
 const User = require('./users/User');
 const Permission = require('./users/Permission');
+const Payment_Method = require('./payments/Payment_method');
+
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');

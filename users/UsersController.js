@@ -168,7 +168,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 leaders: "",
                 directors: "",
                 purchases: "",
-                financial: ""
+                financial: "",
+                ti:""
             }); //gerente
             break;
         case 6:
@@ -177,7 +178,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 leaders: token,
                 directors: "",
                 purchases: "",
-                financial: ""
+                financial: "",
+                ti:""
             }); //gestores
             break;
         case 7:
@@ -186,7 +188,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 leaders: "",
                 directors: token,
                 purchases: "",
-                financial: ""
+                financial: "",
+                ti:""
             }); //diretores 
             break;
         case 8:
@@ -195,7 +198,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 leaders: "",
                 directors: "",
                 purchases: token,
-                financial: ""
+                financial: "",
+                ti:""
             }); //compras
             break;
         case 9:
@@ -204,11 +208,34 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 leaders: "",
                 directors: "",
                 purchases: "",
-                financial: token
+                financial: token,
+                ti:""
             }); //financeiro
             break;
+            case 10:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+                ti: token
+            }); //tecnologia da informação
+            break;
         default:
-            res.render('registrationsToken/index.ejs', { token: 'Erro ao gerar o token' });
+            res.render('registrationsToken/index.ejs', { token: 'Erro ao gerar o token', user: req.session.user });
+            Token.destroy({
+                where: {
+                    [Op.or]: [
+                        { managers: token },
+                        { leaders: token },
+                        { directors: token },
+                        { purchases: token },
+                        { financial: token },
+                        { ti: token }
+                    ]
+                }
+            });
             break;
     }
 
@@ -226,9 +253,21 @@ router.post('/generate_token', adminAuth, async (req, res) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        res.render('registrationsToken/index.ejs', { token: "Email enviado com sucesso!" });
+        res.render('registrationsToken/index.ejs', { token: "Email enviado com sucesso!", user: req.session.user });
     } catch (error) {
-        res.render('registrationsToken/index.ejs', { token: "Erro ao enviar o email \n " + error });
+        Token.destroy({
+            where: {
+                [Op.or]: [
+                    { managers: token },
+                    { leaders: token },
+                    { directors: token },
+                    { purchases: token },
+                    { financial: token },
+                    { ti: token }
+                ]
+            }
+        });
+        res.render('registrationsToken/index.ejs', { token: "Erro ao enviar o email \n " + error, user: req.session.user });
     }
 });
 
@@ -257,6 +296,9 @@ router.get('/registrations/:token', (req, res) => {
         case 9:
             profile = 'financial'; //financeiro
             break;
+        case 10:
+            profile = 'ti'; //T.I
+            break;
         default:
             profile = 'managers';
             break;
@@ -269,7 +311,8 @@ router.get('/registrations/:token', (req, res) => {
                 { leaders: token },
                 { directors: token },
                 { purchases: token },
-                { financial: token }
+                { financial: token },
+                { ti: token }
             ]
         }
     }).then(tipo => {
@@ -410,10 +453,7 @@ router.post('/recover/alter_password', async (req, res) => {
             res.redirect('/?error_send_mail=true');
                 return;
         }
-
-    });
-  
-
+    }); 
 });
 
 router.post('/registration/create', async (req, res) => {
@@ -465,6 +505,7 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 0; // autorização financeira
             validation = 0; // validação
             closure = 0; // encerramento
+            user_registration = 0; // cadastro de usuário
             break;
         case 'leaders': //gestores
             open_request = 0; // abrir requisição
@@ -476,6 +517,7 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 0; // autorização financeira
             validation = 0; // validação
             closure = 1; // encerramento
+            user_registration = 1; // cadastro de usuário
             break;
         case 'directors': //diretores
             open_request = 0; // abrir requisição
@@ -487,6 +529,7 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 1; // autorização financeira
             validation = 0; // validação
             closure = 1; // encerramento
+            user_registration = 1; // cadastro de usuário
             break;
         case 'purchases': //compras
             open_request = 0; // abrir requisição
@@ -498,6 +541,7 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 0; // autorização financeira
             validation = 1; // validação
             closure = 1; // encerramento
+            user_registration = 0; // cadastro de usuário
             break;
         case 'financial': //financeiro
             open_request = 0; // abrir requisição
@@ -509,6 +553,19 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 0; // autorização financeira
             validation = 0; // validação
             closure = 1; // encerramento
+            user_registration = 0; // cadastro de usuário
+            break;
+        case 'ti': //T.I
+            open_request = 1; // abrir requisição
+            attach_nf = 1; // anexar nota fiscal
+            attach_doc = 1; // anexar documento
+            attach_charge = 1; // anexar cobrança
+            receipt_attachment = 1; // anexar comprovante
+            commercial_authorization = 1; // autorização comercial
+            financial_authorization = 1; // autorização financeira
+            validation = 1; // validação
+            closure = 1; // encerramento
+            user_registration = 1; // cadastro de usuário
             break;
     }
 
@@ -570,6 +627,7 @@ router.post('/registration/create', async (req, res) => {
                     financial_authorization: financial_authorization,
                     validation: validation,
                     closure: closure,
+                    user_registration: user_registration,
                     employee_id: newEmployee.id,
                     profile_id: newProfile.id,
                     user_id: newUser.id // Use the newly created user's ID
@@ -583,7 +641,8 @@ router.post('/registration/create', async (req, res) => {
                             { leaders: token },
                             { directors: token },
                             { purchases: token },
-                            { financial: token }
+                            { financial: token },
+                            { ti: token }
                         ]
                     }
                 }
