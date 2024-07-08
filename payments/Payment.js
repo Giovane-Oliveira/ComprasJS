@@ -16,16 +16,13 @@ const Status = {
   };
 
 const Payment = connection.define('Payment', {
-   justification: {
-    type: Sequelize.TEXT,
-    allowNull: false
-   },
+
   description: {
     type: Sequelize.STRING,
     allowNull: true
   },
   value: {
-    type: Sequelize.FLOAT,
+    type: Sequelize.STRING,
     allowNull: false
   },
   expiration_date: {

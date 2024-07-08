@@ -53,7 +53,7 @@
   <div class="form-group">
     <label for="exampleFormControlSelect1">Formas de Pagamento</label>
     <select id="sl" class="form-control" id="exampleFormControlSelect1" required>
-      <option value="">Selecione</option>
+      <option value="" disabled="disabled" selected="selected" required>Selecione o tipo de pagamento</option>
       <option value="Boleto">Boleto</option>
       <option value="Avista">À vista</option>
       <option value="Deposito">Depósito</option>
@@ -93,10 +93,10 @@
           "</div>\n";
 
       } else if (valor == "Pix") {
-        document.getElementById("formadePagamento").innerHTML = "";
-        document.getElementById("chavesPix").innerHTML = "" +
-          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='pix'>\n" +
-          "<div class='form-group'>\n" +
+        document.getElementById("chavesPix").innerHTML = "";
+        document.getElementById("formadePagamento").innerHTML = "" +
+        "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Pix'>\n" +
+        "<div class='form-group'>\n" +
           "<label for='exampleFormControlSelect1'>Chaves Pix</label>\n" +
           "<select id='selectPix' class='form-control' id='exampleFormControlSelect1' required>\n" +
           "<option value=''>Selecione</option>\n" +
@@ -153,13 +153,13 @@
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
 
-          "<input hidden name='ticket' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
+          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
 
       } else if (valor == "Avista") {
 
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
-          "<input hidden name='avista' type='text' class='form-control' id='inputEmail4' value='avista'>\n";
+          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='avista'>\n";
 
       } else {
 
