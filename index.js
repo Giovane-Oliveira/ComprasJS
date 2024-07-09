@@ -18,8 +18,8 @@ app.use(session({
   cookie: {
       maxAge: 900000000 //ms   15min
   },
-  //resave: false,
-  //saveUninitialized: true
+  resave: false,
+  saveUninitialized: false
 }));
 
 

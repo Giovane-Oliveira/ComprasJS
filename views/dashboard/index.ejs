@@ -1,3 +1,93 @@
 <%-  include('../partials/header.ejs') %>
-<h1>Dashboard</h1>
+
+    <h3 class='mb-4 mt-5' style="text-align: center;">Minhas solicitações de compras e serviços</h3>
+    <div class="form-row justify-content-center">
+      <div class="form-group col-md-3">
+        <div class="card" style="width: 96%;">
+          <img class="card-img-top" src="./images/pendent-folder-cuate.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">PENDENTES</h5>
+            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
+            <a href="#" class="btn btn-warning">Visualizar <span class="badge badge-light">0
+              </span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-md-3">
+        <div class="card" style="width: 95%;">
+          <img class="card-img-top" src="./images/danied-cuate.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">REPROVADOS</h5>
+            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
+            <a href="#" class="btn btn-danger">Visualizar <span class="badge badge-light">0
+              </span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-md-3">
+        <div class="card" style="width: 95%;">
+          <img class="card-img-top" src="./images/aproved-rafiki.png" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">APROVADOS</h5>
+            <a href="#" class="btn btn-success">Visualizar <span class="badge badge-light">0
+              </span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="text-align: center; margin-top: 20px;">Últimas solicitações</h3>
+    <table class="table table-responsive-sm table-striped justify-content-center">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Solicitação</th>
+          <th scope="col">Data</th>
+          <th scope="col">Status</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Monitor 27" Full HD</td>
+          <td>2023-12-20</td>
+          <td>Aprovado</td>
+          <td><a href="">Detalhes</a></td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Teclado Mecânico Gamer</td>
+          <td>2023-12-15</td>
+          <td>Pendente</td>
+          <td><a href="">Detalhes</a></td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Mouse Sem Fio</td>
+          <td>2023-12-10</td>
+          <td>Reprovado</td>
+          <td><a href="">Detalhes</a></td>
+        </tr>
+        <tr>
+          <th scope="row">4</th>
+          <td>Webcam 1080p</td>
+          <td>2023-12-05</td>
+          <td>Aprovado</td>
+          <td><a href="">Detalhes</a></td>
+        </tr>
+        <tr>
+          <th scope="row">5</th>
+          <td>Headset Gamer</td>
+          <td>2023-12-01</td>
+          <td>Pendente</td>
+          <td><a href="">Detalhes</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
 <%-  include('../partials/footer.ejs') %>
