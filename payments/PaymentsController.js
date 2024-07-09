@@ -43,7 +43,7 @@ router.get('/payments', (req, res) => {
   });
 });
 
-router.post('/upload', upload.array('files'), (req, res) => {
+router.post('/upload/payments', upload.array('files'), (req, res) => {
   const supplier = req.body.supplier;
   console.log("supplier: " + supplier);
   const company = req.body.company;
@@ -136,7 +136,7 @@ router.post('/upload', upload.array('files'), (req, res) => {
         // Salvar arquivo no diretório de destino 
 
         File.create({
-          fileName: fileName,
+          fileName: uniqueFileName,
           payment_id: payment.id
         }).catch(error => {
           console.error('Error creating file:', error);

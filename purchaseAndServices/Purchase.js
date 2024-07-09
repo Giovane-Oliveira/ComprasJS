@@ -20,32 +20,23 @@ const Purchase = connection.define('Purchase', {
     type: Sequelize.TEXT,
     allowNull: false
    },
-  item: {
-    type: Sequelize.STRING,
-    allowNull: true
-  },
-  description: {
-    type: Sequelize.STRING,
-    allowNull: true
-  },
-  amount:{
-    type: Sequelize.INTEGER,
-    allowNull: false
-  },
-  value: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
  total: {
-    type: Sequelize.FLOAT,
+    type: Sequelize.TEXT,
     allowNull: false
   },
-
+  leader_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  director_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
   status: {
     type: Sequelize.ENUM(Object.values(Status)), // Use Sequelize.ENUM
     allowNull: false,
     defaultValue: Status.GESTOR // Set a default status
-  },
+  }
 
 });
 
@@ -65,7 +56,8 @@ Supplier.hasMany(Purchase, { foreignKey: 'supplier_id', as: 'purchase' });
 //Purchase.sync({ force: false })
 
 // Synchronize models with the database
-/*(async () => {
+/*
+(async () => {
   try {
     await Purchase.sync({ force: true }); // Force: true will drop and recreate tables
     console.log('Table purchases created successfully!');

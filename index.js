@@ -67,6 +67,8 @@ const User = require('./users/User');
 const Permission = require('./users/Permission');
 const Payment_Method = require('./payments/Payment_method');
 const Business = require('./companies/Company');
+const Item = require('./purchaseAndServices/Item');
+
 
 
 

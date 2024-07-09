@@ -1,13 +1,13 @@
 <%-  include('../partials/header.ejs') %>
 
 <h2 class='mb-4'>Autorização de Pagamentos Diversos</h2>
-<form id="guru" action="/upload" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<form action="/upload/payments" method="post" enctype="multipart/form-data" accept-charset="utf-8">
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="inputText">Fornecedor</label>
       <select name="supplier" class="form-control" required>
         <% suppliers.forEach(function(supplier) {%>
-          <option value=<%= supplier.id %>><%= supplier.name %></option>
+        <option value=<%= supplier.id %>><%= supplier.name %></option>
         <% });%>
       </select>
     </div>
@@ -15,7 +15,7 @@
       <label for="inputText">Empresa</label>
       <select name="company" class="form-control" required>
         <% companies.forEach(function(company) {%>
-          <option value=<%= company.id %>><%= company.name %></option>
+        <option value=<%= company.id %>><%= company.name %></option>
         <% });%>
       </select>
     </div>
@@ -91,8 +91,8 @@
       } else if (valor == "Pix") {
         document.getElementById("chavesPix").innerHTML = "";
         document.getElementById("formadePagamento").innerHTML = "" +
-        "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Pix'>\n" +
-        "<div class='form-group'>\n" +
+          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Pix'>\n" +
+          "<div class='form-group'>\n" +
           "<label for='exampleFormControlSelect1'>Chaves Pix</label>\n" +
           "<select id='selectPix' class='form-control' id='exampleFormControlSelect1' required>\n" +
           "<option value=''>Selecione</option>\n" +
@@ -166,21 +166,9 @@
 
     })
   </script>
-
-  <table id="principal" border="0px" width="70%">
-    <tr>
-      <td>Anexo</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-
-      <td class='col-md-2'><input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required /></td>
-
-    </tr>
-  </table>
-  <br>
-  
-
+  <hr>
+  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+  <hr>
   <button type="submit" class="btn btn-info">Enviar</button>
 </form>
 </div>

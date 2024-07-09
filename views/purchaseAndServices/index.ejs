@@ -1,5 +1,79 @@
 <%-  include('../partials/header.ejs') %>
 
-<h2>Compras e Serviços</h2>
+<h2 class='mb-4'>Solicitação de Compras e Serviços</h2>
+
+
+<form action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+  <style>
+    tr,
+    td {
+      border: none;
+    }
+  </style>
+
+  <table id="principal" border="0px" width="100%">
+    <thead>
+      <tr>
+        <td>Quantidade</td>
+        <td>Item</td>
+        <td>Especificação</td>
+        <td>R$</td>
+        <td>&nbsp;</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-md-1"><input type="number" min=1 name="amount1" class="form-control" id="quantidade1" required placeholder="0" /></td>
+
+        <td class="col-md-3"><input type="text" name="item1" class="form-control" id="item1" required placeholder="Item" /></td>
+
+        <td class="col-md-4"><input type="text" name="description1" class="form-control" id="especificacao1" required placeholder="Especificação" /></td>
+
+        <td class="col-md-2"><input type="text" name="value1" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="valor1" required placeholder="Valor" /></td>
+      </tr>
+
+    </tbody>
+  </table>
+  <div class="form-group col-md-8">
+    <label for="exampleFormControlTextarea1">Justificativa</label>
+    <textarea class="form-control" name="justification" id="exampleFormControlTextarea1" required placeholder="Informe a justificativa" rows="6"></textarea>
+  </div>
+  <button type="button" class="btn btn-secondary" onclick="adicionarParcela()">+ Item</button>
+  <button type="submit" class="btn btn-info">Enviar</button>
+  <script>
+    /*$('#valor1').maskMoney({ prefix: 'R$ ', allowNegative: true, thousands: '.', decimal: ',', affixesStay: true });*/
+
+    $.jMaskGlobals.watchDataMask = true;
+
+    let count = 2;
+
+    function adicionarParcela() {
+
+      $('#principal').append("<tr><td class='col-md-1'><input type='number' min=1 name='amount" + count + "' class='form-control' id='inputEmail4' required placeholder='0'/></td>" +
+        "<td class='col-md-3'><input type='text' name='item" + count + "' class='form-control' id='item" + count + "' required placeholder='Item' /></td>" +
+        "<td class='col-md-4'><input type='text' name='description" + count + "' class='form-control' id='especificacao" + count + "' required placeholder='Especificação'  /></td>" +
+        "<td class='col-md-2'><input type='text' data-mask='###.###.##0,00' data-mask-reverse='true' name='value" + count + "' class='form-control' id='valor" + count + "' required placeholder='Valor'/></td>" +
+        "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td></tr>");
+      count++;
+    }
+
+    $('#principal').on('click', 'button', function() {
+
+      var td = $(this).parent();
+      var tr = $(td).parent();
+      count--;
+      tr.remove();
+
+    });
+  </script>
+
+  <hr>
+  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+  <hr>
+
+
+  <button type="submit" class="btn btn-info">Enviar</button>
+</form>
+</div>
 
 <%- include('../partials/footer.ejs') %>
