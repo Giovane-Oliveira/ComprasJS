@@ -4,6 +4,11 @@ const multer = require('multer'); // Import multer
 const fs = require('fs-extra'); // Import fs for file operations
 const Payment = require('../payments/Payment');
 const { where } = require('sequelize');
+const { Op } = require('sequelize');
+const Supplier = require('../suppliers/Supplier');
+const Company = require('../companies/Company');
+const Payment_Method = require('../payments/Payment_method');
+const File =  require( '../users/File');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -17,14 +22,32 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create the upload middleware
 
 router.get('/payments', (req, res) => {
-  res.render('payments/index.ejs', { user: req.session.user });
+
+
+  Supplier.findAll({}).then(suppliers => {
+
+    Company.findAll({
+      where: {
+        name: {
+          [Op.like]: `% ${req.session.user.unit.city.toUpperCase()}%`
+        }
+      }
+    }).then(companies => {
+
+      res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies });
+
+    });
+
+  }).catch(error => {
+    console.error('Error retrieving suppliers:', error);
+  });
 });
 
 router.post('/upload', upload.array('files'), (req, res) => {
   const supplier = req.body.supplier;
   console.log("supplier: " + supplier);
-  const employee = req.body.employee;
-  console.log("employee: " + employee);
+  const company = req.body.company;
+  console.log("company: " + company);
   const description = req.body.description;
   console.log("description: " + description);
   const expiration = req.body.expiration;
@@ -33,7 +56,7 @@ router.post('/upload', upload.array('files'), (req, res) => {
   console.log("value: " + value);
   const payment_method = req.body.payment_method;
   console.log("payment_method: " + payment_method);
-  const bank =  req.body.bank;
+  const bank = req.body.bank;
   console.log("bank: " + bank);
   const agency = req.body.agency;
   console.log("agency: " + agency);
@@ -49,48 +72,85 @@ router.post('/upload', upload.array('files'), (req, res) => {
   console.log("ticket: " + ticket);
   const avista = req.body.avista;
   console.log("avista: " + avista);
+  const cnpj = req.body.cnpj;
+  console.log("cnpj: " + cnpj);
 
   const files = req.files;
 
-  
-Payment.create({
-where: {
-  employee_id: req.session.user.employee.id
-},
-  description: description,
-  value: value,
-  expiration_date:"2024-12-11",
-  employee_id: req.session.user.employee.id,
-  supplier_id: 1
+  var dateFormat = expiration.split("/").reverse().join("-");
+  console.log("dataFormata: " + dateFormat);
 
-}).catch(error => {
-  console.error('Error creating payment:', error);
-});
+  Payment.create({
+    /*where: {
+      employee_id: req.session.user.employee.id
+    },*/
+    description: description,
+    value: value,
+    expiration_date: dateFormat,
+    employee_id: req.session.user.employee.id,
+    supplier_id: supplier
+
+  }).catch(error => {
+    console.error('Error creating payment:', error);
+  });
 
 
-  // Check if any files were uploaded
-  if (files && files.length > 0) {
-    // Processar os dados e o arquivo aqui
-    //console.log(`Nome: ${nome}`);
+  Payment.findOne({
 
-    // Processar arquivos
-    for (const file of files) {
-      // Salvar o arquivo
-      const fileName = file.originalname;
-      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-      fs.moveSync(file.path, filePath);
-      console.log(`Arquivo recebido: ${file.originalname}`);
-      // Salvar arquivo no diretório de destino
+    order: [
+      ['id', 'DESC']
+    ]
+  }).then(payment => {
+
+    Payment_Method.create({
+
+      payment_method: payment_method,
+      bank: bank,
+      agency: agency,
+      currency_account: currency_account,
+      ticket: ticket,
+      cpf: cpf,
+      cnpj: cnpj,
+      phone: phone,
+      email: email,
+      phone: phone,
+      avista: avista,
+      payment_id: payment.id
+
+    }).catch(error => {
+      console.error('Error creating payment_method:', error);
+    });
+
+    // Check if any files were uploaded
+    if (files && files.length > 0) {
+      // Processar os dados e o arquivo aqui
+      //console.log(`Nome: ${nome}`);
+      // Processar arquivos
+      for (const file of files) {
+        // Salvar o arquivo
+        const fileName = file.originalname;
+        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+        fs.moveSync(file.path, filePath);
+        console.log(`Arquivo recebido: ${file.originalname}`);
+        // Salvar arquivo no diretório de destino 
+
+        File.create({
+          path: filePath,
+          payment_id: payment.id
+        }).catch(error => {
+          console.error('Error creating file:', error);
+        });
+
+      }
+    } else {
+      console.error('No files were uploaded.');
     }
-    
 
+    res.redirect('/payments');
+  
+  });
 
-  } else {
-    console.error('No files were uploaded.');
-  }
-
-  res.send('Upload realizado com sucesso!');
 });
 
 module.exports = router;

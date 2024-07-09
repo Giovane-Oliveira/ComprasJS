@@ -6,21 +6,17 @@
     <div class="form-group col-md-6">
       <label for="inputText">Fornecedor</label>
       <select name="supplier" class="form-control" required>
-        <option value="" disabled="disabled" selected="selected" required>Selecione o Fornecedor</option>
-        <option value='Fornecedor1'>Fornecedor1</option>
-        <option value='Fornecedor1'>Fornecedor2</option>
-        <option value='Fornecedor1'>Fornecedor3</option>
-        <option value='Fornecedor1'>Fornecedor4</option>
+        <% suppliers.forEach(function(supplier) {%>
+          <option value=<%= supplier.id %>><%= supplier.name %></option>
+        <% });%>
       </select>
     </div>
     <div class="form-group col-md-6">
       <label for="inputText">Empresa</label>
-      <select name="employee" class="form-control" required>
-        <option value="" disabled="disabled" selected="selected" required>Selecione a Empresa</option>
-        <option value='Empresa1'>Empresa1</option>
-        <option value='Empresa2'>Empresa2</option>
-        <option value='Empresa3'>Empresa3</option>
-        <option value='Empresa4'>Empresa4</option>
+      <select name="company" class="form-control" required>
+        <% companies.forEach(function(company) {%>
+          <option value=<%= company.id %>><%= company.name %></option>
+        <% });%>
       </select>
     </div>
   </div>

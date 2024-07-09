@@ -26,8 +26,8 @@ Payment.hasMany(File, { foreignKey: 'payment_id', as: 'file' });
 
 
 //File.sync({ force: false });
-
-/*(async () => {
+/*
+(async () => {
   try {
     await File.sync({ force: true }); // Force: true will drop and recreate tables
     console.log('Table files created successfully!');

@@ -42,15 +42,10 @@ const Payment_Method = connection.define('Payment_Method', {
     type: Sequelize.STRING,
     allowNull: true
   },
-  cnpj: {
-    type: Sequelize.STRING,
-    allowNull: true
-  },
   phone: {
     type: Sequelize.STRING,
     allowNull: true
-  },
-
+  }
 
 
 });
