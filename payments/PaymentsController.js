@@ -136,7 +136,7 @@ router.post('/upload', upload.array('files'), (req, res) => {
         // Salvar arquivo no diretório de destino 
 
         File.create({
-          path: filePath,
+          fileName: fileName,
           payment_id: payment.id
         }).catch(error => {
           console.error('Error creating file:', error);

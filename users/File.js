@@ -5,7 +5,7 @@ const Payment = require('../payments/Payment')
 
 
 const File = connection.define('File', {
-   path: {
+   fileName: {
     type: Sequelize.TEXT,
     allowNull: false
   }
