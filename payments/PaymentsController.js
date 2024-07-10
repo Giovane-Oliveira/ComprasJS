@@ -12,7 +12,6 @@ const File =  require( '../users/File');
 const Employee = require('../employees/Employee');
 const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
-const Company = require('../companies/Company');
 
 
 
