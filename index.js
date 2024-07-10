@@ -22,7 +22,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
 app.use(express.static('public'));
 
 // parse application/x-www-form-urlencoded
@@ -68,8 +67,6 @@ const Permission = require('./users/Permission');
 const Payment_Method = require('./payments/Payment_method');
 const Business = require('./companies/Company');
 const Item = require('./purchaseAndServices/Item');
-
-
 
 
 app.listen(3000, () => {

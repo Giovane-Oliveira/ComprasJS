@@ -8,7 +8,7 @@
           <div class="card-body">
             <h5 class="card-title">PENDENTES</h5>
             <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
-            <a href="#" class="btn btn-warning">Visualizar <span class="badge badge-light">0
+            <a href="#" class="btn btn-warning">Visualizar <span class="badge badge-light"><%= pending %>
               </span></a>
           </div>
         </div>
@@ -20,7 +20,7 @@
           <div class="card-body">
             <h5 class="card-title">REPROVADOS</h5>
             <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
-            <a href="#" class="btn btn-danger">Visualizar <span class="badge badge-light">0
+            <a href="#" class="btn btn-danger">Visualizar <span class="badge badge-light"><%= reproved %>
               </span></a>
           </div>
         </div>
@@ -31,7 +31,7 @@
           <img class="card-img-top" src="./images/aproved-rafiki.png" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">APROVADOS</h5>
-            <a href="#" class="btn btn-success">Visualizar <span class="badge badge-light">0
+            <a href="#" class="btn btn-success">Visualizar <span class="badge badge-light"><%= aproved %>
               </span></a>
           </div>
         </div>
@@ -50,43 +50,47 @@
         </tr>
       </thead>
       <tbody>
+
+        <% let count = 1; 
+        payments.forEach(payment => {  
+          // Format the date using JavaScript
+          let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });  %>
+
         <tr>
-          <th scope="row">1</th>
-          <td>Monitor 27" Full HD</td>
-          <td>2023-12-20</td>
-          <td>Aprovado</td>
+          <th scope="row"><%= count++ %></th>
+          <td><%= payment.description  %></td>
+          <td><%= formattedDate  %></td>
+          <td><%= payment.status  %></td>
           <td><a href="">Detalhes</a></td>
         </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Teclado Mecânico Gamer</td>
-          <td>2023-12-15</td>
-          <td>Pendente</td>
-          <td><a href="">Detalhes</a></td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Mouse Sem Fio</td>
-          <td>2023-12-10</td>
-          <td>Reprovado</td>
-          <td><a href="">Detalhes</a></td>
-        </tr>
-        <tr>
-          <th scope="row">4</th>
-          <td>Webcam 1080p</td>
-          <td>2023-12-05</td>
-          <td>Aprovado</td>
-          <td><a href="">Detalhes</a></td>
-        </tr>
-        <tr>
-          <th scope="row">5</th>
-          <td>Headset Gamer</td>
-          <td>2023-12-01</td>
-          <td>Pendente</td>
-          <td><a href="">Detalhes</a></td>
-        </tr>
+        
+      <% }); 
+      
+          purchases.forEach(purchase => {  
+            // Format the date using JavaScript
+            let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            });  %>
+
+          <tr>
+            <th scope="row"><%= count++ %></th>
+            <td><%= purchase.justification  %></td>
+            <td><%= formattedDate  %></td>
+            <td><%= purchase.status  %></td>
+            <td><a href="">Detalhes</a></td>
+          </tr>
+          
+        <% }); %>
+        
+        
       </tbody>
-    </table>
+    </table>  
 
   </div>
 

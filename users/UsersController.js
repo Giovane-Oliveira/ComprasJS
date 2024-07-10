@@ -11,7 +11,8 @@ const Token = require('../users/Token')
 const { Op, where } = require('sequelize');
 const adminAuth = require('../middlewares/adminAuth');
 const nodemailer = require('nodemailer');
-
+const Payment = require('../payments/Payment');
+const Purchase = require('../purchaseAndServices/Purchase')
 
 let transporter = nodemailer.createTransport({
     host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -31,13 +32,13 @@ router.get('/registration', (req, res) => {
 
 router.get('/users', adminAuth, (req, res) => {
 
-    res.render('users/index.ejs', {user: req.session.user});
+    res.render('users/index.ejs', { user: req.session.user });
 
 });
 
 
 
-router.post("/authenticate", async(req, res) => {
+router.post("/authenticate", async (req, res) => {
 
     var email = req.body?.email;
     var password = req.body?.password;
@@ -62,23 +63,23 @@ router.post("/authenticate", async(req, res) => {
         console.log(user, profile, employee, permissions, sector, unit);
 
 
-        if(profile == undefined){
+        if (profile == undefined) {
 
             console.log("Profile undefined");
 
-        }else if(employee == undefined){
+        } else if (employee == undefined) {
 
             console.log("Employee undefined");
 
-        }else if(permissions == undefined){
+        } else if (permissions == undefined) {
 
             console.log("Permissions undefined");
 
-        }else if(sector == undefined){
+        } else if (sector == undefined) {
 
             console.log("Sector undefined");
 
-        }else if(unit == undefined){
+        } else if (unit == undefined) {
 
             console.log("Unit undefined");
 
@@ -91,23 +92,23 @@ router.post("/authenticate", async(req, res) => {
 
             if (correct) {
 
-               req.session.user = {
+                req.session.user = {
 
-                user: user,
-                profile: profile,
-                employee: employee,
-                permissions: permissions,
-                sector: sector,
-                unit: unit
+                    user: user,
+                    profile: profile,
+                    employee: employee,
+                    permissions: permissions,
+                    sector: sector,
+                    unit: unit
 
-               }
+                }
 
-               res.redirect("/dashboard");
-               return;
+                res.redirect("/dashboard");
+                return;
 
 
             } else {
-                res.redirect("/");
+                res.redirect("/?login=true");
                 return;
             }
 
@@ -119,9 +120,9 @@ router.post("/authenticate", async(req, res) => {
 
     } catch (err) {
 
+        console.log(err);
         res.redirect("/?login=true");
         return;
-
     }
 
 });
@@ -141,9 +142,148 @@ router.get('/registrations_token', adminAuth, (req, res) => {
 
 });
 
-router.get('/dashboard', adminAuth, (req, res) => {
+router.get('/dashboard', adminAuth, async (req, res) => {
 
-    res.render('dashboard/index.ejs', {user: req.session.user});
+    if (req.session.user.profile.description.includes('managers') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
+
+        const pending_payments = await Payment.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending_purchases = await Purchase.findAll({
+            employee_id: req.session.user.employee.id,
+            where: {
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending = pending_payments.length + pending_purchases.length;
+
+        const reproved_purchases = await Purchase.findAll({
+            employee_id: req.session.user.employee.id,
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            employee_id: req.session.user.employee.id,
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved = reproved_payments.length + reproved_purchases.length;
+
+
+        const aproved_purchases = await Purchase.findAll({
+            employee_id: req.session.user.employee.id,
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved_payments = await Payment.findAll({
+            employee_id: req.session.user.employee.id,
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved = aproved_payments.length + aproved_purchases.length;
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved });
+
+    } else if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('ti')) {
+
+        const pending_payments = await Payment.findAll({
+            where: {
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending_purchases = await Purchase.findAll({
+            where: {
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending = pending_payments.length + pending_purchases.length;
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved = reproved_payments.length + reproved_purchases.length;
+
+
+        const aproved_purchases = await Purchase.findAll({
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved_payments = await Payment.findAll({
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved = aproved_payments.length + aproved_purchases.length;
+
+        const payments = await Payment.findAll({
+            order: [['id', 'DESC']]
+        
+        });
+
+        const purchases = await Purchase.findAll({
+            order: [['id', 'DESC']]
+            
+        });
+
+  
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
+
+    } else {
+        res.redirect("/");
+        return;
+    }
 
 });
 
@@ -170,7 +310,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: "",
-                ti:""
+                ti: ""
             }); //gerente
             break;
         case 6:
@@ -180,7 +320,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: "",
-                ti:""
+                ti: ""
             }); //gestores
             break;
         case 7:
@@ -190,7 +330,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: token,
                 purchases: "",
                 financial: "",
-                ti:""
+                ti: ""
             }); //diretores 
             break;
         case 8:
@@ -200,7 +340,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: token,
                 financial: "",
-                ti:""
+                ti: ""
             }); //compras
             break;
         case 9:
@@ -210,10 +350,10 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: token,
-                ti:""
+                ti: ""
             }); //financeiro
             break;
-            case 10:
+        case 10:
             Token.create({
                 managers: "",
                 leaders: "",
@@ -428,19 +568,19 @@ router.post('/recover/alter_password', async (req, res) => {
                 purchases: "",
                 financial: "",
             });
-    
+
             let from = "nao-responda@provida.med.br";
             let to = email;
             let subject = "Recuperação da Conta";
             let text = "Altere sua senha: \n" + "http://10.0.16.17:3000/recover/alter_password/" + email + "/" + token + "\n";
-    
+
             let mailOptions = {
                 from,
                 to,
                 subject,
                 text
             };
-    
+
             try {
                 await transporter.sendMail(mailOptions);
                 res.redirect('/?sendmail=true');
@@ -449,12 +589,12 @@ router.post('/recover/alter_password', async (req, res) => {
                 res.redirect('/?error_send_mail=true');
                 return;
             }
-    
-        }else{
+
+        } else {
             res.redirect('/?error_send_mail=true');
-                return;
+            return;
         }
-    }); 
+    });
 });
 
 router.post('/registration/create', async (req, res) => {
