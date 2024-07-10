@@ -18,6 +18,9 @@ function notificationUser(req, res, next){
       }else if (req.query.error_send_mail) {
         res.render('users/login.ejs', { message: 'Erro ao enviar email de recuperação de senha!' });
         next();
+      }else if (req.query.login) {
+        res.render('users/login.ejs', { message: 'Usuário ou senha incorretos!' });
+        next();
       }else {
         res.render('users/login.ejs', { message: '' });
          next();

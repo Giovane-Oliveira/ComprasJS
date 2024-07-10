@@ -14,13 +14,14 @@ const Profile = connection.define('Profile', {
 
 //Profile.sync({force : false})
 
-/*(async () => {
+/*
+(async () => {
     try {
       await Profile.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table profiles created successfully!');
     } catch (error) {
       console.error('Unable to create table profiles:', error);
     }
-  })();*/
+  })(); */
 
 module.exports = Profile

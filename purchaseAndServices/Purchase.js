@@ -45,13 +45,13 @@ Purchase.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
 
 //1-N
 Employee.hasMany(Purchase, { foreignKey: 'employee_id', as: 'purchase' });
-
+/*
 //1-1 user_id
 Purchase.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
 
 //1-N
 Supplier.hasMany(Purchase, { foreignKey: 'supplier_id', as: 'purchase' });
-
+*/
 
 //Purchase.sync({ force: false })
 

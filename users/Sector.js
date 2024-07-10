@@ -11,8 +11,8 @@ const Sector = connection.define('Sector', {
 });
 
 //Sector.sync({force : false})
-
-/*(async () => {
+/*
+(async () => {
     try {
       await Sector.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table profiles created successfully!');

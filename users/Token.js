@@ -33,7 +33,8 @@ const Token = connection.define('Token', {
 
 //Token.sync({force : false})
 
-/*(async () => {
+/*
+(async () => {
     try {
       await Token.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table tokens created successfully!');

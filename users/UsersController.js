@@ -112,14 +112,15 @@ router.post("/authenticate", async(req, res) => {
             }
 
         } else {
-            res.redirect("/");
+            res.redirect("/?login=true");
             return;
         }
 
 
     } catch (err) {
 
-        console.log(err);
+        res.redirect("/?login=true");
+        return;
 
     }
 

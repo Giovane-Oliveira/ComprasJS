@@ -30,8 +30,6 @@ Item.belongsTo(Purchase, { foreignKey: 'purchase_id', as: 'purchase' });
 Purchase.hasMany(Item, { foreignKey: 'purchase_id', as: 'item' });
 
 
-
-
 //Purchase.sync({ force: false })
 
 // Synchronize models with the database

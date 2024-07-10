@@ -26,7 +26,8 @@ const Supplier = connection.define('Supplier', {
 //Supplier.sync({force: true})
 
 // Synchronize models with the database
-/*(async () => {
+/*
+(async () => {
     try {
       await Supplier.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Tables suppliers created successfully!');

@@ -42,8 +42,8 @@ Employee.hasMany(User, { foreignKey: 'employee_id', as: 'user' });
 
 //User.sync({force: false})
 
-
-/*(async () => {
+/*
+(async () => {
     try {
       await User.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table users created successfully!');

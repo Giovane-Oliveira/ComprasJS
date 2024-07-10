@@ -42,8 +42,8 @@ Sector.hasMany(Employee, { foreignKey: 'sector_id', as: 'employee' });
 
 
 //Employee.sync({force: false})
-
-/*(async () => {
+/*
+(async () => {
     try {
       await Employee.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Tables employees created successfully!');

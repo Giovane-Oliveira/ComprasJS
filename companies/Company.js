@@ -24,6 +24,6 @@ const Company = connection.define('Company', {
     } catch (error) {
       console.error('Unable to create table company:', error); 
     }
-  })();
-*/
+  })();*/
+
 module.exports = Company

@@ -43,7 +43,7 @@ router.get('/payments', (req, res) => {
   });
 });
 
-router.post('/upload/payments', upload.array('files'), (req, res) => {
+router.post('/upload/payments', upload.array('files'), async(req, res) => {
   const supplier = req.body.supplier;
   console.log("supplier: " + supplier);
   const company = req.body.company;
@@ -80,7 +80,7 @@ router.post('/upload/payments', upload.array('files'), (req, res) => {
   var dateFormat = expiration.split("/").reverse().join("-");
   console.log("dataFormata: " + dateFormat);
 
-  Payment.create({
+ const newPayment = await Payment.create({
     /*where: {
       employee_id: req.session.user.employee.id
     },*/
@@ -94,62 +94,52 @@ router.post('/upload/payments', upload.array('files'), (req, res) => {
     console.error('Error creating payment:', error);
   });
 
+  await Payment_Method.create({
 
-  Payment.findOne({
+    payment_method: payment_method,
+    bank: bank,
+    agency: agency,
+    currency_account: currency_account,
+    ticket: ticket,
+    cpf: cpf,
+    cnpj: cnpj,
+    phone: phone,
+    email: email,
+    phone: phone,
+    avista: avista,
+    payment_id: newPayment.id
 
-    order: [
-      ['id', 'DESC']
-    ]
-  }).then(payment => {
-
-    Payment_Method.create({
-
-      payment_method: payment_method,
-      bank: bank,
-      agency: agency,
-      currency_account: currency_account,
-      ticket: ticket,
-      cpf: cpf,
-      cnpj: cnpj,
-      phone: phone,
-      email: email,
-      phone: phone,
-      avista: avista,
-      payment_id: payment.id
-
-    }).catch(error => {
-      console.error('Error creating payment_method:', error);
-    });
-
-    // Check if any files were uploaded
-    if (files && files.length > 0) {
-      // Processar os dados e o arquivo aqui
-      //console.log(`Nome: ${nome}`);
-      // Processar arquivos
-      for (const file of files) {
-        // Salvar o arquivo
-        const fileName = file.originalname;
-        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-        fs.moveSync(file.path, filePath);
-        console.log(`Arquivo recebido: ${file.originalname}`);
-        // Salvar arquivo no diretório de destino 
-
-        File.create({
-          fileName: uniqueFileName,
-          payment_id: payment.id
-        }).catch(error => {
-          console.error('Error creating file:', error);
-        });
-
-      }
-    } else {
-      console.error('No files were uploaded.');
-    }
-
-    res.redirect('/payments');
-  
+  }).catch(error => {
+    console.error('Error creating payment_method:', error);
   });
+
+  // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+    await File.create({
+        fileName: uniqueFileName,
+        payment_id: newPayment.id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+  res.redirect('/payments');
 
 });
 

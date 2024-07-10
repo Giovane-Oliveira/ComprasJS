@@ -34,8 +34,8 @@ Sector.hasMany(Unit, { foreignKey: 'sector_id', as: 'unit' });
 
 
 //Unit.sync({force : false})
-
-/*(async () => {
+/*
+(async () => {
     try {
       await Unit.sync({ force: true }); // Force: true will drop and recreate tables
       console.log('Table units created successfully!');
