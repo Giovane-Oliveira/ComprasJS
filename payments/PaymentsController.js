@@ -13,8 +13,6 @@ const Employee = require('../employees/Employee');
 const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
 
-
-
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
