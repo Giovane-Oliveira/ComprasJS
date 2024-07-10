@@ -24,8 +24,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
-
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
