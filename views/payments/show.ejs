@@ -1,0 +1,99 @@
+<%-  include('../partials/header_show_payment.ejs') %>
+
+<div class="cabecalho">
+    <img src="../../images/fav-icon2-150x150.png" alt="">
+    <h1>Relatório de Pagamentos</h1>
+    <h6>Nome: <label name="nome"> <%= employee.name %> </label></h6>
+    <p>Data: <label name="data">29/06/2024</label> | <label name="setor">Setor: <%= sector.description %> </label></p>
+  </div>
+  <hr>
+  <br>
+  <div class="conteudo">
+    <table>
+      <tbody>
+        <tr>
+          <td class="destaque"><strong>Fornecedor:</strong></td>
+          <td><span name="fornecedor"> <%= supplier.name %> </span></td>
+          <td class="destaque"><strong>Empresa:</strong></td>
+          <td><span name="empresa">SIGESC Sistemas de Gestão de Convenios</span></td>
+        </tr>
+        <tr>
+          <td class="destaque"><strong>Descrição:</strong></span></td>
+          <td colspan="3"><span name="descricao">Pagamento referente a mensalidade do sistema tomticket</span></td>
+        </tr>
+        <tr>
+          <td class="destaque"><strong>Vencimento:</strong></td>
+          <td><span name="vencimento">29/06/2024</span></td>
+          <td class="destaque"><strong>Valor:</strong></td>
+          <td><span name="valor">R$ 100,00</span></td>
+        </tr>
+        <tr>
+          <td colspan="5" class="destaque"><strong>Forma de Pagamento</strong></td>
+        </tr>
+        <tr name="boleto">
+          <td class="pagamento" colspan="5">Boleto</td>
+        </tr>
+        <tr name="avista">
+          <td class="pagamento" colspan="5">A Vista</td>
+        </tr>
+        <tr name="deposito">
+          <td class="pagamento" colspan="2">Depósito</td>
+          <td><span name="banco">Banco: </span></td>
+          <td colspan="1"><span name="agencia">agencia: </span></td>
+          <td><span name="conta">C/C: </span></td>
+        </tr>
+        <tr name="pix">
+          <td class="pagamento" colspan="2">Pix</td>
+          <td colspan="2">Chave:</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script>
+      var x = "pix";
+      if (x == "pix") {
+        var boletoElements = document.getElementsByName("boleto");
+        for (var i = 0; i < boletoElements.length; i++) {
+          boletoElements[i].style.display = "none";
+        }
+
+        var avistaElements = document.getElementsByName("avista");
+        for (var i = 0; i < avistaElements.length; i++) {
+          avistaElements[i].style.display = "none";
+        }
+
+        var depositoElements = document.getElementsByName("deposito");
+        for (var i = 0; i < depositoElements.length; i++) {
+          depositoElements[i].style.display = "none";
+        }
+      }
+      if (x == "boleto") {
+        var boletoElements = document.getElementsByName("pix");
+        for (var i = 0; i < boletoElements.length; i++) {
+          boletoElements[i].style.display = "none";
+        }
+
+        var avistaElements = document.getElementsByName("avista");
+        for (var i = 0; i < avistaElements.length; i++) {
+          avistaElements[i].style.display = "none";
+        }
+
+        var depositoElements = document.getElementsByName("deposito");
+        for (var i = 0; i < depositoElements.length; i++) {
+          depositoElements[i].style.display = "none";
+        }
+      }
+    </script>
+
+    <div class="footer">
+      <p>Gestor: <label name="gestor">Guilherme Tollens Carvalho</label><br>
+        Email: <label name="emailgestor">guilherme.carvalho@provida.med.br</label></p>
+      <br>
+      <p>Diretor: <label name="diretor">Guilherme Tollens Carvalho</label><br>
+        Email: <label name="emaildiretor">guilherme.carvalho@provida.med.br</label></p>
+      <br>
+      <p>Data de solicitação: <label name="datasolicitacao">15/06/2024</label></p>
+    </div>
+  </div>
+
+  <%- include('../partials/footer.ejs') %>

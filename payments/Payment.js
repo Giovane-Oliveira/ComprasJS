@@ -2,6 +2,8 @@ const Sequelize = require('sequelize')
 const connection = require('../database/database')
 const Employee = require('../employees/Employee')
 const Supplier = require('../suppliers/Supplier')
+const Company = require('../companies/Company')
+
 
 // Define the status enum values
 const Status = {
@@ -49,6 +51,11 @@ Payment.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
 //1-N
 Supplier.hasMany(Payment, { foreignKey: 'supplier_id', as: 'payment' });
 
+//1-1 user_id
+Payment.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+
+//1-N
+Company.hasMany(Payment, { foreignKey: 'company_id', as: 'payment' });
 
 //Payment.sync({ force: false })
 /*
