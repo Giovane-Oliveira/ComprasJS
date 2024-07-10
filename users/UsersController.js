@@ -37,7 +37,6 @@ router.get('/users', adminAuth, (req, res) => {
 });
 
 
-
 router.post("/authenticate", async (req, res) => {
 
     var email = req.body?.email;

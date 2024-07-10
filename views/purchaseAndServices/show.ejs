@@ -1,0 +1,57 @@
+
+<%-  include('../partials/header_show_purchase.ejs') %>
+
+<% 
+       let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+    
+    %>
+
+<div class="cabecalho">
+    <img src="../../images/fav-icon2-150x150.png" alt="">
+    <h1>Relatório de Compras</h1>
+    <h6>Nome: <label name="nome"> <%= employee.name %> </label></h6>
+    <p>Data: <label name="data"> <%= formattedDate %>  </label> | <label name="setor">Setor: <%= sector.description %></label></p>
+  </div>
+  <hr>
+  <br>
+  <div class="conteudo">
+    <table>
+      <thead>
+        <tr>
+          <th>Quantidade</th>
+          <th>Item</th>
+          <th>Especificações</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% item.forEach(item => { %>
+          <tr>
+          <td><%= item.amount %></td>
+          <td><%= item.item %></td>
+          <td><%= item.description %></td>
+          <td><%= item.value %></td>
+        </tr>
+       <% }); %>
+   
+      </tbody>
+    </table>
+    <div class="valor-total">
+      <label>Valor Total:</label>
+      <label name="total" id="valor-display"> <%= purchase.total %> </label>
+    </div>
+    <div class="footer">
+      <p>Gestor: <label name="gestor">Guilherme Tollens Carvalho</label><br>
+        Email: <label name="emailgestor">guilherme.carvalho@provida.med.br</label></p>
+      <br>
+      <p>Diretor: <label name="diretor">Guilherme Tollens Carvalho</label><br>
+        Email: <label name="emaildiretor">guilherme.carvalho@provida.med.br</label></p>
+      <br>
+      <p>Data de solicitação: <label name="datasolicitacao">15/06/2024</label></p>
+    </div>
+
+<%- include('../partials/footer.ejs') %>

@@ -12,6 +12,8 @@ const notificationUser = require('./middlewares/notification');
 
 app.set('view engine', 'ejs');
 
+app.use(express.static('public'));
+
 // Sessions
 app.use(session({
   secret: 'secret', //qualquer coisa além do secret
@@ -22,7 +24,7 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.use(express.static('public'));
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
