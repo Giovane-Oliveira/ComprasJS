@@ -48,6 +48,8 @@ router.get('/payments/:id', async (req, res) => {
     console.log("Unit undefinied")
   }else if (payment_method == undefined) {
     console.log("Payment_method undefinied")
+  }else if (company == undefined) {
+    console.log("Company undefinied")
   }
 
 res.render('payments/show.ejs', { user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company  });
