@@ -20,8 +20,8 @@ app.use(session({
   cookie: {
       maxAge: 900000000 //ms   15min
   },
-  resave: false,
-  saveUninitialized: false
+   resave: false,
+   saveUninitialized: false
 }));
 
 // parse application/x-www-form-urlencoded
