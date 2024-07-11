@@ -80,7 +80,7 @@ let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', {
       <% }else if(payment_method.phone != null){%>
       <tr name="phone">
         <td class="pagamento" colspan="2">Pix</td>
-        <td colspan="2">Chave phone: <%= payment_method.phone %></td>
+        <td colspan="2">Chave fone: <%= payment_method.phone %></td>
       </tr>
       <% } }%>
     </tbody>

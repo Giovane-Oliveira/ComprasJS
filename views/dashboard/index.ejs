@@ -43,6 +43,7 @@
   <thead>
     <tr>
       <th scope="col">#</th>
+      <th scope="col">Tipo</th>
       <th scope="col">Solicitação</th>
       <th scope="col">Data</th>
       <th scope="col">Status</th>
@@ -52,7 +53,6 @@
   <tbody>
 
     <% 
-        let count = 1; 
         if(payments != undefined){
 
         payments.forEach(payment => {  
@@ -64,7 +64,8 @@
           });  %>
 
     <tr>
-      <th scope="row"><%= count++ %></th>
+      <th scope="row"><%= payment.id %></th>
+      <td>Pagamento</td>
       <td><%= payment.description  %></td>
       <td><%= formattedDate  %></td>
       <td><%= payment.status  %></td>
@@ -85,8 +86,9 @@
             });  %>
 
     <tr>
-      <th scope="row"><%= count++ %></th>
-      <td><%= purchase.justification  %></td>
+      <th scope="row"><%= purchase.id %></th>
+      <td>Compra</td>
+      <td><%= purchase.justification.substring(0, 30)  %></td>
       <td><%= formattedDate  %></td>
       <td><%= purchase.status  %></td>
       <td>
