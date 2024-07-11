@@ -7,6 +7,7 @@ const adminAuth = require('../middlewares/adminAuth');
 const Employee = require('../employees/Employee');
 const Item = require('./Item');
 const Sector = require('../users/Sector');
+const File = require('../users/File');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
