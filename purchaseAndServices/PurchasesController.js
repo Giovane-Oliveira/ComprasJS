@@ -27,20 +27,43 @@ router.get('/purchases', (req, res) => {
 
 router.get('/purchases/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
-//res.render('purchaseAndServices/show.ejs', { purchase: purchase, user: req.session.user });
+    var leader_employee = null;
+    var director_employee = null;
+    var financial_employee = null;
+    var purchase_employee = null;
 
     const purchase = await Purchase.findByPk(id);
+
+    if(purchase.leader_id != null){
+
+       leader_employee = await Employee.findByPk(purchase.leader_id);
+
+    }
+    
+    if(purchase.director_id != null){
+
+      director_employee = await Employee.findByPk(purchase.director_id);
+
+    }
+
+    if(purchase.purchase_id != null){
+
+        purchase_employee = await Employee.findByPk(purchase.purchase_id);
+
+    }
+
+    if(purchase.financial_id != null){
+
+         financial_employee = await Employee.findByPk(purchase.financial_id);
+
+    }
+
     const employee = await Employee.findByPk(purchase.employee_id);
     const item = await Item.findAll({ where: { purchase_id: purchase.id } });
     const sector = await Sector.findByPk(employee.sector_id);
+    const file = await File.findAll({ where: { purchase_id: purchase.id } });
 
-
-
-
-    res.render('purchaseAndServices/show.ejs', { purchase, employee, item, sector, user: req.session.user });
-
-
-
+    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, file, user: req.session.user });
 
 
 });
@@ -57,8 +80,6 @@ router.post('/upload/purchases', upload.array('files'), async (req, res) => {
     var item = req.body.item1;
     var count = 1;
     var total = 0.00;
-
-
 
     while (item != undefined) {
 
