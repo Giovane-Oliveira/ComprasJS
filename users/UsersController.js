@@ -213,14 +213,17 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
         const payments = await Payment.findAll({
             order: [['id', 'DESC']],
+            limit: 3,
             where: {
             employee_id: req.session.user.employee.id,
+          
           
             }
         });
 
         const purchases = await Purchase.findAll({
             order: [['id', 'DESC']],
+            limit: 3,
             where: {
             employee_id: req.session.user.employee.id,
             }
@@ -288,12 +291,16 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         const aproved = aproved_payments.length + aproved_purchases.length;
 
         const payments = await Payment.findAll({
-            order: [['id', 'DESC']]
+            order: [['id', 'DESC']],
+            limit: 3
+        
         
         });
 
         const purchases = await Purchase.findAll({
-            order: [['id', 'DESC']]
+            order: [['id', 'DESC']],
+            limit: 3
+         
             
         });
 
