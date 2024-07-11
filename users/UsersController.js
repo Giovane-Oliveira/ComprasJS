@@ -126,6 +126,9 @@ router.post("/authenticate", async (req, res) => {
 
 });
 
+
+
+
 router.get("/logout", (req, res) => {
     req.session.user = undefined;
     res.redirect("/");
@@ -144,37 +147,46 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     req.session.user.profile.description.includes('purchases') ||
     req.session.user.profile.description.includes('financial')) {
 
-
-        console.log('Entrou na primeira opção');
         const pending_payments = await Payment.findAll({
             where: {
-                employee_id: req.session.user.employee.id
+                employee_id: req.session.user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
             }
-
         });
 
         const pending_purchases = await Purchase.findAll({
-            employee_id: req.session.user.employee.id
-    
+          
+            where: {
+                employee_id: req.session.user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
         });
-
-        console.log(`Total de pagamentos: ${pending_payments.length}`);
-        console.log(`Total de compras: ${pending_purchases.length}`);
-
 
         const pending = pending_payments.length + pending_purchases.length;
 
         const reproved_purchases = await Purchase.findAll({
-            employee_id: req.session.user.employee.id,
+            
             where: {
-                status: "REPROVADO"
+                status: "REPROVADO",
+                employee_id: req.session.user.employee.id
             }
         });
 
         const reproved_payments = await Payment.findAll({
-            employee_id: req.session.user.employee.id,
+            
             where: {
-                status: "REPROVADO"
+                status: "REPROVADO",
+                employee_id: req.session.user.employee.id
             }
         });
 
@@ -182,40 +194,45 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
 
         const aproved_purchases = await Purchase.findAll({
-            employee_id: req.session.user.employee.id,
+          
             where: {
-                status: "APROVADO"
+                status: "APROVADO",
+                employee_id: req.session.user.employee.id
             }
         });
 
         const aproved_payments = await Payment.findAll({
-            employee_id: req.session.user.employee.id,
+            
             where: {
-                status: "APROVADO"
+                status: "APROVADO",
+                employee_id: req.session.user.employee.id
             }
         });
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
         const payments = await Payment.findAll({
+            order: [['id', 'DESC']],
+            where: {
             employee_id: req.session.user.employee.id,
-            order: [['id', 'DESC']]
-        
+          
+            }
         });
 
         const purchases = await Purchase.findAll({
+            order: [['id', 'DESC']],
+            where: {
             employee_id: req.session.user.employee.id,
-            order: [['id', 'DESC']]
+            }
+            
         });
 
-        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases });
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
     req.session.user.profile.description.includes('ti')) {
-
-
-        console.log('Entrou na segunda opção');
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -279,6 +296,8 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             order: [['id', 'DESC']]
             
         });
+
+  
 
         res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
 
