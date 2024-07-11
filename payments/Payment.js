@@ -31,6 +31,22 @@ const Payment = connection.define('Payment', {
     type: Sequelize.DATE,
     allowNull: false
   },
+  leader_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  director_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  purchase_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  financial_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
   status: {
     type: Sequelize.ENUM(Object.values(Status)), // Use Sequelize.ENUM
     allowNull: false,

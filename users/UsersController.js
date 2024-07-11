@@ -127,8 +127,6 @@ router.post("/authenticate", async (req, res) => {
 });
 
 
-
-
 router.get("/logout", (req, res) => {
     req.session.user = undefined;
     res.redirect("/");
@@ -138,6 +136,214 @@ router.get("/logout", (req, res) => {
 router.get('/registrations_token', adminAuth, (req, res) => {
 
     res.render('registrationsToken/index.ejs', { token: '', user: req.session.user });
+
+});
+
+router.get('/dashboard/pending', adminAuth, async (req, res) => {
+
+    if (req.session.user.profile.description.includes('managers') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
+
+        const pending_payments = await Payment.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending_purchases = await Purchase.findAll({
+          
+            where: {
+                employee_id: req.session.user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        res.render("dashboard/pending.ejs", { user: req.session.user, payments: pending_payments, purchases: pending_purchases });
+
+    } else if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('ti')) {
+
+        const pending_payments = await Payment.findAll({
+            where: {
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending_purchases = await Purchase.findAll({
+            where: {
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+
+        const pending = pending_payments.length + pending_purchases.length;
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved = reproved_payments.length + reproved_purchases.length;
+
+
+        const aproved_purchases = await Purchase.findAll({
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved_payments = await Payment.findAll({
+            where: {
+                status: "APROVADO"
+            }
+        });
+
+        const aproved = aproved_payments.length + aproved_purchases.length;
+
+        const payments = await Payment.findAll({
+            order: [['id', 'DESC']]
+        });
+
+        const purchases = await Purchase.findAll({
+            order: [['id', 'DESC']]  
+        });
+
+  
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
+
+    } else {
+        res.redirect("/");
+        return;
+    }
+
+});
+
+
+router.get('/dashboard/reproved', adminAuth, async (req, res) => {
+
+    if (req.session.user.profile.description.includes('managers') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                status: "REPROVADO"
+            }
+        });
+
+        res.render("dashboard/reproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
+
+    } else if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('ti')) {
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+
+                status: "REPROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+           
+                status: "REPROVADO"
+            }
+        });
+
+        res.render("dashboard/reproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases});
+
+    } else {
+        res.redirect("/");
+        return;
+    }
+
+});
+
+router.get('/dashboard/aproved', adminAuth, async (req, res) => {
+
+    if (req.session.user.profile.description.includes('managers') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                status: "APROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+                employee_id: req.session.user.employee.id,
+                status: "APROVADO"
+            }
+        });
+
+        res.render("dashboard/aproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
+
+    } else if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('ti')) {
+
+        const reproved_purchases = await Purchase.findAll({
+            where: {
+
+                status: "APROVADO"
+            }
+        });
+
+        const reproved_payments = await Payment.findAll({
+            where: {
+           
+                status: "APROVADO"
+            }
+        });
+
+        res.render("dashboard/aproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases});
+
+    } else {
+        res.redirect("/");
+        return;
+    }
 
 });
 
