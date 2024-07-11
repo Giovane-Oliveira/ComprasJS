@@ -32,6 +32,14 @@ const Purchase = connection.define('Purchase', {
     type: Sequelize.INTEGER,
     allowNull: true
   },
+  purchase_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  financial_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
   status: {
     type: Sequelize.ENUM(Object.values(Status)), // Use Sequelize.ENUM
     allowNull: false,

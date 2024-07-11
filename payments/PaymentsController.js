@@ -9,6 +9,9 @@ const Supplier = require('../suppliers/Supplier');
 const Company = require('../companies/Company');
 const Payment_Method = require('../payments/Payment_method');
 const File =  require( '../users/File');
+const Employee = require('../employees/Employee');
+const Sector = require('../users/Sector');
+const Unit = require('../users/Unit');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -21,8 +24,40 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }); // Create the upload middleware
 
-router.get('/payments', (req, res) => {
 
+router.get('/payments/:id', async (req, res) => {
+ 
+  const id = req.params.id;
+  const payment = await Payment.findByPk(id);
+  const employee = await Employee.findByPk(payment.employee_id);
+  const supplier = await Supplier.findByPk(payment.supplier_id);
+  const sector = await Sector.findByPk(employee.sector_id);
+  const unit = await Unit.findByPk(employee.unit_id);
+  const payment_method = await Payment_Method.findByPk(payment.id);
+  const company = await Company.findByPk(payment.company_id);
+
+  if (payment == undefined) {
+    console.log("Payment undefinied")
+  }else if (employee == undefined) {
+    console.log("Employee undefinied")
+  }else if (supplier == undefined) {
+    console.log("Supplier undefinied")
+  }else if (sector == undefined) {
+    console.log("Sector undefinied")
+  }else if (unit == undefined) {
+    console.log("Unit undefinied")
+  }else if (payment_method == undefined) {
+    console.log("Payment_method undefinied")
+  }else if (company == undefined) {
+    console.log("Company undefinied")
+  }
+
+res.render('payments/show.ejs', { user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company  });
+
+});
+
+
+router.get('/payments', (req, res) => {
 
   Supplier.findAll({}).then(suppliers => {
 
@@ -88,7 +123,8 @@ router.post('/upload/payments', upload.array('files'), async(req, res) => {
     value: value,
     expiration_date: dateFormat,
     employee_id: req.session.user.employee.id,
-    supplier_id: supplier
+    supplier_id: supplier,
+    company_id: company
 
   }).catch(error => {
     console.error('Error creating payment:', error);

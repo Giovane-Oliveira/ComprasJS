@@ -2,6 +2,8 @@ const Sequelize = require('sequelize')
 const connection = require('../database/database')
 const Employee = require('../employees/Employee')
 const Supplier = require('../suppliers/Supplier')
+const Company = require('../companies/Company')
+
 
 // Define the status enum values
 const Status = {
@@ -29,6 +31,22 @@ const Payment = connection.define('Payment', {
     type: Sequelize.DATE,
     allowNull: false
   },
+  leader_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  director_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  purchase_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
+  financial_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  },
   status: {
     type: Sequelize.ENUM(Object.values(Status)), // Use Sequelize.ENUM
     allowNull: false,
@@ -49,6 +67,11 @@ Payment.belongsTo(Supplier, { foreignKey: 'supplier_id', as: 'supplier' });
 //1-N
 Supplier.hasMany(Payment, { foreignKey: 'supplier_id', as: 'payment' });
 
+//1-1 user_id
+Payment.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+
+//1-N
+Company.hasMany(Payment, { foreignKey: 'company_id', as: 'payment' });
 
 //Payment.sync({ force: false })
 /*

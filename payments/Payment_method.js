@@ -26,10 +26,6 @@ const Payment_Method = connection.define('Payment_Method', {
     type: Sequelize.STRING,
     allowNull: true
   },
-  ticket: {
-    type: Sequelize.STRING,
-    allowNull: true
-  },
   cpf: {
     type: Sequelize.STRING,
     allowNull: true

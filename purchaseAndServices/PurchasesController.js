@@ -2,9 +2,12 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require('fs-extra');
-Purchase = require('./Purchase');
-Item = require('./Item');
-File = require('../users/File');
+const Purchase = require('./Purchase');
+const adminAuth = require('../middlewares/adminAuth');
+const Employee = require('../employees/Employee');
+const Item = require('./Item');
+const Sector = require('../users/Sector');
+const File = require('../users/File');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -20,6 +23,30 @@ const upload = multer({ storage: storage }); // Create the upload middleware
 router.get('/purchases', (req, res) => {
     res.render('purchaseAndServices/index.ejs', { user: req.session.user });
 });
+
+
+router.get('/purchases/:id', adminAuth, async (req, res) => {
+    const id = req.params.id;
+//res.render('purchaseAndServices/show.ejs', { purchase: purchase, user: req.session.user });
+
+    const purchase = await Purchase.findByPk(id);
+    const employee = await Employee.findByPk(purchase.employee_id);
+    const item = await Item.findAll({ where: { purchase_id: purchase.id } });
+    const sector = await Sector.findByPk(employee.sector_id);
+
+
+
+
+    res.render('purchaseAndServices/show.ejs', { purchase, employee, item, sector, user: req.session.user });
+
+
+
+
+
+});
+
+
+
 
 router.post('/upload/purchases', upload.array('files'), async (req, res) => {
 

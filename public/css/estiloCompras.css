@@ -1,0 +1,86 @@
+* {
+  -webkit-print-color-adjust: exact;
+}
+#tabelaCompras {
+  max-width: 80%;
+  margin: auto;
+}
+.cabecalho {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* 1 coluna para imagem e 2 para o texto*/
+  grid-template-rows: auto; /* Ajusta automaticamente as linhas para o tamanho do conteúdo */
+  gap: 10px; /* Adiciona espaço entre os elementos */
+}
+
+.cabecalho img {
+  grid-column: 1; /* Imagem na primeira coluna */
+  grid-row: 1 / span 3; /* Imagem ocupa 3 linhas */
+}
+
+.cabecalho h1 {
+  grid-column: 2; /* Texto na segunda coluna */
+  grid-row: 1; /* texto na primeira linha */
+}
+
+.cabecalho h3:first-child {
+  /* Controla o primeiro h3 */
+  grid-column: 2; /* nome e data na segunda coluna */
+  grid-row: 2; /* Nome e data pode ocupar duas linhas */
+}
+
+.cabecalho h3:last-child {
+  /* controla o último h3 */
+  grid-column: 2; /* nome e data na segunda coluna */
+  grid-row: 3; /* nome e data na terceira linha */
+}
+#tabelaCompras {
+  border-collapse: collapse; /* Remove espaço entre as células */
+  width: 100%; /* Faz a tabela ocupar 100% da largura da página */
+}
+
+#tabelaCompras th {
+  border: 1px solid black; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: left; /* Alinha o texto à esquerda */
+}
+#tabelaCompras td {
+  border: 1px solid black; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: left; /* Alinha o texto à esquerda */
+}
+
+#tabelaCompras th {
+  background-color: #bcbcbc; /* Define a cor de fundo para os cabeçalhos */
+  font-weight: bold; /* define o texto em negrito */
+}
+
+.valor-total {
+  display: flex;
+  align-items: center;
+  margin-top: 30px; /* Adiciona espaço entre label e tabela*/
+  margin-bottom: 30px;
+  margin-left: 120px;
+}
+
+.valor-total label {
+  margin-right: 10px; /* adiciona espaço entre label */
+  font-weight: bold; /* Texto em negrito */
+}
+
+.valor-total label[name="total"] {
+  padding: 5px; /* adiciona espaçamento interno */
+  border: 1px solid #000; /* Adiciona borda */
+  border-radius: 3px; /* Arredendoda as bordas */
+  font-size: 16px; /* Ajusta tamanho da fonte */
+}
+
+.assinaturas {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto auto auto; /* Adjust column widths as needed */
+  gap: 10px;
+  margin: auto;
+  padding: 10px;
+  font-weight: bold; /* define o texto em negrito */
+  text-align: center; /* Center the text within the footer */
+}

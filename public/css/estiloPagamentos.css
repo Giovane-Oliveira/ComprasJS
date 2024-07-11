@@ -1,0 +1,70 @@
+* {
+  -webkit-print-color-adjust: exact;
+}
+#tabelaPagamento {
+  max-width: 80%;
+  margin: auto;
+}
+
+.cabecalho {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* 1 coluna para imagem e 2 para o texto*/
+  grid-template-rows: auto; /* Ajusta automaticamente as linhas para o tamanho do conteúdo */
+  gap: 10px; /* Adiciona espaço entre os elementos */
+}
+
+.cabecalho img {
+  grid-column: 1; /* Imagem na primeira coluna */
+  grid-row: 1 / span 3; /* Imagem ocupa 3 linhas */
+}
+
+.cabecalho h1 {
+  grid-column: 2; /* Texto na segunda coluna */
+  grid-row: 1; /* texto na primeira linha */
+}
+
+.cabecalho h3:first-child {
+  /* Controla o primeiro h3 */
+  grid-column: 2; /* nome e data na segunda coluna */
+  grid-row: 2; /* Nome e data pode ocupar duas linhas */
+}
+
+.cabecalho h3:last-child {
+  /* controla o último h3 */
+  grid-column: 2; /* nome e data na segunda coluna */
+  grid-row: 3; /* nome e data na terceira linha */
+}
+#tabelaPagamento {
+  border: 1px solid #000;
+  border-collapse: collapse; /* Remove espaço entre as células */
+  width: 100%; /* Faz a tabela ocupar 100% da largura da página */
+  margin: 0 auto; /* Now the auto margins will center it horizontally */
+  box-sizing: border-box; /* Include padding and border in the width */
+}
+
+#tabelaPagamento td {
+  border: 1px solid #000; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: left; /* Alinha o texto à esquerda */
+}
+
+.assinaturas {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  margin-top: 30px !important;
+  margin: auto;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.destaque {
+  text-align: center;
+  background-color: #ccc;
+}
+.pagamento {
+  text-align: center !important;
+  font-weight: bold;
+}

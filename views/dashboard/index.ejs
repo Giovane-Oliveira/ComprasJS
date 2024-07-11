@@ -1,97 +1,120 @@
-<%-  include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 
-    <h3 class='mb-4 mt-5' style="text-align: center;">Minhas solicitações de compras e serviços</h3>
-    <div class="form-row justify-content-center">
-      <div class="form-group col-md-3">
-        <div class="card" style="width: 96%;">
-          <img class="card-img-top" src="./images/pendent-folder-cuate.png" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">PENDENTES</h5>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
-            <a href="#" class="btn btn-warning">Visualizar <span class="badge badge-light"><%= pending %>
-              </span></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group col-md-3">
-        <div class="card" style="width: 95%;">
-          <img class="card-img-top" src="./images/danied-cuate.png" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">REPROVADOS</h5>
-            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
-            <a href="#" class="btn btn-danger">Visualizar <span class="badge badge-light"><%= reproved %>
-              </span></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group col-md-3">
-        <div class="card" style="width: 95%;">
-          <img class="card-img-top" src="./images/aproved-rafiki.png" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">APROVADOS</h5>
-            <a href="#" class="btn btn-success">Visualizar <span class="badge badge-light"><%= aproved %>
-              </span></a>
-          </div>
+  <h3 class='mb-4 mt-5' style="text-align: center;">Minhas solicitações de compras e serviços</h3>
+  <div class="form-row justify-content-center">
+    <div class="form-group col-md-3">
+      <div class="card" style="width: 96%;">
+        <img class="card-img-top" src="./images/pendent-folder-cuate.png" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">PENDENTES</h5>
+          <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
+          <a href="/dashboard/pending" class="btn btn-warning">Visualizar <span class="badge badge-light">
+              <%= pending %>
+            </span></a>
         </div>
       </div>
     </div>
 
-    <h3 style="text-align: center; margin-top: 20px;">Últimas solicitações</h3>
-    <table class="table table-responsive-sm table-striped justify-content-center">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Solicitação</th>
-          <th scope="col">Data</th>
-          <th scope="col">Status</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
+    <div class="form-group col-md-3">
+      <div class="card" style="width: 95%;">
+        <img class="card-img-top" src="./images/danied-cuate.png" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">REPROVADOS</h5>
+          <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>  -->
+          <a href="/dashboard/reproved" class="btn btn-danger">Visualizar <span class="badge badge-light">
+              <%= reproved %>
+            </span></a>
+        </div>
+      </div>
+    </div>
 
-        <% let count = 1; 
-        payments.forEach(payment => {  
-          // Format the date using JavaScript
-          let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', {
+    <div class="form-group col-md-3">
+      <div class="card" style="width: 95%;">
+        <img class="card-img-top" src="./images/aproved-rafiki.png" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">APROVADOS</h5>
+          <a href="/dashboard/aproved" class="btn btn-success">Visualizar <span class="badge badge-light">
+              <%= aproved %>
+            </span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="text-align: center; margin-top: 20px;">Últimas solicitações</h3>
+  <table class="table table-responsive-sm table-striped justify-content-center">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Solicitação</th>
+        <th scope="col">Data</th>
+        <th scope="col">Status</th>
+        <th scope="col">Detalhes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <% if(payments !=undefined){ payments.forEach(payment=> {
+        // Format the date using JavaScript
+        let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+        }); %>
+
+        <tr>
+          <th scope="row">
+            <%= payment.id %>
+          </th>
+          <td>Pagamento</td>
+          <td>
+            <%= payment.description %>
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+          <td>
+            <%= payment.status %>
+          </td>
+          <td><a href="/payments/<%= payment.id %>">Detalhes</a></td>
+        </tr>
+
+        <% }); } %>
+
+          <% if(purchases !=undefined){ purchases.forEach(purchase=> {
+            // Format the date using JavaScript
+            let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
-          });  %>
+            }); %>
 
-        <tr>
-          <th scope="row"><%= count++ %></th>
-          <td><%= payment.description  %></td>
-          <td><%= formattedDate  %></td>
-          <td><%= payment.status  %></td>
-          <td><a href="">Detalhes</a></td>
-        </tr>
-        
-      <% }); 
-      
-          purchases.forEach(purchase => {  
-            // Format the date using JavaScript
-            let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            });  %>
+            <tr>
+              <th scope="row">
+                <%= purchase.id %>
+              </th>
+              <td>Compra</td>
+              <td>
+                <%= purchase.justification.substring(0, 30) %>
+              </td>
+              <td>
+                <%= formattedDate %>
+              </td>
+              <td>
+                <%= purchase.status %>
+              </td>
+              <td>
+                <a href="/purchases/<%= purchase.id %>">Detalhes</a>
+              </td>
+            </tr>
 
-          <tr>
-            <th scope="row"><%= count++ %></th>
-            <td><%= purchase.justification  %></td>
-            <td><%= formattedDate  %></td>
-            <td><%= purchase.status  %></td>
-            <td><a href="">Detalhes</a></td>
-          </tr>
-          
-        <% }); %>
-        
-        
-      </tbody>
-    </table>  
+            <% }); } %>
 
-  </div>
 
-<%-  include('../partials/footer.ejs') %>
+    </tbody>
+  </table>
+
+    </div>
+
+  <%- include('../partials/footer.ejs') %>

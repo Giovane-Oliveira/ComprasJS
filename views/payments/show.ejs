@@ -1,0 +1,105 @@
+<%- include('../partials/header.ejs') %>
+
+  <% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+
+    <div class="cabecalho">
+      <img src="../../images/fav-icon2-150x150.png" alt="">
+      <h1>Relatório de Pagamentos</h1>
+      <h6>Nome: <label name="nome">
+          <%= employee.name %>
+        </label></h6>
+      <p>Data: <label name="data">
+          <%= formattedDate %>
+        </label> | <label name="setor">Setor: <%= sector.description %> </label></p>
+    </div>
+    <hr>
+    <br>
+    <div class="conteudo">
+      <table id="tabelaPagamento">
+        <tbody>
+          <tr>
+            <td class="destaque"><strong>Fornecedor:</strong></td>
+            <td><span name="fornecedor">
+                <%= supplier.name %>
+              </span></td>
+            <td class="destaque"><strong>Empresa:</strong></td>
+            <td><span name="empresa">
+                <%= company.name %>
+              </span></td>
+          </tr>
+          <tr>
+            <td class="destaque"><strong>Descrição:</strong></span></td>
+            <td colspan="3"><span name="descricao">
+                <%= payment.description %>
+              </span></td>
+          </tr>
+          <tr>
+            <td class="destaque"><strong>Vencimento:</strong></td>
+            <td><span name="vencimento">
+                <%= expiration_formattedDate %>
+              </span></td>
+            <td class="destaque"><strong>Valor:</strong></td>
+            <td><span name="valor">
+                <%= payment.value %>
+              </span></td>
+          </tr>
+          <tr>
+            <td colspan="5" class="destaque pagamento"><strong>Forma de Pagamento</strong></td>
+          </tr>
+          <% if(payment_method.payment_method=="Boleto" ){ %>
+            <tr name="boleto">
+              <td class="pagamento" colspan="5">Boleto</td>
+            </tr>
+            <% } else if(payment_method.payment_method=="Avista" ){ %>
+              <tr name="avista">
+                <td class="pagamento" colspan="5">A Vista</td>
+              </tr>
+              <% } else if(payment_method.payment_method=="Deposito" ){ %>
+                <tr name="deposito">
+                  <td class="pagamento" colspan="2">Depósito</td>
+                  <td><span name="banco">Banco: <%= payment_method.bank %> </span></td>
+                  <td colspan="1"><span name="agencia">agencia: <%= payment_method.agency %> </span></td>
+                  <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
+                </tr>
+                <% } else if(payment_method.payment_method=="Pix" ){ %> %>
+
+                  <%if(payment_method.cpf !=null){ %>
+                    <tr name="cpf">
+                      <td class="pagamento" colspan="2">Pix</td>
+                      <td colspan="2">Chave CPF: <%= payment_method.cpf %>
+                      </td>
+                    </tr>
+                    <% } else if(payment_method.cnpj !=null){ %>
+                      <tr name="cnpj">
+                        <td class="pagamento" colspan="2">Pix</td>
+                        <td colspan="2">Chave CNPJ: <%= payment_method.cnpj %>
+                        </td>
+                      </tr>
+                      <% }else if(payment_method.email !=null){%>
+                        <tr name="email">
+                          <td class="pagamento" colspan="2">Pix</td>
+                          <td colspan="2">Chave e-mail: <%= payment_method.email %>
+                          </td>
+                        </tr>
+                        <% }else if(payment_method.phone !=null){%>
+                          <tr name="phone">
+                            <td class="pagamento" colspan="2">Pix</td>
+                            <td colspan="2">Chave fone: <%= payment_method.phone %>
+                            </td>
+                          </tr>
+                          <% } }%>
+        </tbody>
+      </table>
+
+      <div class="assinaturas">
+        <p>Gestor: <label name="gestor">Guilherme Tollens Carvalho</label><br>
+          Email: <label name="emailgestor">guilherme.carvalho@provida.med.br</label></p>
+        <br>
+        <p>Diretor: <label name="diretor">Guilherme Tollens Carvalho</label><br>
+          Email: <label name="emaildiretor">guilherme.carvalho@provida.med.br</label></p>
+        <br>
+        <p>Data de solicitação: <label name="datasolicitacao">15/06/2024</label></p>
+      </div>
+    </div>
+
+    <%- include('../partials/footer.ejs') %>
