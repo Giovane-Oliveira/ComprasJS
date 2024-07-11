@@ -149,6 +149,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         const pending_payments = await Payment.findAll({
             where: {
                 employee_id: req.session.user.employee.id
+            }
 
         });
 
