@@ -1,10 +1,25 @@
 <%-  include('../partials/header_show_payment.ejs') %>
 
+<% 
+let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', {
+     day: '2-digit',
+     month: '2-digit',
+     year: 'numeric'
+   });
+
+   let expiration_formattedDate = new Date(payment.expiration_date).toLocaleDateString('pt-BR', {
+     day: '2-digit',
+     month: '2-digit',
+     year: 'numeric'
+   });
+
+%>
+
 <div class="cabecalho">
     <img src="../../images/fav-icon2-150x150.png" alt="">
     <h1>Relatório de Pagamentos</h1>
     <h6>Nome: <label name="nome"> <%= employee.name %> </label></h6>
-    <p>Data: <label name="data">29/06/2024</label> | <label name="setor">Setor: <%= sector.description %> </label></p>
+    <p>Data: <label name="data"> <%= formattedDate %> </label> | <label name="setor">Setor: <%= sector.description %> </label></p>
   </div>
   <hr>
   <br>
@@ -19,13 +34,13 @@
         </tr>
         <tr>
           <td class="destaque"><strong>Descrição:</strong></span></td>
-          <td colspan="3"><span name="descricao">Pagamento referente a mensalidade do sistema tomticket</span></td>
+          <td colspan="3"><span name="descricao"> <%= payment.description %> </span></td>
         </tr>
         <tr>
           <td class="destaque"><strong>Vencimento:</strong></td>
-          <td><span name="vencimento">29/06/2024</span></td>
+          <td><span name="vencimento"><%= expiration_formattedDate %></span></td>
           <td class="destaque"><strong>Valor:</strong></td>
-          <td><span name="valor">R$ 100,00</span></td>
+          <td><span name="valor"><%= payment.value %></span></td>
         </tr>
         <tr>
           <td colspan="5" class="destaque"><strong>Forma de Pagamento</strong></td>
@@ -48,9 +63,15 @@
         </tr>
       </tbody>
     </table>
-
+    <div id="forma_pagamento" data-payment-type="<%= payment_method.payment_method %>"></div>
     <script>
-      var x = "pix";
+      const forma_pagamento = document.getElementById("forma_pagamento");
+      const paymentType = forma_pagamento.dataset.paymentType;
+
+      console.log("Forma de pagamento: " +paymentType);
+
+
+      var x = paymentType;
       if (x == "pix") {
         var boletoElements = document.getElementsByName("boleto");
         for (var i = 0; i < boletoElements.length; i++) {

@@ -57,10 +57,7 @@ res.render('payments/show.ejs', { user: req.session.user, payment: payment, empl
 });
 
 
-
-
 router.get('/payments', (req, res) => {
-
 
   Supplier.findAll({}).then(suppliers => {
 
@@ -112,8 +109,6 @@ router.post('/upload/payments', upload.array('files'), async(req, res) => {
   console.log("avista: " + avista);
   const cnpj = req.body.cnpj;
   console.log("cnpj: " + cnpj);
-
-
 
   const files = req.files;
 
