@@ -42,8 +42,6 @@ router.get('/purchase/download/:arquivo', (req, res) => {
   });
   
 
-
-
 router.get('/purchases/:id', adminAuth, async (req, res) => {
     const id = req.params.id;
     var leader_employee = null;
