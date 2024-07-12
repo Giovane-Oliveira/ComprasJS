@@ -5,12 +5,11 @@
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
-          });
-    
+          });   
     %>
 
 <div class="cabecalho">
-  <img src="../../images/fav-icon2-150x150.png" alt="">
+  <img  src="../../images/fav-icon2-150x150.png" alt="">
   <h1>Relatório de Compras</h1>
   <h6>Nome: <label name="nome"> <%= employee.name %> </label></h6>
   <p>Data: <label name="data"> <%= formattedDate %> </label> | <label name="setor">Setor: <%= sector.description %></label></p>
@@ -67,13 +66,12 @@
 
 </table>
 
-
-
   <div class="valor-total">
     <label>Valor Total:</label>
     <label name="total" id="valor-display"> <%= purchase.total %> </label>
   </div>
-  <div class="footer">
+
+  <div class="assinaturas">
     <% if(purchase.status == "Em análise pelo diretor") {%>
     <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
       Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
@@ -91,30 +89,30 @@
     <% if(user.profile.description == "leaders" && purchase.leader_id == null && purchase.director_id == null &&
    purchase.purchase_id == null && purchase.financial_id == null ){%>
   <div>
-    <a href="/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    <a href="/purchase/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+    <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
   <% }else if(user.profile.description == "purchases" && purchase.director_id == null && purchase.leader_id != null
 && purchase.purchase_id == null && purchase.financial_id == null ) { %>
 
   <% if(file == undefined) {%>
   
-  <form action="/accept/purchases/" method="post" enctype="multipart/form-data">
+  <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
     <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
     <hr>
     <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
     <hr>
-    <button type="submit" class="btn btn-primary">Aceitar</button>
+    <button type="submit" class="btn btn-primary">Enviar</button>
   </form>
 
   <% }else{%>
 
-  <form action="/accept/purchases/" method="post" enctype="multipart/form-data">
+  <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
     <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
     <hr>
     <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple/>
     <hr>
-    <button type="submit" class="btn btn-primary">Aceitar</button>
+    <button type="submit" class="btn btn-primary">Enviar</button>
   </form>
 
   <% } %>
@@ -124,14 +122,14 @@
 && purchase.purchase_id != null && purchase.financial_id == null ) { %>
 
   <div>
-    <a href="/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    <a href="/purchase/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+    <a href="/purchase/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
 
   <% }else if(user.profile.description == "financial" && purchase.director_id != null && purchase.leader_id != null
 && purchase.purchase_id != null && purchase.financial_id == null ) { %>
 
-  <form action="/accept/fincancial" method="post" enctype="multipart/form-data">
+  <form action="/purchase/accept/fincancial" method="post" enctype="multipart/form-data">
     <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
     <hr>
     <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />

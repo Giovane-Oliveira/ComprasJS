@@ -22,8 +22,8 @@ const storage = multer.diskStorage({
     cb(null, file.originalname); // Use the original filename
   }
 });
-const upload = multer({ storage: storage }); // Create the upload middleware
 
+const upload = multer({ storage: storage }); // Create the upload middleware
 
 router.get('/payments/:id', async (req, res) => {
  
@@ -35,7 +35,12 @@ router.get('/payments/:id', async (req, res) => {
   const unit = await Unit.findByPk(employee.unit_id);
   const payment_method = await Payment_Method.findByPk(payment.id);
   const company = await Company.findByPk(payment.company_id);
-
+  const files = await File.findAll({
+    where: {
+      payment_id: payment.id
+    }
+  });
+  
   if (payment == undefined) {
     console.log("Payment undefinied")
   }else if (employee == undefined) {
@@ -52,10 +57,26 @@ router.get('/payments/:id', async (req, res) => {
     console.log("Company undefinied")
   }
 
-res.render('payments/show.ejs', { user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company  });
+res.render('payments/show.ejs', { user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
 
 });
 
+
+router.get('/payment/download/:arquivo', (req, res) => {
+  // Obter o nome do arquivo
+  const fileName = req.params.arquivo;
+  const filePath = `uploads/${fileName}`;
+
+  // Verificar se o arquivo existe
+  if (!fs.existsSync(filePath)) {
+    res.status(404).send('Arquivo não encontrado!');
+    return;
+  }
+
+  // Enviar o arquivo como download
+  res.header('Content-Disposition', `inline; filename="${fileName}"`);
+  res.sendFile(fileName,  { root: 'uploads' });
+});
 
 router.get('/payments', (req, res) => {
 
