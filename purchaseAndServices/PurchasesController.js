@@ -8,6 +8,7 @@ const Employee = require('../employees/Employee');
 const Item = require('./Item');
 const Sector = require('../users/Sector');
 const File = require('../users/File');
+const path = require('path');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -23,6 +24,24 @@ const upload = multer({ storage: storage }); // Create the upload middleware
 router.get('/purchases', (req, res) => {
     res.render('purchaseAndServices/index.ejs', { user: req.session.user });
 });
+
+router.get('/purchase/download/:arquivo', (req, res) => {
+    // Obter o nome do arquivo
+    const fileName = req.params.arquivo;
+    const filePath = `uploads/${fileName}`;
+  
+    // Verificar se o arquivo existe
+    if (!fs.existsSync(filePath)) {
+      res.status(404).send('Arquivo não encontrado!');
+      return;
+    }
+  
+    // Enviar o arquivo como download
+    res.header('Content-Disposition', `inline; filename="${fileName}"`);
+    res.sendFile(fileName,  { root: 'uploads' });
+  });
+  
+
 
 
 router.get('/purchases/:id', adminAuth, async (req, res) => {
@@ -61,9 +80,9 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
     const employee = await Employee.findByPk(purchase.employee_id);
     const item = await Item.findAll({ where: { purchase_id: purchase.id } });
     const sector = await Sector.findByPk(employee.sector_id);
-    const file = await File.findAll({ where: { purchase_id: purchase.id } });
+    const files = await File.findAll({ where: { purchase_id: purchase.id } });
 
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, file, user: req.session.user });
+    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user });
 
 });
 
