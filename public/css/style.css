@@ -10927,6 +10927,3 @@ td {
   box-sizing: border-box;
   /* Include padding and border in the width */
 }
-#qtd {
-  width: 2px;
-}
