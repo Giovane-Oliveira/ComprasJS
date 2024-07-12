@@ -137,16 +137,16 @@
       <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
         Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
       <br>
-<<<<<<< HEAD
+
       <% } if(director_employee != undefined) {  %>
         
         <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
         Email: <label name="emailgestor"><%= director_employee.email %></label></p>
-=======
-      <% } else if(director_employee.name != "") { %>
+
+      <% } else if(director_employee != undefined) { %>
       <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
         Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
->>>>>>> 9501eca21fc6b65639db775c764d4977cbd67df5
+
       <br>
       
      <% } } %>
