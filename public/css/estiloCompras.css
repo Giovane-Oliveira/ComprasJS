@@ -10,6 +10,7 @@
   grid-template-columns: 1fr 2fr; /* 1 coluna para imagem e 2 para o texto*/
   grid-template-rows: auto; /* Ajusta automaticamente as linhas para o tamanho do conteúdo */
   gap: 10px; /* Adiciona espaço entre os elementos */
+  margin-left: 280px;
 }
 
 .cabecalho img {
@@ -41,7 +42,7 @@
 #tabelaCompras th {
   border: 1px solid black; /* Adiciona bordas para as células */
   padding: 8px; /* Adiciona espaço interno para as células */
-  text-align: left; /* Alinha o texto à esquerda */
+  text-align: center; /* Alinha o texto à esquerda */
 }
 #tabelaCompras td {
   border: 1px solid black; /* Adiciona bordas para as células */

@@ -1,143 +1,159 @@
-<%-  include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 
-<% 
-       let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          });   
-    %>
-
-<div class="cabecalho">
-  <img  src="../../images/fav-icon2-150x150.png" alt="">
-  <h1>Relatório de Compras</h1>
-  <h6>Nome: <label name="nome"> <%= employee.name %> </label></h6>
-  <p>Data: <label name="data"> <%= formattedDate %> </label> | <label name="setor">Setor: <%= sector.description %></label></p>
-</div>
-<hr>
-<br>
-<div class="conteudo">
-  <table id="tabelaCompras">
-    <thead>
-      <tr>
-        <th>Quantidade</th>
-        <th>Item</th>
-        <th>Especificações</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% item.forEach(item => { %>
-      <tr>
-        <td><%= item.amount %></td>
-        <td><%= item.item %></td>
-        <td><%= item.description %></td>
-        <td><%= item.value %></td>
-      </tr>
-      <% }); %>
-    </tbody>
-  </table>
-<hr>
-<table id="tabelaCompras">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Anexo</th>
-      <th>Data</th>
-      <th>Abrir</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% files.forEach(file => { %>
-      <td><%= file.id %></td>
-      <td><%= file.fileName %></td>
-      <% 
-      let formattedDate = new Date(file.createdAt).toLocaleDateString('pt-BR', {
-           day: '2-digit',
-           month: '2-digit',
-           year: 'numeric'
-         });
-   %>
-      <td><%= formattedDate %></td>
-      <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-
-      <% }); %>
-  </tbody>
-
-</table>
-
-  <div class="valor-total">
-    <label>Valor Total:</label>
-    <label name="total" id="valor-display"> <%= purchase.total %> </label>
-  </div>
-
-  <div class="assinaturas">
-    <% if(purchase.status == "Em análise pelo diretor") {%>
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
+  <% let formattedDate=new Date(purchase.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+    <div class="buySpace"">
+<div class=" cabecalho">
+      <img src="../../images/fav-icon2-150x150.png" alt="">
+      <h1>Relatório de Compras</h1>
+      <h6>Nome: <label name="nome">
+          <%= employee.name %>
+        </label></h6>
+      <p>Data: <label name="data">
+          <%= formattedDate %>
+        </label> | <label name="setor">Setor: <%= sector.description %></label></p>
+    </div>
+    <hr>
     <br>
-    <% } else if(purchase.status == "Pagamento em andamento") { %>
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-    <br>
-    <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
-      Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
-    <br>
-    <% } %>
-  </div>
+    <div class="conteudo">
+      <table id="tabelaCompras">
+        <thead>
+          <tr>
+            <th>Quantidade</th>
+            <th>Item</th>
+            <th>Especificações</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% item.forEach(item=> { %>
+            <tr>
+              <td>
+                <%= item.amount %>
+              </td>
+              <td>
+                <%= item.item %>
+              </td>
+              <td>
+                <%= item.description %>
+              </td>
+              <td>
+                <%= item.value %>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
+      <hr>
+      <table id="tabelaCompras">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Anexo</th>
+            <th>Data</th>
+            <th>Abrir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% files.forEach(file=> { %>
+            <td>
+              <%= file.id %>
+            </td>
+            <td>
+              <%= file.fileName %>
+            </td>
+            <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+              <td>
+                <%= formattedDate %>
+              </td>
+              <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
 
-    <% if(user.profile.description == "leaders" && purchase.leader_id == null && purchase.director_id == null &&
-   purchase.purchase_id == null && purchase.financial_id == null ){%>
-  <div>
-    <a href="/purchase/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
-  <% }else if(user.profile.description == "purchases" && purchase.director_id == null && purchase.leader_id != null
-&& purchase.purchase_id == null && purchase.financial_id == null ) { %>
+              <% }); %>
+        </tbody>
 
-  <% if(file == undefined) {%>
-  
-  <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
-    <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
-    <hr>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
-    <hr>
-    <button type="submit" class="btn btn-primary">Enviar</button>
-  </form>
+      </table>
 
-  <% }else{%>
+      <div class="valor-total">
+        <label>Valor Total:</label>
+        <label name="total" id="valor-display">
+          <%= purchase.total %>
+        </label>
+      </div>
 
-  <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
-    <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
-    <hr>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple/>
-    <hr>
-    <button type="submit" class="btn btn-primary">Enviar</button>
-  </form>
+      <div class="assinaturas">
+        <% if(purchase.status=="Em análise pelo diretor" ) {%>
+          <p>Gestor: <label name="gestor">
+              <%= leader_employee.name %>
+            </label><br>
+            Email: <label name="emailgestor">
+              <%= leader_employee.email %>
+            </label></p>
+          <br>
+          <% } else if(purchase.status=="Pagamento em andamento" ) { %>
+            <p>Gestor: <label name="gestor">
+                <%= leader_employee.name %>
+              </label><br>
+              Email: <label name="emailgestor">
+                <%= leader_employee.email %>
+              </label></p>
+            <br>
+            <p>Diretor: <label name="diretor">
+                <%= director_employee.name %>
+              </label><br>
+              Email: <label name="emaildiretor">
+                <%= director_employee.email %>
+              </label></p>
+            <br>
+            <% } %>
+      </div>
 
-  <% } %>
+      <% if(user.profile.description=="leaders" && purchase.leader_id==null && purchase.director_id==null && purchase.purchase_id==null && purchase.financial_id==null ){%>
+        <div>
+          <a href="/purchase/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+          <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+        </div>
+        <% }else if(user.profile.description=="purchases" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id==null && purchase.financial_id==null ) { %>
+
+          <% if(file==undefined) {%>
+
+            <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
+              <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
+              <hr>
+              <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+              <hr>
+              <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+
+            <% }else{%>
+
+              <form action="/purchase/accept/purchases/" method="post" enctype="multipart/form-data">
+                <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
+                <hr>
+                <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
+                <hr>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+              </form>
+
+              <% } %>
 
 
-  <% }else if(user.profile.description == "directors" && purchase.director_id == null && purchase.leader_id != null
-&& purchase.purchase_id != null && purchase.financial_id == null ) { %>
+                <% }else if(user.profile.description=="directors" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
 
-  <div>
-    <a href="/purchase/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/purchase/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
+                  <div>
+                    <a href="/purchase/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+                    <a href="/purchase/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+                  </div>
 
-  <% }else if(user.profile.description == "financial" && purchase.director_id != null && purchase.leader_id != null
-&& purchase.purchase_id != null && purchase.financial_id == null ) { %>
+                  <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
 
-  <form action="/purchase/accept/fincancial" method="post" enctype="multipart/form-data">
-    <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
-    <hr>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
-    <hr>
-    <button type="submit" class="btn btn-primary">Aceitar</button>
-  </form>
+                    <form action="/purchase/accept/fincancial" method="post" enctype="multipart/form-data">
+                      <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
+                      <hr>
+                      <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+                      <hr>
+                      <button type="submit" class="btn btn-primary">Aceitar</button>
+                    </form>
 
-  <% } %>
+                    <% } %>
 
-
-  <%- include('../partials/footer.ejs') %>
+    </div>
+    <%- include('../partials/footer.ejs') %>
