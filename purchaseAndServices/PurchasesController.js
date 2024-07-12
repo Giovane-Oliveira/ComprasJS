@@ -65,7 +65,6 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
     res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, file, user: req.session.user });
 
-
 });
 
 

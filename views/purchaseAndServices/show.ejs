@@ -67,7 +67,7 @@
 && purchase.purchase_id == null && purchase.financial_id == null ) { %>
 
   <% if(file == undefined) {%>
-
+  
   <form action="/accept/purchases/" method="post" enctype="multipart/form-data">
     <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
     <hr>
