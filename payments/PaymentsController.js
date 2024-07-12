@@ -25,16 +25,70 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }); // Create the upload middleware
 
+router.get('/payment/accept/leaders/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'Em análise pelo diretor',
+    leader_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
 router.get('/payments/:id', async (req, res) => {
  
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
+
+
+  if(payment.leader_id != null){
+
+    console.log("leader_id: " + payment.leader_id);
+    leader_employee = await Employee.findByPk(payment.leader_id);
+
+ }
+ 
+ if(payment.director_id != null){
+
+   director_employee = await Employee.findByPk(payment.director_id);
+
+ }
+
+ if(payment.purchase_id != null){
+
+     purchase_employee = await Employee.findByPk(payment.purchase_id);
+
+ }
+
+ if(payment.financial_id != null){
+
+      financial_employee = await Employee.findByPk(payment.financial_id);
+
+ }
+
+
+
   const employee = await Employee.findByPk(payment.employee_id);
   const supplier = await Supplier.findByPk(payment.supplier_id);
   const sector = await Sector.findByPk(employee.sector_id);
   const unit = await Unit.findByPk(employee.unit_id);
   const payment_method = await Payment_Method.findByPk(payment.id);
   const company = await Company.findByPk(payment.company_id);
+
+
   const files = await File.findAll({
     where: {
       payment_id: payment.id
@@ -57,7 +111,7 @@ router.get('/payments/:id', async (req, res) => {
     console.log("Company undefinied")
   }
 
-res.render('payments/show.ejs', { user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
+res.render('payments/show.ejs', { leader_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
 
 });
 

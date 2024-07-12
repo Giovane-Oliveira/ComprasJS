@@ -133,9 +133,9 @@
     <% } %>
   </div>
 
-  <% if(user.profile.description == "leaders" && payment.leader_id == null && payment.director_id == null &&
-      payment.purchase_id == null && payment.financial_id == null ){%>
-  <div>payment
+  <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&
+      payment.purchase_id == "" && payment.financial_id == "" ){%>
+  <div>
     <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
     <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
