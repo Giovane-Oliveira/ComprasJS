@@ -25,6 +25,157 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }); // Create the upload middleware
 
+
+router.post('/payment/accept/financial', upload.array('files'), async (req, res) => {
+
+  const id = req.body.payment_id;
+   const files = req.files;
+
+  Payment.update({
+
+    status: 'APROVADO',
+    financial_id: req.session.user.employee.id
+
+  }, {
+    where: {
+      id: id
+    }  
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+
+// Check if any files were uploaded
+if (files && files.length > 0) {
+  // Processar os dados e o arquivo aqui
+  //console.log(`Nome: ${nome}`);
+  // Processar arquivos
+  for (const file of files) {
+    // Salvar o arquivo
+    const fileName = file.originalname;
+    const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+    const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+    fs.moveSync(file.path, filePath);
+    console.log(`Arquivo recebido: ${file.originalname}`);
+    // Salvar arquivo no diretório de destino 
+
+  await File.create({
+      fileName: uniqueFileName,
+      payment_id: id
+    }).catch(error => {
+      console.error('Error creating file:', error);
+    });
+
+  }
+
+} else {
+  console.error('No files were uploaded.');
+}
+
+
+  res.redirect('/payments/' + id);
+
+});
+
+
+
+router.get('/payment/accept/purchases/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'Pagamento em andamento',
+    purchase_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
+
+router.get('/payment/reprove/purchases/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'REPROVADO',
+    purchase_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
+
+router.get('/payment/accept/directors/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'Em análise pelo compras',
+    director_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
+
+router.get('/payment/reprove/directors/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'REPROVADO',
+    director_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
+
 router.get('/payment/accept/leaders/:id', (req, res) => {
 
   const id = req.params.id;
@@ -96,6 +247,9 @@ router.get('/payments/:id', async (req, res) => {
  if(payment.purchase_id != null){
 
      purchase_employee = await Employee.findByPk(payment.purchase_id);
+
+    console.log("purchase_employee: " + purchase_employee)
+
 
  }
 

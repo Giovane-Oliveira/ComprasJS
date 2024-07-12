@@ -101,6 +101,7 @@
     </thead>
     <tbody>
       <% files.forEach(file => { %>
+        <tr>
       <td><%= file.id %></td>
       <td><%= file.fileName %></td>
       <% 
@@ -112,7 +113,7 @@
    %>
       <td><%= formattedDate %></td>
       <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-
+    </tr>
       <% }); %>
     </tbody>
 
@@ -143,13 +144,28 @@
         <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
         Email: <label name="emailgestor"><%= director_employee.email %></label></p>
 
-      <% } else if(director_employee != undefined) { %>
-      <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
+      <% } if(purchase_employee != undefined) { %>
+      <p>Comprador(a): <label name="diretor"> <%= director_employee.name %> </label><br>
         Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
 
       <br>
       
-     <% } } %>
+     <% } } else{ %>
+
+      <% if(leader_employee != undefined) { %>
+
+        <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
+          Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
+        <br>
+  
+        <% } if(director_employee != undefined) {  %>
+          
+          <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
+          Email: <label name="emailgestor"><%= director_employee.email %></label></p>
+  
+        <% } %>
+
+   <%  } %>
   </div>
 
   <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&
@@ -158,24 +174,27 @@
     <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
     <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
-  <% }else if(user.profile.description == "directors" && payment.director_id == null && payment.leader_id != null
-   && payment.purchase_id == null && payment.financial_id == null ) { %>
+  <% }else if(user.profile.description == "directors" && payment.director_id == "" && payment.leader_id != ""
+   && payment.purchase_id == "" && payment.financial_id == "" &&
+   payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
 
   <div>
     <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
     <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
 
-  <% }else if(user.profile.description == "purchases" && payment.director_id != null && payment.leader_id != null
-   && payment.purchase_id == null && payment.financial_id == null ) { %>
+  <% }else if(user.profile.description == "purchases" && payment.director_id != "" && payment.leader_id != ""
+   && payment.purchase_id == "" && payment.financial_id == "" 
+  && payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
 
   <div>
-    <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+    <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
 
-  <% }else if(user.profile.description == "financial" && payment.director_id != null && payment.leader_id != null
-   && payment.purchase_id != null && payment.financial_id == null ) { %>
+  <% }else if(user.profile.description == "financial" && payment.director_id != "" && payment.leader_id != ""
+   && payment.purchase_id != "" && payment.financial_id == "" 
+  && payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
 
   <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
     <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
