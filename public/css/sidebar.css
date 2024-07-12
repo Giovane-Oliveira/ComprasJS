@@ -17,6 +17,9 @@
   left: -260px;
   position: relative;
 }
+#sidebar ul :hover {
+  background-color: #00aa9b !important;
+}
 
 #content {
   flex-grow: 1;
