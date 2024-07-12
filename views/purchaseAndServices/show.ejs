@@ -1,4 +1,4 @@
-<%-  include('../partials/header_show_purchase.ejs') %>
+<%-  include('../partials/header.ejs') %>
 
 <% 
        let formattedDate = new Date(purchase.createdAt).toLocaleDateString('pt-BR', {
@@ -18,7 +18,7 @@
 <hr>
 <br>
 <div class="conteudo">
-  <table>
+  <table id="tabelaCompras">
     <thead>
       <tr>
         <th>Quantidade</th>
