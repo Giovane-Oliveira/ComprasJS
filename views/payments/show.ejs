@@ -137,11 +137,11 @@
       <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
         Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
       <br>
-      <% }  if(director_employee.name != "") { %>
+      <% } else if(director_employee.name != "") { %>
       <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
         Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
       <br>
-      <% } %>
+      <% } }%>
   </div>
 
   <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&
@@ -150,8 +150,8 @@
     <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
     <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
-  <% }else if(user.profile.description == "directors" && payment.director_id == "" && payment.leader_id != ""
-   && payment.purchase_id == "" && payment.financial_id == "" ) { %>
+  <% }else if(user.profile.description == "directors" && payment.director_id == null && payment.leader_id != null
+   && payment.purchase_id == null && payment.financial_id == null ) { %>
 
   <div>
     <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
