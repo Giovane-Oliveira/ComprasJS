@@ -1,7 +1,7 @@
 * {
   -webkit-print-color-adjust: exact;
 }
-body {
+#tabelaPagamento {
   max-width: 80%;
   margin: auto;
 }
@@ -34,7 +34,7 @@ body {
   grid-column: 2; /* nome e data na segunda coluna */
   grid-row: 3; /* nome e data na terceira linha */
 }
-table {
+#tabelaPagamento {
   border: 1px solid #000;
   border-collapse: collapse; /* Remove espaço entre as células */
   width: 100%; /* Faz a tabela ocupar 100% da largura da página */
@@ -42,17 +42,18 @@ table {
   box-sizing: border-box; /* Include padding and border in the width */
 }
 
-td {
+#tabelaPagamento td {
   border: 1px solid #000; /* Adiciona bordas para as células */
   padding: 8px; /* Adiciona espaço interno para as células */
   text-align: left; /* Alinha o texto à esquerda */
 }
 
-.footer {
+.assinaturas {
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: auto auto auto;
   gap: 10px;
+  margin-top: 30px !important;
   margin: auto;
   padding: 10px;
   font-weight: bold;
@@ -64,6 +65,6 @@ td {
   background-color: #ccc;
 }
 .pagamento {
-  text-align: center;
+  text-align: center !important;
   font-weight: bold;
 }

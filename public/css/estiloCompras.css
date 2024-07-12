@@ -1,7 +1,7 @@
 * {
   -webkit-print-color-adjust: exact;
 }
-body {
+#tabelaCompras {
   max-width: 80%;
   margin: auto;
 }
@@ -33,19 +33,23 @@ body {
   grid-column: 2; /* nome e data na segunda coluna */
   grid-row: 3; /* nome e data na terceira linha */
 }
-table {
+#tabelaCompras {
   border-collapse: collapse; /* Remove espaço entre as células */
   width: 100%; /* Faz a tabela ocupar 100% da largura da página */
 }
 
-th,
-td {
+#tabelaCompras th {
+  border: 1px solid black; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: left; /* Alinha o texto à esquerda */
+}
+#tabelaCompras td {
   border: 1px solid black; /* Adiciona bordas para as células */
   padding: 8px; /* Adiciona espaço interno para as células */
   text-align: left; /* Alinha o texto à esquerda */
 }
 
-th {
+#tabelaCompras th {
   background-color: #bcbcbc; /* Define a cor de fundo para os cabeçalhos */
   font-weight: bold; /* define o texto em negrito */
 }
@@ -53,7 +57,9 @@ th {
 .valor-total {
   display: flex;
   align-items: center;
-  margin-top: 10px; /* Adiciona espaço entre label e tabela*/
+  margin-top: 30px; /* Adiciona espaço entre label e tabela*/
+  margin-bottom: 30px;
+  margin-left: 120px;
 }
 
 .valor-total label {
@@ -68,12 +74,12 @@ th {
   font-size: 16px; /* Ajusta tamanho da fonte */
 }
 
-.footer {
+.assinaturas {
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: auto auto auto; /* Adjust column widths as needed */
   gap: 10px;
-  margin: auto; /* Adjust margins as needed */
+  margin: auto;
   padding: 10px;
   font-weight: bold; /* define o texto em negrito */
   text-align: center; /* Center the text within the footer */

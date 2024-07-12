@@ -1,112 +1,44 @@
-.sidebar {
-  min-width: 200px; /* Minimum width for the sidebar */
-  max-width: 290px; /* Maximum width for the sidebar */
-  background-color: #f0f0f0; /* Cor de fundo do menu */
-  position: fixed; /* Fixa o menu na tela */
-  top: 0; /* Posição superior do menu */
-  left: -280px; /* Posição inicial do menu fora da tela */
-  transition: left 0.3s ease; /* Transição suave para o menu */
-  height: 100%; /* Altura do menu */
-  padding: 40px 20px; /* Espaçamento interno do menu (aumentado para baixo) */
-  z-index: 10; /* Garante que o menu fique acima do conteúdo */
+.wrapper {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden; /* Prevent scrollbars on the wrapper */
+}
+#sidebar {
+  z-index: 100;
+  min-width: 250px;
+  max-width: 250px;
+  background: #535353;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s;
+  /*height: 100vh;*/
+  top: 0;
+  left: -260px;
+  position: relative;
 }
 
-.sidebar.active {
-  left: 0; /* Posição do menu quando ativo */
+#content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: -230px;
+  margin-right: 20px;
 }
-
-.sidebar-toggle {
-  position: fixed; /* Fixa o botão na tela */
-  top: 20px;
-  left: 0px;
-  z-index: 11; /* Garante que o botão fique acima do menu */
-  cursor: pointer;
-  transition: left 0.3s ease; /* Transição suave para o botão */
-  background-color: #f0f0f0; /* Cor de fundo do botão */
-  padding: 10px; /* Espaçamento interno do botão */
-  border-radius: 5px; /* Arredondamento do botão */
+.navbar {
+  background-color: #535353;
 }
-
-.sidebar-toggle.active {
-  left: 240px; /* Move o botão para a direita quando o menu está ativo */
+.custom-menu {
+  background-color: #535353;
 }
-
-.sidebar-toggle span {
-  display: block;
-  width: 30px;
-  height: 4px;
-  background-color: #333;
-  margin-bottom: 5px;
-  border-radius: 2px;
-  transition: transform 0.3s ease;
+.fa-bars {
+  color: #fff !important;
+  margin-left: 5px;
 }
-
-.sidebar-toggle span:nth-child(2) {
-  margin-bottom: 5px;
+#sidebar.active {
+  margin-left: 260px; /* Move sidebar to the right */
 }
-
-.sidebar-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.sidebar-toggle.active span:nth-child(2) {
-  opacity: 0;
-}
-
-.sidebar-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin-left: 20px; /* Espaçamento horizontal entre o botão e a lista (reduzido) */
-  margin-top: 20px; /* Espaçamento entre o botão e a lista */
-}
-
-.sidebar li {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  margin-bottom: 10px;
-  display: flex; /* Permite alinhar a imagem e o texto */
-  align-items: center; /* Alinha verticalmente a imagem e o texto */
-}
-
-.sidebar li img {
-  width: 50px; /* Define a largura da imagem */
-  height: 50px; /* Define a altura da imagem */
-  margin-right: 10px; /* Espaçamento entre a imagem e o texto */
-}
-
-.sidebar a {
-  display: block;
-  padding: 10px;
-  color: #333;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.sidebar a:hover {
-  background-color: #ddd;
-}
-.user-profile-container {
-  display: flex; /* Enable flexbox layout */
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-}
-
-.user-profile-container img {
-  width: 50px; /* Adjust image width as needed */
-  height: 50px; /* Adjust image height as needed */
-  border-radius: 50%; /* Make the image circular */
-  margin-bottom: 10px; /* Add spacing between image and name */
-}
-@media screen and (max-width: 992px) {
-  .sidebar {
-    width: 100%;
-  }
-  .sidebar.active ~ .content {
-    margin-left: 0;
-  }
+.navbar-brand img {
+  width: 100px;
+  height: 100px;
+  margin-left: 70%;
 }
