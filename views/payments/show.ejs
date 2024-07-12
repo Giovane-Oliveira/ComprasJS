@@ -61,8 +61,7 @@
         <td colspan="1"><span name="agencia">agencia: <%= payment_method.agency %> </span></td>
         <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
       </tr>
-      <% } else if(payment_method.payment_method=="Pix" ){ %> %>
-
+      <% } else if(payment_method.payment_method=="Pix" ){ %> 
       <%if(payment_method.cpf !=null){ %>
       <tr name="cpf">
         <td class="pagamento" colspan="2">Pix</td>
