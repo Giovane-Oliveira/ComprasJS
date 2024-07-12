@@ -29,7 +29,7 @@
       <tr>
         <th scope="row"><%= payment.id %></th>
         <td>Pagamento</td>
-        <td><%= payment.description  %></td>
+        <td><%= payment.description.substring(0, 30)  %></td>
         <td><%= formattedDate  %></td>
         <td><%= payment.status  %></td>
         <td><a href="/payments/<%= payment.id %>">Detalhes</a></td>
