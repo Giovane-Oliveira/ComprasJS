@@ -137,7 +137,7 @@ router.get('/payments/:id', async (req, res) => {
     console.log("Company undefinied")
   }
 
-res.render('payments/show.ejs', { leader_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
+res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
 
 });
 

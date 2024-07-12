@@ -132,16 +132,18 @@
     <br>
     <% } else if(payment.status == "REPROVADO") { %>
 
-      <% if(leader_employee.name != "") { %>
+      <% if(leader_employee != undefined) { %>
 
       <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
         Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
       <br>
-      <% }  if(director_employee.name != "") { %>
-      <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
-        Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
+      <% } if(director_employee != undefined) {  %>
+        
+        <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
+        Email: <label name="emailgestor"><%= director_employee.email %></label></p>
       <br>
-      <% } }%>
+      
+     <% } } %>
   </div>
 
   <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&
