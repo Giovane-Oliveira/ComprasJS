@@ -10927,3 +10927,17 @@ td {
   box-sizing: border-box;
   /* Include padding and border in the width */
 }
+body {
+  background-image: url("../images/wave-top.svg");
+  margin-top: 0px;
+  background-repeat: no-repeat;
+}
+.formSpace {
+  margin-top: 90px;
+}
+.paySpace {
+  margin-top: 90px;
+}
+.buySpace {
+  margin-top: 90px;
+}

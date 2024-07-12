@@ -1,73 +1,73 @@
 <%- include('../partials/header.ejs') %>
-
-  <div class="sobreposicaoForm">
-    <h2>Solicitação de Compras e Serviços</h2>
-  </div>
-
-  <form action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
-
-
-    <table id="principal" border="0px" width="100%">
-      <thead>
-        <tr>
-          <td>Quantidade</td>
-          <td>Item</td>
-          <td>Especificação</td>
-          <td>R$</td>
-          <td>&nbsp;</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="col-md-1"><input type="number" min=1 name="amount1" class="form-control" id="quantidade1" required placeholder="0" /></td>
-
-          <td class="col-md-3"><input type="text" name="item1" class="form-control" id="item1" required placeholder="Item" /></td>
-
-          <td class="col-md-4"><input type="text" name="description1" class="form-control" id="especificacao1" required placeholder="Especificação" /></td>
-
-          <td class="col-md-2"><input type="text" name="value1" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="valor1" required placeholder="Valor" /></td>
-        </tr>
-
-      </tbody>
-    </table>
-    <div class="form-group col-md-8">
-      <button style="margin-top:8px; margin-left:-7px" type="button" class="btn btn-secondary" onclick="adicionarParcela()">+ Item</button>
+  <div class="formSpace">
+    <div class="sobreposicaoForm">
+      <h2>Solicitação de Compras e Serviços</h2>
     </div>
 
-    <script>
-      /*$('#valor1').maskMoney({ prefix: 'R$ ', allowNegative: true, thousands: '.', decimal: ',', affixesStay: true });*/
+    <form action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
 
-      $.jMaskGlobals.watchDataMask = true;
 
-      let count = 2;
+      <table id="principal" border="0px" width="100%">
+        <thead>
+          <tr>
+            <td>Quantidade</td>
+            <td>Item</td>
+            <td>Especificação</td>
+            <td>R$</td>
+            <td>&nbsp;</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-md-1"><input type="number" min=1 name="amount1" class="form-control" id="quantidade1" required placeholder="0" /></td>
 
-      function adicionarParcela() {
+            <td class="col-md-3"><input type="text" name="item1" class="form-control" id="item1" required placeholder="Item" /></td>
 
-        $('#principal').append("<tr><td class='col-md-1'><input type='number' min=1 name='amount" + count + "' class='form-control' id='inputEmail4' required placeholder='0'/></td>" +
-          "<td class='col-md-3'><input type='text' name='item" + count + "' class='form-control' id='item" + count + "' required placeholder='Item' /></td>" +
-          "<td class='col-md-4'><input type='text' name='description" + count + "' class='form-control' id='especificacao" + count + "' required placeholder='Especificação'  /></td>" +
-          "<td class='col-md-2'><input type='text' data-mask='###.###.##0,00' data-mask-reverse='true' name='value" + count + "' class='form-control' id='valor" + count + "' required placeholder='Valor'/></td>" +
-          "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td></tr>");
-        count++;
-      }
+            <td class="col-md-4"><input type="text" name="description1" class="form-control" id="especificacao1" required placeholder="Especificação" /></td>
 
-      $('#principal').on('click', 'button', function () {
+            <td class="col-md-2"><input type="text" name="value1" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="valor1" required placeholder="Valor" /></td>
+          </tr>
 
-        var td = $(this).parent();
-        var tr = $(td).parent();
-        count--;
-        tr.remove();
+        </tbody>
+      </table>
+      <div class="form-group col-md-8">
+        <button style="margin-top:8px; margin-left:-7px" type="button" class="btn btn-secondary" onclick="adicionarParcela()">+ Item</button>
+      </div>
 
-      });
-    </script>
+      <script>
+        /*$('#valor1').maskMoney({ prefix: 'R$ ', allowNegative: true, thousands: '.', decimal: ',', affixesStay: true });*/
 
-    <hr style="width: 90%;">
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
-    <hr style="width: 90%;;">
-    <label for="exampleFormControlTextarea1">Justificativa</label>
-    <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180"></textarea>
-    <button style="margin-top:10px; margin-bottom:15px;" type="submit" class="btn btn-info">Enviar</button>
-  </form>
+        $.jMaskGlobals.watchDataMask = true;
+
+        let count = 2;
+
+        function adicionarParcela() {
+
+          $('#principal').append("<tr><td class='col-md-1'><input type='number' min=1 name='amount" + count + "' class='form-control' id='inputEmail4' required placeholder='0'/></td>" +
+            "<td class='col-md-3'><input type='text' name='item" + count + "' class='form-control' id='item" + count + "' required placeholder='Item' /></td>" +
+            "<td class='col-md-4'><input type='text' name='description" + count + "' class='form-control' id='especificacao" + count + "' required placeholder='Especificação'  /></td>" +
+            "<td class='col-md-2'><input type='text' data-mask='###.###.##0,00' data-mask-reverse='true' name='value" + count + "' class='form-control' id='valor" + count + "' required placeholder='Valor'/></td>" +
+            "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td></tr>");
+          count++;
+        }
+
+        $('#principal').on('click', 'button', function () {
+
+          var td = $(this).parent();
+          var tr = $(td).parent();
+          count--;
+          tr.remove();
+
+        });
+      </script>
+
+      <hr style="width: 90%;">
+      <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
+      <hr style="width: 90%;;">
+      <label for="exampleFormControlTextarea1">Justificativa</label>
+      <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180"></textarea>
+      <button style="margin-top:10px; margin-bottom:15px;" type="submit" class="btn btn-info">Enviar</button>
+    </form>
   </div>
-
+  </div>
   <%- include('../partials/footer.ejs') %>
