@@ -74,7 +74,7 @@ if (files && files.length > 0) {
 }
 
 
-  res.redirect('/payments/' + id);
+res.redirect('/dashboard/pending');
 
 });
 
@@ -99,7 +99,7 @@ router.get('/payment/accept/purchases/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard/pending');
 
 });
 
@@ -123,7 +123,7 @@ router.get('/payment/reprove/purchases/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard');
 
 });
 
@@ -147,7 +147,7 @@ router.get('/payment/accept/directors/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard/pending');
 
 });
 
@@ -171,7 +171,7 @@ router.get('/payment/reprove/directors/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard');
 
 });
 
@@ -195,7 +195,7 @@ router.get('/payment/accept/leaders/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard/pending');
 
 });
 
@@ -219,7 +219,7 @@ router.get('/payment/reprove/leaders/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/payments/' + id);
+  res.redirect('/dashboard');
 
 });
 
