@@ -139,8 +139,8 @@
     <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
     <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
   </div>
-  <% }else if(user.profile.description == "directors" && payment.director_id == null && payment.leader_id != null
-   && payment.purchase_id == null && payment.financial_id == null ) { %>
+  <% }else if(user.profile.description == "directors" && payment.director_id == "" && payment.leader_id != ""
+   && payment.purchase_id == "" && payment.financial_id == "" ) { %>
 
   <div>
     <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>

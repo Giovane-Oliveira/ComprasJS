@@ -48,6 +48,32 @@ router.get('/payment/accept/leaders/:id', (req, res) => {
 
 });
 
+
+router.get('/payment/reprove/leaders/:id', (req, res) => {
+
+  const id = req.params.id;
+  Payment.update({
+
+    status: 'REPROVADO',
+    leader_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+  res.redirect('/payments/' + id);
+
+});
+
+
+
 router.get('/payments/:id', async (req, res) => {
  
   const id = req.params.id;

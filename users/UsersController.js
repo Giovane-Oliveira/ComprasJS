@@ -239,7 +239,7 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
   
 
-        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
+        res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
 
     } else {
         res.redirect("/");
