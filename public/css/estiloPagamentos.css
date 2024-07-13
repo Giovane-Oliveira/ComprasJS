@@ -69,3 +69,25 @@
   text-align: center !important;
   font-weight: bold;
 }
+#tabelaAnexos {
+  max-width: 80%;
+  margin: auto;
+  border-collapse: collapse; /* Remove espaço entre as células */
+  width: 100%; /* Faz a tabela ocupar 100% da largura da página */
+}
+
+#tabelaAnexos th {
+  border: 1px solid black; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: center; /* Alinha o texto à esquerda */
+}
+#tabelaAnexos td {
+  border: 1px solid black; /* Adiciona bordas para as células */
+  padding: 8px; /* Adiciona espaço interno para as células */
+  text-align: center; /* Alinha o texto à esquerda */
+}
+#tabelaAnexos th {
+  background-color: #bcbcbc; /* Define a cor de fundo para os cabeçalhos */
+  font-weight: bold; /* define o texto em negrito */
+  text-align: center;
+}

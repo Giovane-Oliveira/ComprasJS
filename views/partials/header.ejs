@@ -38,16 +38,18 @@
             <span class="sr-only">Toggle Menu</span>
           </button>
         </div>
-        <a class="navbar-brand" href="#">
-          <img src="../images/logo_oficial_sf.png" alt="">
-        </a>
-
         <ul class="list-unstyled components mb-5">
-          <li class="active">
-            <a href="/dashboard"><span class="fa fa-user mr-3"></span>
-              <%= user.employee.name %>
-            </a>
-          </li>
+          <div id="userIcon">
+            <li class="active">
+              <a href="/dashboard">
+                <img src="../images/user.png">
+                <br>
+                <span>
+                  <%= user.employee.name %>
+                </span>
+              </a>
+            </li>
+          </div>
           <li>
             <a href="/dashboard"><span class="fa fa-home mr-3"></span> Dashboard</a>
           </li>
