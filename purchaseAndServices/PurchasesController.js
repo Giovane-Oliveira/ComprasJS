@@ -22,14 +22,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create the upload middleware
 
 
+router.get('/purchases', (req, res) => {
+ 
+  res.render('purchaseAndServices/index.ejs', { user: req.session.user});
+});
 
 
 router.get('/revision_orcament/:id', (req, res) => {
   const id = req.params.id;
-  res.render('purchaseAndServices/index.ejs', { user: req.session.user });
+  res.render('purchaseAndServices/revision_orcament.ejs', { user: req.session.user });
 });
-
-
 
 
 router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) => {

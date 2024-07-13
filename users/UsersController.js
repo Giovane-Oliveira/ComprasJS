@@ -478,7 +478,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
         const reproved = reproved_payments.length + reproved_purchases.length;
 
-
         const aproved_purchases = await Purchase.findAll({
             where: {
                 status: "APROVADO"
