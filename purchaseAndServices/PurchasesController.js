@@ -21,9 +21,97 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }); // Create the upload middleware
 
-router.get('/purchases', (req, res) => {
-    res.render('purchaseAndServices/index.ejs', { user: req.session.user });
+
+
+
+router.get('/revision_orcament/:id', (req, res) => {
+  const id = req.params.id;
+  res.render('purchaseAndServices/index.ejs', { user: req.session.user });
 });
+
+
+
+
+router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) => {
+
+  const id = req.body.purchase_id;
+   const files = req.files;
+
+  Purchase.update({
+
+    status: 'Em análise pelo compras',
+    leader_id: req.session.user.employee.id
+
+  }, {
+    where: {
+      id: id
+    }  
+})
+  .catch(error => {
+    console.error('Error updating purchase:', error);
+  });
+
+
+// Check if any files were uploaded
+if (files && files.length > 0) {
+  // Processar os dados e o arquivo aqui
+  //console.log(`Nome: ${nome}`);
+  // Processar arquivos
+  for (const file of files) {
+    // Salvar o arquivo
+    const fileName = file.originalname;
+    const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+    const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+    fs.moveSync(file.path, filePath);
+    console.log(`Arquivo recebido: ${file.originalname}`);
+    // Salvar arquivo no diretório de destino 
+
+  await File.create({
+      fileName: uniqueFileName,
+      purchase_id: id
+    }).catch(error => {
+      console.error('Error creating file:', error);
+    });
+
+  }
+
+} else {
+  console.error('No files were uploaded.');
+}
+
+
+res.redirect('/dashboard/pending');
+
+});
+
+
+router.get('/purchase/reprove/leaders/:id', (req, res) => {
+
+  const id = req.params.id;
+  Purchase.update({
+
+    status: 'REPROVADO',
+    leader_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+  .then(result => {
+    console.log('Purchase updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating purchase:', error);
+  });
+
+  res.redirect('/dashboard');
+
+});
+
+
+
+
+
 
 router.get('/purchase/download/:arquivo', (req, res) => {
     // Obter o nome do arquivo

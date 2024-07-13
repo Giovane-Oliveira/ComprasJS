@@ -141,9 +141,7 @@ router.get('/registrations_token', adminAuth, (req, res) => {
 
 router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
-    if (req.session.user.profile.description.includes('managers') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+    if (req.session.user.profile.description.includes('managers')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -174,7 +172,9 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti')) {
+    req.session.user.profile.description.includes('ti') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -229,15 +229,9 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
-        const payments = await Payment.findAll({
-            order: [['id', 'DESC']]
-        });
 
-        const purchases = await Purchase.findAll({
-            order: [['id', 'DESC']]  
-        });
 
-  
+      
 
         res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: pending_payments, purchases: pending_purchases});
 
@@ -251,9 +245,7 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
 router.get('/dashboard/reproved', adminAuth, async (req, res) => {
 
-    if (req.session.user.profile.description.includes('managers') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+    if (req.session.user.profile.description.includes('managers')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
@@ -273,7 +265,9 @@ router.get('/dashboard/reproved', adminAuth, async (req, res) => {
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti')) {
+    req.session.user.profile.description.includes('ti') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
@@ -300,9 +294,7 @@ router.get('/dashboard/reproved', adminAuth, async (req, res) => {
 
 router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 
-    if (req.session.user.profile.description.includes('managers') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+    if (req.session.user.profile.description.includes('managers')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
@@ -322,7 +314,9 @@ router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti')) {
+    req.session.user.profile.description.includes('ti') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
@@ -349,9 +343,7 @@ router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 
 router.get('/dashboard', adminAuth, async (req, res) => {
 
-    if (req.session.user.profile.description.includes('managers') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+    if (req.session.user.profile.description.includes('managers')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -441,7 +433,9 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti')) {
+    req.session.user.profile.description.includes('ti') ||
+    req.session.user.profile.description.includes('purchases') ||
+    req.session.user.profile.description.includes('financial')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -464,6 +458,9 @@ router.get('/dashboard', adminAuth, async (req, res) => {
                 ]
             }
         });
+
+       // console.log("PENDENTES COMPRAS:" + pending_purchases.length);
+       // console.log("PENDENTES PAGAMENTOS:" + pending_payments.length);
 
         const pending = pending_payments.length + pending_purchases.length;
 
