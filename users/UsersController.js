@@ -168,7 +168,15 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
             }
         });
 
-        res.render("dashboard/pending.ejs", { user: req.session.user, payments: pending_payments, purchases: pending_purchases });
+        let message = '';
+
+        if(req.query.success){
+
+            message = 'Enviado com sucesso!';
+
+        }
+
+        res.render("dashboard/pending.ejs", { user: req.session.user, payments: pending_payments, purchases: pending_purchases, message: message });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
@@ -229,11 +237,15 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
+        let message = '';
 
+        if(req.query.success){
 
-      
+            message = 'Enviado com sucesso!';
 
-        res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: pending_payments, purchases: pending_purchases});
+        }
+    
+        res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: pending_payments, purchases: pending_purchases, message: message});
 
     } else {
         res.redirect("/");
@@ -428,8 +440,17 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             
         });
 
+        let message = '';
 
-        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases });
+        if(req.query.error){
+
+            message = 'Solicitação reprovada com sucesso!';
+
+        }
+
+
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases, message });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
@@ -506,9 +527,15 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             
         });
 
-  
+        let message = '';
 
-        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases});
+        if(req.query.error){
+
+            message = 'Solicitação reprovada com sucesso!';
+
+        }
+
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases, message: message});
 
     } else {
         res.redirect("/");

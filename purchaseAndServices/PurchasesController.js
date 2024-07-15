@@ -25,7 +25,18 @@ const upload = multer({ storage: storage }); // Create the upload middleware
 
 router.get('/purchases', (req, res) => {
 
-  res.render('purchaseAndServices/index.ejs', { user: req.session.user });
+  let message = "Requisição de compras/serviços criada com sucesso";
+
+  if(req.query.success){
+  
+    res.render('purchaseAndServices/index.ejs', { user: req.session.user, message: message });
+
+  }else{
+
+    res.render('purchaseAndServices/index.ejs', { user: req.session.user, message: '' });
+
+  }
+  
 });
 
 
@@ -187,7 +198,7 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
     console.error('No files were uploaded.');
   }
   
-res.redirect('/dashboard/pending');  
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -290,7 +301,7 @@ router.post('/purchase/accept/financial', upload.array('files'), async (req, res
   }
 
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -346,7 +357,7 @@ router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) 
   }
 
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -370,7 +381,7 @@ router.get('/purchase/reprove/leaders/:id', (req, res) => {
       console.error('Error updating purchase:', error);
     });
 
-  res.redirect('/dashboard');
+  res.redirect('/dashboard/?error=true');
 
 });
 
@@ -397,7 +408,7 @@ router.get('/purchase/accept/directors/:id', (req, res) => {
     });
 
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -421,7 +432,7 @@ router.get('/purchase/reprove/directors/:id', (req, res) => {
       console.error('Error updating purchase:', error);
     });
 
-  res.redirect('/dashboard');
+    res.redirect('/dashboard/?error=true');
 
 });
 
@@ -594,7 +605,7 @@ router.post('/upload/purchases', upload.array('files'), async (req, res) => {
     console.error('No files were uploaded.');
   }
 
-  res.redirect('/purchases');
+  res.redirect('/purchases/?success=true');
 
 });
 

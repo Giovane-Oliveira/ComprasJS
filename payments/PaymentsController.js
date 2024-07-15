@@ -74,7 +74,7 @@ if (files && files.length > 0) {
 }
 
 
-res.redirect('/dashboard/pending');
+res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -99,7 +99,7 @@ router.get('/payment/accept/purchases/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -123,7 +123,7 @@ router.get('/payment/reprove/purchases/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard');
+  res.redirect('/dashboard/?error=true');
 
 });
 
@@ -147,7 +147,7 @@ router.get('/payment/accept/directors/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -171,7 +171,7 @@ router.get('/payment/reprove/directors/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard');
+  res.redirect('/dashboard/?error=true');
 
 });
 
@@ -195,7 +195,7 @@ router.get('/payment/accept/leaders/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard/pending');
+  res.redirect('/dashboard/pending/?success=true');
 
 });
 
@@ -219,7 +219,7 @@ router.get('/payment/reprove/leaders/:id', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
-  res.redirect('/dashboard');
+  res.redirect('/dashboard/?error=true');
 
 });
 
@@ -324,7 +324,16 @@ router.get('/payments', (req, res) => {
       }
     }).then(companies => {
 
-      res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies });
+      if(req.query.success){
+        let message = "Pagamento criado com sucesso!";
+        res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: message });
+
+      }else{
+        res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: '' });
+
+      }
+
+      
 
     });
 
@@ -430,7 +439,7 @@ router.post('/upload/payments', upload.array('files'), async(req, res) => {
     console.error('No files were uploaded.');
   }
 
-  res.redirect('/payments');
+  res.redirect('/payments/?success=true');
 
 });
 

@@ -1,4 +1,12 @@
 <%- include('../partials/header.ejs') %>
+
+<% if(message) { console.log(message) %>
+  <script>
+    alert("<%=message%>");
+  </script>
+  <% } %>
+
+
   <div class="space">
     <h1>Solicitações Pendentes</h1>
 

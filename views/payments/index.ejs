@@ -1,5 +1,17 @@
 <%-  include('../partials/header.ejs') %>
 
+
+
+
+<% if(message) { console.log(message) %>
+  <script>
+    alert("<%=message%>");
+  </script>
+  <% } %>
+
+
+
+
 <h2 class='mb-4'>Autorização de Pagamentos Diversos</h2>
 <form action="/upload/payments" method="post" enctype="multipart/form-data" accept-charset="utf-8">
   <div class="form-row">

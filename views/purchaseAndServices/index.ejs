@@ -1,5 +1,14 @@
 <%- include('../partials/header.ejs') %>
-  <div class="formSpace">
+  
+
+<% if(message) { console.log(message) %>
+  <script>
+    alert("<%=message%>");
+  </script>
+  <% } %>
+
+
+<div class="formSpace">
     <div class="sobreposicaoForm">
       <h2>Solicitação de Compras e Serviços</h2>
     </div>
