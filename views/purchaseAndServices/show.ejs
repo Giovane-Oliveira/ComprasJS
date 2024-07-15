@@ -55,6 +55,7 @@
     </thead>
     <tbody>
       <% files.forEach(file=> { %>
+        <tr>
       <td>
         <%= file.id %>
       </td>
@@ -66,7 +67,7 @@
         <%= formattedDate %>
       </td>
       <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-
+    </tr>
       <% }); %>
     </tbody>
 
@@ -129,9 +130,6 @@
   <div>
     <form action="/purchase/accept/leaders/" method="post" enctype="multipart/form-data">
       <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
-      <hr>
-      <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
-      <hr>
       <button type="submit" class="btn btn-primary">Aceitar</button>
       <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </form>
@@ -150,7 +148,7 @@
 
   <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
 
-  <form action="/purchase/accept/fincancial" method="post" enctype="multipart/form-data">
+  <form action="/purchase/accept/financial" method="post" enctype="multipart/form-data">
     <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
     <hr>
     <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />

@@ -67,7 +67,8 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
 
   Purchase.update({
     total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-    status: 'Em análise pelo diretor'
+    status: 'Em análise pelo diretor',
+    purchase_id: req.session.user.employee.id
   }, {
     where: {
       id: req.body.purchase_id
@@ -123,10 +124,34 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
 
   }
 
+
+    
+
   // Check if any files were uploaded
   if (files && files.length > 0) {
     // Processar os dados e o arquivo aqui
     //console.log(`Nome: ${nome}`);
+
+      //deletar arquivo
+      const archives = await  File.findAll({
+        where: {
+          purchase_id: req.body.purchase_id
+        }
+      });
+
+      archives.forEach(archive => {
+        let directory_path = `uploads/${archive}`;
+
+        fs.unlink(directory_path, (err) => {
+          if (err) {
+            console.error(err);
+            console.log('Erro ao excluir o arquivo');
+            return;
+          }
+          console.log('Arquivo excluído com sucesso');
+        });
+      });
+
     // Processar arquivos
     for (const file of files) {
       // Salvar o arquivo
@@ -211,6 +236,68 @@ router.get('/revision_orcament/:id', async (req, res) => {
 });
 
 
+router.post('/purchase/accept/financial', upload.array('files'), async (req, res) => {
+
+  const id = req.body.purchase_id;
+  const files = req.files;
+
+  Purchase.update({
+
+    status: 'APROVADO',
+    financial_id: req.session.user.employee.id
+
+  }, {
+    where: {
+      id: id
+    }
+  })
+    .catch(error => {
+      console.error('Error updating purchase:', error);
+    });
+
+
+  // Check if any files were uploaded
+  if (files && files.length > 0) {
+
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+
+    // Processar arquivos
+    for (const file of files) {
+
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      await File.create({
+        fileName: uniqueFileName,
+        purchase_id: id
+      }).then(result => {
+        console.log('File created successfully:', result);
+      })
+      .catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+
+  res.redirect('/dashboard/pending');
+
+});
+
+
+
+
+
 router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) => {
 
   const id = req.body.purchase_id;
@@ -271,6 +358,57 @@ router.get('/purchase/reprove/leaders/:id', (req, res) => {
 
     status: 'REPROVADO',
     leader_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+    .then(result => {
+      console.log('Purchase updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating purchase:', error);
+    });
+
+  res.redirect('/dashboard');
+
+});
+
+
+router.get('/purchase/accept/directors/:id', (req, res) => {
+
+  const id = req.params.id;
+
+
+  Purchase.update({
+
+    status: 'Pagamento em andamento',
+    director_id: req.session.user.employee.id
+
+  }, {
+    where: {
+      id: id
+    }
+  }).then(result => {
+    console.log('Purchase updated successfully:', result);
+  
+  }).catch(error => {
+      console.error('Error updating purchase:', error);
+    });
+
+
+  res.redirect('/dashboard/pending');
+
+});
+
+
+router.get('/purchase/reprove/directors/:id', (req, res) => {
+
+  const id = req.params.id;
+  Purchase.update({
+
+    status: 'REPROVADO',
+    director_id: req.session.user.employee.id
   }, {
     where: {
       id: id
