@@ -10,7 +10,15 @@
     </label></h6>
   <p>Data: <label name="data">
       <%= formattedDate %>
-    </label> | <label name="setor">Setor: <%= sector.description %> </label></p>
+      <% if(unit.description == 'Sede Ramiro'){%>
+    </label> | <label name="setor">Setor: <%= sector.description %> Cidade: Cachoeira do Sul</label></p>
+  <% } else if(unit.description == 'Medicina do Trabalho'){%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
+  <% } else if(unit.description == 'Clínica'){%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
+  <% }else{%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: <%= unit.city %> </label></p>
+  <% } %>
 </div>
 <hr>
 <br>
@@ -61,7 +69,7 @@
         <td colspan="1"><span name="agencia">agencia: <%= payment_method.agency %> </span></td>
         <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
       </tr>
-      <% } else if(payment_method.payment_method=="Pix" ){ %> 
+      <% } else if(payment_method.payment_method=="Pix" ){ %>
       <%if(payment_method.cpf !=null){ %>
       <tr name="cpf">
         <td class="pagamento" colspan="2">Pix</td>
@@ -101,19 +109,19 @@
     </thead>
     <tbody>
       <% files.forEach(file => { %>
-        <tr>
-      <td><%= file.id %></td>
-      <td><%= file.fileName %></td>
-      <% 
+      <tr>
+        <td><%= file.id %></td>
+        <td><%= file.fileName %></td>
+        <% 
       let formattedDate = new Date(file.createdAt).toLocaleDateString('pt-BR', {
            day: '2-digit',
            month: '2-digit',
            year: 'numeric'
          });
    %>
-      <td><%= formattedDate %></td>
-      <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-    </tr>
+        <td><%= formattedDate %></td>
+        <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+      </tr>
       <% }); %>
     </tbody>
 
@@ -133,39 +141,39 @@
     <br>
     <% } else if(payment.status == "REPROVADO") { %>
 
-      <% if(leader_employee != undefined) { %>
+    <% if(leader_employee != undefined) { %>
 
-      <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-        Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-      <br>
+    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
+      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
+    <br>
 
-      <% } if(director_employee != undefined) {  %>
-        
-        <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
-        Email: <label name="emailgestor"><%= director_employee.email %></label></p>
+    <% } if(director_employee != undefined) {  %>
 
-      <% } if(purchase_employee != undefined) { %>
-      <p>Comprador(a): <label name="diretor"> <%= director_employee.name %> </label><br>
-        Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
+    <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
+      Email: <label name="emailgestor"><%= director_employee.email %></label></p>
 
-      <br>
-      
-     <% } } else{ %>
+    <% } if(purchase_employee != undefined) { %>
+    <p>Comprador(a): <label name="diretor"> <%= director_employee.name %> </label><br>
+      Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
 
-      <% if(leader_employee != undefined) { %>
+    <br>
 
-        <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-          Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-        <br>
-  
-        <% } if(director_employee != undefined) {  %>
-          
-          <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
-          Email: <label name="emailgestor"><%= director_employee.email %></label></p>
-  
-        <% } %>
+    <% } } else{ %>
 
-   <%  } %>
+    <% if(leader_employee != undefined) { %>
+
+    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
+      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
+    <br>
+
+    <% } if(director_employee != undefined) {  %>
+
+    <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
+      Email: <label name="emailgestor"><%= director_employee.email %></label></p>
+
+    <% } %>
+
+    <%  } %>
   </div>
 
   <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&

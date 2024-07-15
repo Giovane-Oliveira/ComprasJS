@@ -8,6 +8,7 @@ const Employee = require('../employees/Employee');
 const Item = require('./Item');
 const Sector = require('../users/Sector');
 const File = require('../users/File');
+const Unit = require('../users/Unit');
 const { where } = require('sequelize');
 
 
@@ -495,8 +496,26 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
   const item = await Item.findAll({ where: { purchase_id: purchase.id } });
   const sector = await Sector.findByPk(employee.sector_id);
   const files = await File.findAll({ where: { purchase_id: purchase.id } });
+  const unit = await Unit.findByPk(employee.unit_id);
 
-  res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user });
+
+  if (purchase == undefined) {
+    console.log("Payment undefinied")
+  }else if (employee == undefined) {
+    console.log("Employee undefinied")
+  }else if (sector == undefined) {
+    console.log("Sector undefinied")
+  }else if (unit == undefined) {
+    console.log("Unit undefinied")
+  }else if (item == undefined) {
+    console.log("Item undefinied")
+  }else if (files == undefined) {
+    console.log("Files undefinied")
+  }
+
+
+
+  res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit });
 
 });
 
