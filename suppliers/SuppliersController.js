@@ -1,11 +1,14 @@
 const express = require('express')
 const router = express.Router()
+const Supplier = require('./Supplier')
 
 
 
-router.get('/suppliers', (req, res) => {
+router.get('/suppliers', async (req, res) => {
 
-    res.render('suppliers/index.ejs',{user: req.session.user});
+    const suppliers = await Supplier.findAll();
+
+    res.render('suppliers/index.ejs',{user: req.session.user, suppliers: suppliers});
 
 });
 
