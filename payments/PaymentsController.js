@@ -325,7 +325,7 @@ router.get('/payments', (req, res) => {
     }).then(companies => {
 
       if(req.query.success){
-        let message = "Pagamento criado com sucesso!";
+        let message = "Solicitação de pagamento gerada com sucesso!";
         res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: message });
 
       }else{
