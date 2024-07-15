@@ -10932,15 +10932,25 @@ body {
   margin-top: 0px;
   background-repeat: no-repeat;
 }
-.formSpace {
-  margin-top: 90px;
+#userIcon img {
+  width: 50px;
+  height: 50px;
+  margin-left: 68px;
 }
-.paySpace {
-  margin-top: 90px;
-}
-.buySpace {
-  margin-top: 90px;
+#userIcon span {
+  font-size: 14px;
 }
 .space {
   margin-top: 90px;
+}
+.sobreposicaoFormToken {
+  position: relative;
+  width: 200px;
+  height: 50px;
+  padding-left: 6px;
+  padding-right: 5px;
+  margin-bottom: -28px;
+  margin-left: 30px;
+  background-color: #fff !important;
+  z-index: 100;
 }

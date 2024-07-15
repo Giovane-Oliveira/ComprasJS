@@ -1,33 +1,35 @@
-<%-  include('../partials/header.ejs') %>
-
-<h2>Gerar Token</h2>
-
-<form action="/generate_token" method="post">
-  <div class="form-row">
-    <div class="form-group col-md-4">
-      <label for="inputState">Tipo usuário:</label>
-      <select name="length" id="inputState" class="form-control" required>
-        <option value="" selected>Selecione</option>
-        <option value="5">Gerente</option>
-        <option value="6">Gestor</option>
-        <option value="7">Diretor</option>
-        <option value="8">Compras</option>
-        <option value="9">Financeiro</option>
-        <option value="10">T.I</option>
-      </select>
-    </div>
+<%- include('../partials/header.ejs') %>
+  <img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px">
+  <div class="sobreposicaoFormToken">
+    <h2>Gerar Token</h2>
   </div>
-  <input type="email" name="email" class="form-control" placeholder="Informe o email:" required>
-  <hr>
-  <button type="submit" class="btn btn-info">Gerar Token</button>
-</form>
+  <form action="/generate_token" method="post" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="inputState">Tipo usuário:</label>
+        <select name="length" id="inputState" class="form-control" required>
+          <option value="" selected>Selecione</option>
+          <option value="5">Gerente</option>
+          <option value="6">Gestor</option>
+          <option value="7">Diretor</option>
+          <option value="8">Compras</option>
+          <option value="9">Financeiro</option>
+          <option value="10">T.I</option>
+        </select>
+      </div>
+    </div>
+    <input type="email" name="email" class="form-control" placeholder="Informe o email:" required>
+    <hr style="width: 90%;">
+    <button type="submit" class="btn btn-info">Gerar Token</button>
+  </form>
+  <hr style="width: 90%;">
 
-<hr>
+  <% if (token) { %>
+    <p>
+      <%= token %>
+    </p>
+    <%}%>
 
-<% if (token) { %>
-<p><%= token %></p>
-<%}%>
 
 
-
-<%- include('../partials/footer.ejs') %>
+      <%- include('../partials/footer.ejs') %>
