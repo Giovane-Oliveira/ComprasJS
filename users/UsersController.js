@@ -135,7 +135,7 @@ router.get("/logout", (req, res) => {
 
 router.get('/registrations_token', adminAuth, (req, res) => {
 
-    res.render('registrationsToken/index.ejs', { token: '', user: req.session.user });
+    res.render('registrationsToken/index.ejs', { message: '', user: req.session.user });
 
 });
 
@@ -621,7 +621,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
             }); //tecnologia da informação
             break;
         default:
-            res.render('registrationsToken/index.ejs', { token: 'Erro ao gerar o token', user: req.session.user });
+            res.render('registrationsToken/index.ejs', { message: 'Erro ao gerar o token', user: req.session.user });
             Token.destroy({
                 where: {
                     [Op.or]: [
@@ -651,7 +651,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        res.render('registrationsToken/index.ejs', { token: "Email enviado com sucesso!", user: req.session.user });
+        res.render('registrationsToken/index.ejs', { message: "Email enviado com sucesso!", user: req.session.user });
     } catch (error) {
         Token.destroy({
             where: {
@@ -665,7 +665,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 ]
             }
         });
-        res.render('registrationsToken/index.ejs', { token: "Erro ao enviar o email \n " + error, user: req.session.user });
+        res.render('registrationsToken/index.ejs', { message: "Erro ao enviar o email \n " + error, user: req.session.user });
     }
 });
 
