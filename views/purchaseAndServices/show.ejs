@@ -1,6 +1,18 @@
 <%- include('../partials/header.ejs') %>
 
 <% let formattedDate=new Date(purchase.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+
+<% if(modal) {  %>
+<script>
+  $(document).ready(function() {
+    $('#reproveModal').modal('show');
+  });
+</script>
+<% } %>
+
+
+
+
 <div class="buySpace"">
 <div class=" cabecalho">
   <img src="../../images/fav-icon2-150x150.png" alt="">
@@ -11,14 +23,14 @@
   <p>Data: <label name="data">
       <%= formattedDate %>
       <% if(unit.description == 'Sede Ramiro'){%>
-      </label> | <label name="setor">Setor: <%= sector.description %> Cidade: Cachoeira do Sul</label></p>
-    <% } else if(unit.description == 'Medicina do Trabalho'){%>
-    </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-    <% } else if(unit.description == 'Clínica'){%>
-    </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-    <% }else{%>
-    </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: <%= unit.city %> </label></p>
-    <% } %>
+    </label> | <label name="setor">Setor: <%= sector.description %> Cidade: Cachoeira do Sul</label></p>
+  <% } else if(unit.description == 'Medicina do Trabalho'){%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
+  <% } else if(unit.description == 'Clínica'){%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
+  <% }else{%>
+  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: <%= unit.city %> </label></p>
+  <% } %>
 </div>
 <hr>
 <br>
@@ -63,19 +75,19 @@
     </thead>
     <tbody>
       <% files.forEach(file=> { %>
-        <tr>
-      <td>
-        <%= file.id %>
-      </td>
-      <td>
-        <%= file.fileName %>
-      </td>
-      <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-      <td>
-        <%= formattedDate %>
-      </td>
-      <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-    </tr>
+      <tr>
+        <td>
+          <%= file.id %>
+        </td>
+        <td>
+          <%= file.fileName %>
+        </td>
+        <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+        <td>
+          <%= formattedDate %>
+        </td>
+        <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+      </tr>
       <% }); %>
     </tbody>
 
@@ -145,7 +157,9 @@
   </div>
   <% }else if(user.profile.description=="purchases" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id==null && purchase.financial_id==null ) { %>
 
-    <script>window.location.href = '/revision_orcament/<%= purchase.id %>'</script>
+  <script>
+    window.location.href = '/revision_orcament/<%= purchase.id %>'
+  </script>
 
   <% }else if(user.profile.description=="directors" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
 
@@ -167,4 +181,36 @@
   <% } %>
 
 </div>
+
+
+
+<div class="modal fade" id="reproveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/purchase/reprove/leaders" method="post">
+
+          <input type="text" name="id" class="form-control" value="<%= purchase.id %>" hidden>
+          <label for="message-text" class="col-form-label">Motivo:</label>
+          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger">Recusar</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
 <%- include('../partials/footer.ejs') %>
