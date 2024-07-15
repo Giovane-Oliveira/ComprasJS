@@ -1,53 +1,14 @@
 <%-  include('../partials/header.ejs') %>
 
+    
+<% if(message) { console.log(message) %>
+    <script>
+      alert("<%=message%>");
+    </script>
+    <% } %>
+
+
     <h2 class='mb-4'>Gerenciamento de Fornecedores</h2>
-    
-    
-        <form  action="adicionarFornecedor" method="post" accept-charset="utf-8">
-            <style>
-                tr, td {
-                        border: none;
-                        }
-           </style>
-
-            <table id="principal" border="0px" width="100%">
-
-    <tr>
-        <td><b>Adicionar Fornecedores</b></td>
-           <td>&nbsp;</td> 
-    </tr>
-
-    <tr>
-<td class="col-md-10"><input type="text" name="nome1" class="form-control" id="inputEmail4" required placeholder="Informe o nome do fornecedor" /> </td>
-
-    </tr>
-</table>
-            
-            <button type="button" class="btn btn-secondary" onclick="adicionarParcela()">+</button>
-            <button type="submit" class="btn btn-info">Cadastrar</button>
-            <script>				
-             let count = 2;
-                function adicionarParcela() {
-
-                    $('#principal').append(
-                            "<tr><td class='col-md-3'><input type='text' name='nome" + count + "' class='form-control' id='inputEmail4' required placeholder='Informe o nome do fornecedor' /></td>" +
-                            "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td></tr>");
-                        count++;
-                }
-
-                $('#principal').on('click', 'button', function () {
-                    var td = $(this).parent();
-                    var tr = $(td).parent();
-                    count--;
-                    tr.remove();
-            
-                });
-
-            </script>
-        </form>
-    
-    
-    
     
     <br>
     <table id="example" class="table table-striped table-bordered"
@@ -58,6 +19,7 @@
                 <th>Id</th>
                 <th>CNPJ</th>
                 <th>Nome</th>
+                <th>Status</th>
                 <th>Excluir</th>
             </tr>
         </thead>
@@ -70,12 +32,35 @@
                     <td> <%= supplier.id %> </td> 
                     <td> <%= supplier.cnpj %> </td> 
                     <td> <%= supplier.name %> </td> 
-                    <td><a href="#"> <button ><i class="fa fa-trash-o"></i></button> </a></td>      	
+                
+                    
+                        <% if(supplier.status == 1){%>
+                            <td> <input id=<%=supplier.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success"  data-size="xs"></td>
+                   <% }else{ %>
+                         <td> <input id=<%=supplier.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success"  data-size="xs"></td>
+                   <% } %>
+                     
+                    <td><a href="delete_supplier/<%= supplier.id %>"> <button ><i class="fa fa-trash-o"></i></button> </a></td>      	
                 </tr>      
                 
              <%  }); %>
     
-              
+             <script type="text/javascript">
+	
+		
+                $('input:checkbox').change(
+                        function(){
+                            if ($(this).is(':checked')) {
+                               // alert($(this).attr("id"));
+                                window.location.href = "/activate_supplier/" + $(this).attr("id"); 
+                            }else{
+                                
+                                //alert($(this).attr("id"));
+                                window.location.href = "desactivate_supplier/" + $(this).attr("id"); 
+                            }
+                        });
+                
+                </script>
             
             
         </tbody>

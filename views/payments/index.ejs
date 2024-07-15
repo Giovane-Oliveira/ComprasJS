@@ -19,7 +19,9 @@
       <label for="inputText">Fornecedor</label>
       <select name="supplier" class="form-control" required>
         <% suppliers.forEach(function(supplier) {%>
+          <% if(supplier.status == 1){ %>
         <option value=<%= supplier.id %>><%= supplier.name %></option>
+        <% } %>
         <% });%>
       </select>
     </div>

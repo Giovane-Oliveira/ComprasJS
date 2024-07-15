@@ -30,9 +30,66 @@ router.get('/registration', (req, res) => {
 
 });
 
-router.get('/users', adminAuth, (req, res) => {
+router.get('/users', adminAuth, async (req, res) => {
 
-    res.render('users/index.ejs', { user: req.session.user });
+    const user = await User.findAll().catch(err => {
+        console.log(err);
+    });
+
+    if(req.query.activated){
+
+     res.render('users/index.ejs', { user: req.session.user, listusers: user, message: 'Usuário ativado com sucesso!'});
+
+
+    }else if(req.query.desactivated){
+    
+        res.render('users/index.ejs', { user: req.session.user, listusers: user, message: 'Usuário desativado com sucesso!'});
+
+    }
+
+    res.render('users/index.ejs', { user: req.session.user, listusers: user, message: ''});
+
+});
+
+router.get('/activate_user/:id', (req, res) => {
+
+    const id = req.params.id;
+
+    console.log("ID:" + id);
+
+
+    User.update({
+        active: 1
+    }, {
+        where: {
+            id: id
+        }
+    }).then(() => {
+        res.redirect('/users?activated=true');
+    }).catch(err => {
+        console.log(err);
+    });
+
+});
+
+
+router.get('/desactivate_user/:id', (req, res) => {
+
+    const id = req.params.id;
+
+    console.log("ID:" + id);
+
+    User.update({
+        active: 0
+    }, {
+        where: {
+            id: id
+        }
+    }).then(() => {
+        res.redirect('/users?desactivated=true');
+    }).catch(err => {
+        console.log(err);
+    });
 
 });
 
@@ -62,6 +119,7 @@ router.post("/authenticate", async (req, res) => {
         console.log(user, profile, employee, permissions, sector, unit);
 
 
+
         if (profile == undefined) {
 
             console.log("Profile undefined");
@@ -89,6 +147,9 @@ router.post("/authenticate", async (req, res) => {
             //Validar senha
             var correct = bcrypt.compareSync(password, user.password);
 
+
+            if(user.active == 1){
+
             if (correct) {
 
                 req.session.user = {
@@ -109,6 +170,13 @@ router.post("/authenticate", async (req, res) => {
             } else {
                 res.redirect("/?login=true");
                 return;
+            }
+
+            }else{
+
+                res.redirect("/?login=true");
+                return;
+
             }
 
         } else {

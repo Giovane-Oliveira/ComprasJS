@@ -1,0 +1,27 @@
+<%-  include('../partials/header.ejs') %>
+
+<h1>Cadastro de fornecedores</h1>
+
+
+<% if(message) { console.log(message) %>
+    <script>
+      alert("<%=message%>");
+    </script>
+    <% } %>
+
+
+<br>
+<hr>
+<form action="register_supplier" method="post">
+
+<input type="text" name="name" class="form-control" placeholder="Nome:">
+<script>
+     $.jMaskGlobals.watchDataMask= true;
+</script>
+<input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder="CNPJ:">
+<input type="submit" class="btn btn-primary" value="Cadastrar">
+
+
+</form>
+
+<%- include('../partials/footer.ejs') %>

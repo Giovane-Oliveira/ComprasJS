@@ -1,11 +1,6 @@
 const Sequelize = require('sequelize')
 const connection = require('../database/database')
 
-const Status = {
-    ACTIVE: 1,
-    INACTIVE: 0
-}
-
 const Supplier = connection.define('Supplier', {
     cnpj: {
         type: Sequelize.STRING,
@@ -17,8 +12,8 @@ const Supplier = connection.define('Supplier', {
     },
     status: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        default: Status.ACTIVE
+        allowNull: true,
+        default: 1
     }
 });
 
