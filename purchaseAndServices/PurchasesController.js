@@ -362,7 +362,7 @@ router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) 
 
 });
 
-
+//parei aqui
 router.get('/purchase/reprove/leaders/:id', (req, res) => {
 
   const id = req.params.id;
