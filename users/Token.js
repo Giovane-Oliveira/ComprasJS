@@ -18,7 +18,7 @@ const Token = connection.define('Token', {
     },
     purchases: { // Compras
         type: Sequelize.STRING(8),
-        allowNull: TransformStreamDefaultController
+        allowNull: true
     },
     financial: { // Financeiro
         type: Sequelize.STRING(9),

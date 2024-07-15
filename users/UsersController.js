@@ -880,6 +880,8 @@ router.post('/registration/create', async (req, res) => {
     var financial_authorization; // autorização financeira
     var validation; // validação
     var closure; // encerramento
+    var user_registration; // cadastro de usuário
+    var supplier_registration; // cadastro de fornecedor
 
     if (sector == undefined) {
 
@@ -904,6 +906,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 0; // validação
             closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'leaders': //gestores
             open_request = 0; // abrir requisição
@@ -916,6 +919,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 0; // validação
             closure = 1; // encerramento
             user_registration = 1; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'directors': //diretores
             open_request = 0; // abrir requisição
@@ -928,6 +932,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 0; // validação
             closure = 1; // encerramento
             user_registration = 1; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'purchases': //compras
             open_request = 0; // abrir requisição
@@ -940,6 +945,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 1; // validação
             closure = 1; // encerramento
             user_registration = 0; // cadastro de usuário
+            supplier_registration = 1; // cadastro de fornecedor
             break;
         case 'financial': //financeiro
             open_request = 0; // abrir requisição
@@ -952,6 +958,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 0; // validação
             closure = 1; // encerramento
             user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'ti': //T.I
             open_request = 1; // abrir requisição
@@ -964,6 +971,7 @@ router.post('/registration/create', async (req, res) => {
             validation = 1; // validação
             closure = 1; // encerramento
             user_registration = 1; // cadastro de usuário
+            supplier_registration = 1; // cadastro de fornecedor
             break;
     }
 
@@ -1026,6 +1034,7 @@ router.post('/registration/create', async (req, res) => {
                     validation: validation,
                     closure: closure,
                     user_registration: user_registration,
+                    supplier_registration: supplier_registration,
                     employee_id: newEmployee.id,
                     profile_id: newProfile.id,
                     user_id: newUser.id // Use the newly created user's ID

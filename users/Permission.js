@@ -54,6 +54,11 @@ const Permission = connection.define('Permission', {
         type: Sequelize.INTEGER,
         allowNull: false,
         default: 0
+    },
+    supplier_registration: { //cadastro de fornecedor
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        default: 0
     }
 });
 

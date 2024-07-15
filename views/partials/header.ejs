@@ -57,15 +57,21 @@
           <li>
             <a href="/payments"><span class="fa fa-sticky-note mr-3"></span>Pagamentos</a>
           </li>
+          <%  if(user.permissions.user_registration == 1){ %>
           <li>
             <a href="/registrations_token"><span class="fa fa-address-book mr-3"></span>Cadastro</a>
           </li>
-          <li>
+          <% } %>
+          <!--
+             <li>
             <a href="/users"><span class="fa fa-address-book mr-3""></span>Usuários</a>
+            </li>     
+          -->
+          <%  if(user.permissions.supplier_registration == 1){ %>
+          <li>
+            <a href=" /suppliers"><span class="fa fa-address-book mr-3""></span>Fornecedores</a>
             </li>
-            <li>
-              <a href=" /suppliers"><span class="fa fa-address-book mr-3""></span>Fornecedores</a>
-            </li>
+            <% } %>
             <li>
               <a href=" /logout"><span class="fa fa-sign-out mr-3"></span>Logout</a>
           </li>
