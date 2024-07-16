@@ -14,7 +14,8 @@ const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
 const nodemailer = require('nodemailer');
 const Profile = require('../users/Profile');
-const User = require('../users/User')
+const User = require('../users/User');
+const Purchase = require('../purchaseAndServices/Purchase');
 
 
 let transporter = nodemailer.createTransport({
@@ -42,23 +43,62 @@ const upload = multer({ storage: storage }); // Create the upload middleware
 
 router.post('/payment/accept/financial', upload.array('files'), async (req, res) => {
 
-  const id = req.body.payment_id;
+   const id = req.body.payment_id;
    const files = req.files;
 
-  Payment.update({
+   const payment = await Payment.findByPk(id);
+   const manager = await Employee.findByPk(payment.employee_id);
+   const leader = await Employee.findByPk(payment.leader_id);
+   const director = await Employee.findByPk(payment.director_id);
+   const purchase = await Employee.findByPk(payment.purchase_id);
+   const financial = await Employee.findByPk(req.session.user.employee.id);
+  
+   const emails = [manager.email, leader.email, director.email, purchase.email, financial.email];
+ 
+   // Send emails to all recipients
+   emails.forEach(async (email) => {
+ 
+     console.log("Email: " + email);
+ 
+     let from = "nao-responda@provida.med.br";
+     let to = email;
+     let subject = `Solicitação #${id}`;
+     let text = "Finaceiro efetuou o pagamento.\n"
+     + "\n\n Colaborador(a): " + financial.name + 
+     "\n E-mail: " + financial.email;
+ 
+     let mailOptions = {
+         from,
+         to,
+         subject,
+         text
+     };
+ 
+     try {
+         await transporter.sendMail(mailOptions);
+         console.log('Email sent successfully!');
+     } catch (error) {
+       console.log("Erro ao enviar o email: " + error);
+     }
+   });
+ 
+   // Update payment status
+   Payment.update({
+     status: 'APROVADO',
+     financial_id: req.session.user.employee.id
+   }, {
+     where: {
+       id: id
+     }
+   })
+   .then(result => {
+     console.log('Payment updated successfully:', result);
+   })
+   .catch(error => {
+     console.error('Error updating payment:', error);
+   });
 
-    status: 'APROVADO',
-    financial_id: req.session.user.employee.id
-
-  }, {
-    where: {
-      id: id
-    }  
-})
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
-
+// APROVADO financial_id
 
 // Check if any files were uploaded
 if (files && files.length > 0) {
@@ -97,52 +137,62 @@ res.redirect('/dashboard/pending?success=true');
 router.get('/payment/accept/purchases/:id', async (req, res) => {
 
   const id = req.params.id;
-
   const payment = await Payment.findByPk(id);
-
   const manager = await Employee.findByPk(payment.employee_id);
-
-  const director = await Employee.findByPk(payment.director_id);
-
   const leader = await Employee.findByPk(payment.leader_id);
-
+  const director = await Employee.findByPk(payment.director_id);
   const purchase = await Employee.findByPk(req.session.user.employee.id);
-
-  //const financial = await Employee.findByPk(payment.financial_id);
-
- const emails = [manager.email, director.email, leader.email, purchase.email];
-
-
-emails.forEach(async (email) => {
-
-  let from = "nao-responda@provida.med.br";
-  let to = email;
-  let subject = `Solicitação #${id}`;
-  let text = "Setor de compras recusou a solicitação de pagamento.\n"
-  + "Motivo: " + motivo
-  + "\n\n Comprador(a): " + purchase.name + 
-  "\n E-mail: " + purchase.email;
-
-  let mailOptions = {
-      from,
-      to,
-      subject,
-      text
-  };
-
-  try {
-      await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully!');
-    } catch (error) {
-
-      console.log("Erro ao enviar o email: " + error);
-
-  }
-
-});
   
-  Payment.update({
 
+  const financial = await Profile.findAll({
+    where: {
+      description: 'financial'
+    }
+  });
+ 
+  const financialLoginsPromises = financial.map(async (finance) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: finance.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  const financialLogins = await Promise.all(financialLoginsPromises);
+
+  
+  const emails = [manager.email, leader.email, director.email, purchase.email, ...financialLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+
+    console.log("Email: " + email);
+
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Compras aceitou a solicitação de pagamento.\n"
+    + "\n\n Comprador(a): " + purchase.name + 
+    "\n E-mail: " + purchase.email;
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  // Update payment status
+  Payment.update({
     status: 'Pagamento em andamento',
     purchase_id: req.session.user.employee.id
   }, {
@@ -152,10 +202,12 @@ emails.forEach(async (email) => {
   })
   .then(result => {
     console.log('Payment updated successfully:', result);
-})
+  })
   .catch(error => {
     console.error('Error updating payment:', error);
   });
+
+  //Pagamento em andamento purchase_id
 
   res.redirect('/dashboard/pending?success=true');
 
@@ -244,50 +296,58 @@ emails.forEach(async (email) => {
 router.get('/payment/accept/directors/:id', async (req, res) => {
 
   const id = req.params.id;
-
   const payment = await Payment.findByPk(id);
-
   const manager = await Employee.findByPk(payment.employee_id);
-
+  const leader = await Employee.findByPk(payment.leader_id);
   const director = await Employee.findByPk(req.session.user.employee.id);
 
-  const leader = await Employee.findByPk(payment.leader_id);
+ 
+  const purchases = await Profile.findAll({
+    where: {
+      description: 'purchases'
+    }
+  });
+ 
+  const purchaseLoginsPromises = purchases.map(async (purchase) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: purchase.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
 
-  //const purchase = await Employee.findByPk(req.session.user.employee.id);
+  const purchaseLogins = await Promise.all(purchaseLoginsPromises);
 
-  //const financial = await Employee.findByPk(payment.financial_id);
+  
+  const emails = [manager.email, leader.email, director.email, ...purchaseLogins];
 
-const emails = [manager.email, leader.email, director.email];
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Diretor aceitou a solicitação de pagamento.\n"
+    + "\n\n Diretor(a): " + director.name + 
+    "\n E-mail: " + director.email;
 
-emails.forEach(async (email) => {
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
 
-  let from = "nao-responda@provida.med.br";
-  let to = email;
-  let subject = `Solicitação #${id}`;
-  let text = "Diretor recusou a solicitação de pagamento.\n"
-  + "Motivo: " + motivo
-  + "\n\n Diretor(a): " + director.name + 
-  "\n E-mail: " + director.email;
-
-  let mailOptions = {
-      from,
-      to,
-      subject,
-      text
-  };
-
-  try {
-      await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully!');
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
     } catch (error) {
-
       console.log("Erro ao enviar o email: " + error);
+    }
+  });
 
-  }
-});
-
+  // Update payment status
   Payment.update({
-
     status: 'Em análise pelo compras',
     director_id: req.session.user.employee.id
   }, {
@@ -297,14 +357,14 @@ emails.forEach(async (email) => {
   })
   .then(result => {
     console.log('Payment updated successfully:', result);
-})
+  })
   .catch(error => {
     console.error('Error updating payment:', error);
   });
 
   res.redirect('/dashboard/pending?success=true');
 
-
+//Em análise pelo compras director_id
 
 });
 
