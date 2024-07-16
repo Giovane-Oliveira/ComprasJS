@@ -2,6 +2,32 @@
 
 <% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 
+<% if(modal == 'leaders') {  %>
+  <script>
+    $(document).ready(function() {
+      $('#reproveLeaderModal').modal('show');
+    });
+  </script>
+  <% }else if(modal == 'directors'){%>
+  
+    <script>
+      $(document).ready(function() {
+        $('#reproveDirectorModal').modal('show');
+      });
+    </script>
+  
+    <% }else if(modal == 'purchases'){%>
+  
+      <script>
+        $(document).ready(function() {
+          $('#reprovePurchaseModal').modal('show');
+        });
+      </script>
+    
+      <% } %>
+
+
+
 <div class="cabecalho">
   <img src="../../images/fav-icon2-150x150.png" alt="">
   <h1>Relatório de Pagamentos</h1>
@@ -214,6 +240,85 @@
 
   <% } %>
 
+</div>
+
+
+<div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/payment/reprove/leaders" method="post">
+
+          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+          <label for="message-text" class="col-form-label">Motivo:</label>
+          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger">Recusar</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reproveDirectorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/payment/reprove/directors" method="post">
+
+          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+          <label for="message-text" class="col-form-label">Motivo:</label>
+          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger">Recusar</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reprovePurchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/payment/reprove/purchases" method="post">
+
+          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+          <label for="message-text" class="col-form-label">Motivo:</label>
+          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger">Recusar</button>
+      </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <%- include('../partials/footer.ejs') %>

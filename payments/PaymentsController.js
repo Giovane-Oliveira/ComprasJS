@@ -103,10 +103,22 @@ router.get('/payment/accept/purchases/:id', (req, res) => {
 
 });
 
-
 router.get('/payment/reprove/purchases/:id', (req, res) => {
 
   const id = req.params.id;
+
+  res.redirect(`/payments/${id}?modal=purchases`);
+
+});
+
+router.post('/payment/reprove/purchases', (req, res) => {
+
+  const id = req.body.id;
+
+  const motivo = req.body.motivo;
+
+  console.log("Motivo:" + motivo);
+
   Payment.update({
 
     status: 'REPROVADO',
@@ -151,10 +163,22 @@ router.get('/payment/accept/directors/:id', (req, res) => {
 
 });
 
-
 router.get('/payment/reprove/directors/:id', (req, res) => {
 
   const id = req.params.id;
+
+  res.redirect(`/payments/${id}?modal=directors`);
+
+
+});
+
+router.post('/payment/reprove/directors', (req, res) => {
+
+  const id = req.body.id;
+  const motivo = req.body.motivo;
+
+  console.log("Motivo:" + motivo);
+
   Payment.update({
 
     status: 'REPROVADO',
@@ -199,10 +223,21 @@ router.get('/payment/accept/leaders/:id', (req, res) => {
 
 });
 
-
 router.get('/payment/reprove/leaders/:id', (req, res) => {
 
   const id = req.params.id;
+
+  res.redirect(`/payments/${id}?modal=leaders`);
+
+});
+
+
+router.post('/payment/reprove/leaders', (req, res) => {
+
+  const id = req.body.id;
+  const motivo = req.body.motivo;
+  console.log("Motivo:" + motivo);
+
   Payment.update({
 
     status: 'REPROVADO',
@@ -291,7 +326,25 @@ router.get('/payments/:id', async (req, res) => {
     console.log("Company undefinied")
   }
 
-res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files});
+  if(req.query.modal == 'leaders'){
+
+    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders'});
+
+  }else if(req.query.modal == 'directors'){
+
+    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors'});
+
+  }else if(req.query.modal == 'purchases'){
+
+    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases'});
+
+  }else{
+
+    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: ''});
+
+  }
+
+
 
 });
 

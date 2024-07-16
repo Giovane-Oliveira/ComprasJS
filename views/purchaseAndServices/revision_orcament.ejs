@@ -42,7 +42,7 @@
           <td class="col-md-1"><input type="number" min=1 name="newamount<%=count %>" class="form-control" id="newquantidade<%=count %>" value="<%= item.amount %>" required placeholder="0" /></td>
           <td class="col-md-3"><input type="text" name="newitem<%=count %>" class="form-control" id="newitem<%=count %>" value="<%= item.item %>" required placeholder="Item" /></td>
           <td class="col-md-4"><input type="text" name="newdescription<%=count %>" class="form-control" id="newespecificacao<%=count %>" value="<%= item.description %>" required placeholder="Especificação" /></td>
-          <td class="col-md-2"><input type="text" name="newvalue<%=count %>" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="newvalor<%=count %>" placeholder="Altere o valor" /></td>
+          <td class="col-md-2"><input type="text" name="newvalue<%=count %>" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="newvalor<%=count %>" required placeholder="Altere o valor" /></td>
         </tr>
 
         <% count++;  }); %>

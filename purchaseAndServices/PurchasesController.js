@@ -47,12 +47,13 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
 
   const files = req.files;
   var item = req.body.newitem1;
+  var value = req.body.newvalue1;
 
 
   var count = 1;
   var total = 0.00;
 
-  while (item != undefined) {
+  while (item != undefined && value != undefined) {
 
     let valorF = req.body['newvalue' + count].replace('.', ' ');
     let arrValor = valorF.split(" ");
@@ -71,6 +72,8 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
 
     count++;
     item = req.body['newitem' + count];
+    value = req.body['newvalue' + count];
+
 
   }
 
@@ -367,7 +370,7 @@ router.get('/purchase/reprove/leaders/:id', (req, res) => {
 
   const id = req.params.id;
 
-  res.redirect(`/purchases/${id}?modal=true`)
+  res.redirect(`/purchases/${id}?modal=leaders`);
 
 
 });
@@ -431,6 +434,19 @@ router.get('/purchase/accept/directors/:id', (req, res) => {
 router.get('/purchase/reprove/directors/:id', (req, res) => {
 
   const id = req.params.id;
+
+  res.redirect(`/purchases/${id}?modal=directors`)
+
+});
+
+router.post('/purchase/reprove/directors', (req, res) => {
+
+  const id = req.body.id;
+
+  const motivo = req.body.motivo;
+
+  console.log("Motivo:" + motivo);
+
   Purchase.update({
 
     status: 'REPROVADO',
@@ -447,7 +463,7 @@ router.get('/purchase/reprove/directors/:id', (req, res) => {
       console.error('Error updating purchase:', error);
     });
 
-    res.redirect('/dashboard?error=true');
+  res.redirect('/dashboard?error=true');
 
 });
 
@@ -528,18 +544,19 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
   }
 
 
-  if(req.query.modal){
+  if(req.query.modal == 'leaders'){
 
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: true });
+    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'leaders' });
 
+  }else if(req.query.modal == 'directors'){
+  
+    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'directors' });
 
   }else{
 
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: false });
+    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: '' });
 
   }
-
-
 
 });
 
