@@ -10,7 +10,19 @@ const Sector = require('../users/Sector');
 const File = require('../users/File');
 const Unit = require('../users/Unit');
 const { where } = require('sequelize');
+const nodemailer = require('nodemailer');
+const Profile = require('../users/Profile');
+const User = require('../users/User');
 
+let transporter = nodemailer.createTransport({
+  host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  auth: {
+      user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+      pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+  }
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -48,7 +60,6 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
   const files = req.files;
   var item = req.body.newitem1;
   var value = req.body.newvalue1;
-
 
   var count = 1;
   var total = 0.00;
@@ -375,13 +386,36 @@ router.get('/purchase/reprove/leaders/:id', (req, res) => {
 
 });
 
-router.post('/purchase/reprove/leaders', (req, res) => {
+router.post('/purchase/reprove/leaders', async(req, res) => {
 
   const id = req.body.id;
 
   const motivo = req.body.motivo;
 
   console.log("Motivo:" + motivo);
+
+  const purchase = await Purchase.findByPk(id);
+
+  const manager = await Employee.findByPk(purchase.employee_id);
+
+  //const director = await Employee.findByPk(payment.director_id);
+
+  const leader = await Employee.findByPk(req.session.user.employee.id);
+
+  //const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+if(purchase == undefined){
+  console.log("Payment undefinied")
+}else if(manager == undefined){
+  console.log("Manager undefinied")
+}else if(leader == undefined){
+  console.log("Leader undefinied")
+}
+
+
+const emails = [manager.email, leader.email];
 
   Purchase.update({
 
@@ -392,12 +426,43 @@ router.post('/purchase/reprove/leaders', (req, res) => {
       id: id
     }
   })
-    .then(result => {
-      console.log('Purchase updated successfully:', result);
-    })
-    .catch(error => {
-      console.error('Error updating purchase:', error);
-    });
+  .then(result => {
+    console.log('Payment updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating payment:', error);
+  });
+
+emails.forEach(async (email) => {
+
+  console.log("Email: " + email);
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Gestor recusou a solicitação de compras/serviços.\n"
+  + "Motivo: " + motivo
+  + "\n\n Gestor(a): " + leader.name + 
+  "\n E-mail: " + leader.email +
+  "\n\n Acesse: http://10.0.16.17:3000";
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+});
 
   res.redirect('/dashboard?error=true');
 
@@ -438,13 +503,44 @@ router.get('/purchase/reprove/directors/:id', (req, res) => {
 
 });
 
-router.post('/purchase/reprove/directors', (req, res) => {
+router.post('/purchase/reprove/directors', async (req, res) => {
 
   const id = req.body.id;
 
   const motivo = req.body.motivo;
 
   console.log("Motivo:" + motivo);
+
+
+  const purchase = await Purchase.findByPk(id);
+
+  const manager = await Employee.findByPk(purchase.employee_id);
+
+  const director = await Employee.findByPk(req.session.user.employee.id);
+
+  const leader = await Employee.findByPk(purchase.leader_id);
+
+  const purchases = await Employee.findByPk(purchase.purchase_id);
+
+
+
+ 
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+if(purchase == undefined){
+  console.log("Payment undefinied")
+}else if(manager == undefined){
+  console.log("Manager undefinied")
+}else if(leader == undefined){
+  console.log("Leader undefinied")
+}else if(director == undefined){
+  console.log("Purchase undefinied")
+}else if(purchases == undefined){
+  console.log("Purchase undefinied")
+}
+
+const emails = [manager.email, leader.email, director.email, purchases.email];
 
   Purchase.update({
 
@@ -455,12 +551,43 @@ router.post('/purchase/reprove/directors', (req, res) => {
       id: id
     }
   })
-    .then(result => {
-      console.log('Purchase updated successfully:', result);
-    })
-    .catch(error => {
-      console.error('Error updating purchase:', error);
-    });
+  .then(result => {
+    console.log('Purchase updated successfully:', result);
+})
+  .catch(error => {
+    console.error('Error updating purchase:', error);
+  });
+
+emails.forEach(async (email) => {
+
+  console.log("Email: " + email);
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Diretor recusou a solicitação de compras/serviços.\n"
+  + "Motivo: " + motivo
+  + "\n\n Diretor(a): " + director.name + 
+  "\n E-mail: " + director.email +
+  "\n\n Acesse: http://10.0.16.17:3000";
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+});
 
   res.redirect('/dashboard?error=true');
 
