@@ -13,6 +13,9 @@ const Employee = require('../employees/Employee');
 const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
 const nodemailer = require('nodemailer');
+const Profile = require('../users/Profile');
+const User = require('../users/User')
+
 
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -91,9 +94,53 @@ res.redirect('/dashboard/pending?success=true');
 
 
 
-router.get('/payment/accept/purchases/:id', (req, res) => {
+router.get('/payment/accept/purchases/:id', async (req, res) => {
 
   const id = req.params.id;
+
+  const payment = await Payment.findByPk(id);
+
+  const manager = await Employee.findByPk(payment.employee_id);
+
+  const director = await Employee.findByPk(payment.director_id);
+
+  const leader = await Employee.findByPk(payment.leader_id);
+
+  const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+ const emails = [manager.email, director.email, leader.email, purchase.email];
+
+
+emails.forEach(async (email) => {
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Setor de compras recusou a solicitação de pagamento.\n"
+  + "Motivo: " + motivo
+  + "\n\n Comprador(a): " + purchase.name + 
+  "\n E-mail: " + purchase.email;
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+});
+  
   Payment.update({
 
     status: 'Pagamento em andamento',
@@ -194,9 +241,51 @@ emails.forEach(async (email) => {
 });
 
 
-router.get('/payment/accept/directors/:id', (req, res) => {
+router.get('/payment/accept/directors/:id', async (req, res) => {
 
   const id = req.params.id;
+
+  const payment = await Payment.findByPk(id);
+
+  const manager = await Employee.findByPk(payment.employee_id);
+
+  const director = await Employee.findByPk(req.session.user.employee.id);
+
+  const leader = await Employee.findByPk(payment.leader_id);
+
+  //const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+const emails = [manager.email, leader.email, director.email];
+
+emails.forEach(async (email) => {
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Diretor recusou a solicitação de pagamento.\n"
+  + "Motivo: " + motivo
+  + "\n\n Diretor(a): " + director.name + 
+  "\n E-mail: " + director.email;
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+});
+
   Payment.update({
 
     status: 'Em análise pelo compras',
@@ -214,6 +303,8 @@ router.get('/payment/accept/directors/:id', (req, res) => {
   });
 
   res.redirect('/dashboard/pending?success=true');
+
+
 
 });
 
@@ -297,13 +388,63 @@ emails.forEach(async (email) => {
 });
 
 
-
-
-router.get('/payment/accept/leaders/:id', (req, res) => {
-
+//parei aqui
+router.get('/payment/accept/leaders/:id', async (req, res) => {
+  
   const id = req.params.id;
-  Payment.update({
+  const payment = await Payment.findByPk(id);
+  const manager = await Employee.findByPk(payment.employee_id);
+  const leader = await Employee.findByPk(req.session.user.employee.id);
 
+  // Fetch all directors asynchronously
+  const directors = await Profile.findAll({
+    where: {
+      description: 'directors'
+    }
+  });
+
+  // Now you can use map on the directors array
+  const directorLoginsPromises = directors.map(async (director) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: director.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  // Wait for all director logins to be fetched
+  const directorLogins = await Promise.all(directorLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [manager.email, leader.email, ...directorLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Gestor aceitou a solicitação de pagamento.\n"
+    + "\n\n Diretor(a): " + leader.name + 
+    "\n E-mail: " + leader.email;
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  // Update payment status
+  Payment.update({
     status: 'Em análise pelo diretor',
     leader_id: req.session.user.employee.id
   }, {
@@ -313,14 +454,14 @@ router.get('/payment/accept/leaders/:id', (req, res) => {
   })
   .then(result => {
     console.log('Payment updated successfully:', result);
-})
+  })
   .catch(error => {
     console.error('Error updating payment:', error);
   });
 
   res.redirect('/dashboard/pending?success=true');
-
 });
+
 
 router.get('/payment/reprove/leaders/:id', (req, res) => {
 
