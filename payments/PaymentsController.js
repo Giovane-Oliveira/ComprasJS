@@ -65,7 +65,8 @@ router.post('/payment/accept/financial', upload.array('files'), async (req, res)
      let subject = `Solicitação #${id}`;
      let text = "Finaceiro efetuou o pagamento.\n"
      + "\n\n Colaborador(a): " + financial.name + 
-     "\n E-mail: " + financial.email;
+     "\n E-mail: " + financial.email +
+     "\n\n Acesse: http://10.0.16.17:3000";
  
      let mailOptions = {
          from,
@@ -174,7 +175,8 @@ router.get('/payment/accept/purchases/:id', async (req, res) => {
     let subject = `Solicitação #${id}`;
     let text = "Compras aceitou a solicitação de pagamento.\n"
     + "\n\n Comprador(a): " + purchase.name + 
-    "\n E-mail: " + purchase.email;
+    "\n E-mail: " + purchase.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
 
     let mailOptions = {
         from,
@@ -267,7 +269,8 @@ emails.forEach(async (email) => {
   let text = "Setor de compras recusou a solicitação de pagamento.\n"
   + "Motivo: " + motivo
   + "\n\n Comprador(a): " + purchase.name + 
-  "\n E-mail: " + purchase.email;
+  "\n E-mail: " + purchase.email +
+  "\n\n Acesse: http://10.0.16.17:3000";
 
   let mailOptions = {
       from,
@@ -329,7 +332,8 @@ router.get('/payment/accept/directors/:id', async (req, res) => {
     let subject = `Solicitação #${id}`;
     let text = "Diretor aceitou a solicitação de pagamento.\n"
     + "\n\n Diretor(a): " + director.name + 
-    "\n E-mail: " + director.email;
+    "\n E-mail: " + director.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
 
     let mailOptions = {
         from,
@@ -423,7 +427,8 @@ emails.forEach(async (email) => {
   let text = "Diretor recusou a solicitação de pagamento.\n"
   + "Motivo: " + motivo
   + "\n\n Diretor(a): " + director.name + 
-  "\n E-mail: " + director.email;
+  "\n E-mail: " + director.email +
+  "\n\n Acesse: http://10.0.16.17:3000";
 
   let mailOptions = {
       from,
@@ -486,7 +491,8 @@ router.get('/payment/accept/leaders/:id', async (req, res) => {
     let subject = `Solicitação #${id}`;
     let text = "Gestor aceitou a solicitação de pagamento.\n"
     + "\n\n Diretor(a): " + leader.name + 
-    "\n E-mail: " + leader.email;
+    "\n E-mail: " + leader.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
 
     let mailOptions = {
         from,
@@ -589,7 +595,8 @@ emails.forEach(async (email) => {
   let text = "Gestor recusou a solicitação de pagamento.\n"
   + "Motivo: " + motivo
   + "\n\n Diretor(a): " + leader.name + 
-  "\n E-mail: " + leader.email;
+  "\n E-mail: " + leader.email +
+  "\n\n Acesse: http://10.0.16.17:3000";
 
   let mailOptions = {
       from,
@@ -846,6 +853,54 @@ router.post('/upload/payments', upload.array('files'), async(req, res) => {
   } else {
     console.error('No files were uploaded.');
   }
+
+  // Fetch all directors asynchronously
+  const leaders = await Profile.findAll({
+    where: {
+      description: 'leaders'
+    }
+  });
+
+  // Now you can use map on the directors array
+  const leaderLoginsPromises = leaders.map(async (leader) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: leader.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  // Wait for all director logins to be fetched
+  const leaderLogins = await Promise.all(leaderLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [req.session.user.employee.email, ...leaderLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${newPayment.id}`;
+    let text = "Nova solicitação de pagamento gerada.\n"
+    + "\n\n Gerente: " + req.session.user.employee.name + 
+    "\n E-mail: " + req.session.user.employee.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
 
   res.redirect('/payments/?success=true');
 
