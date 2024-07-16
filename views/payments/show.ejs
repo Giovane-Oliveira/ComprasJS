@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs') %>
 
-<% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+<% let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 
 <% if(modal == 'leaders') {  %>
   <script>

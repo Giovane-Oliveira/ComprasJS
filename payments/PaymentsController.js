@@ -12,6 +12,17 @@ const File =  require( '../users/File');
 const Employee = require('../employees/Employee');
 const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
+const nodemailer = require('nodemailer');
+
+let transporter = nodemailer.createTransport({
+  host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  auth: {
+      user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+      pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+  }
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -111,13 +122,27 @@ router.get('/payment/reprove/purchases/:id', (req, res) => {
 
 });
 
-router.post('/payment/reprove/purchases', (req, res) => {
+router.post('/payment/reprove/purchases', async (req, res) => {
 
   const id = req.body.id;
 
   const motivo = req.body.motivo;
 
   console.log("Motivo:" + motivo);
+
+  const payment = await Payment.findByPk(id);
+
+  const manager = await Employee.findByPk(payment.employee_id);
+
+  const director = await Employee.findByPk(payment.director_id);
+
+  const leader = await Employee.findByPk(payment.leader_id);
+
+  const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+const emails = [manager.email, director.email, leader.email, purchase.email];
 
   Payment.update({
 
@@ -134,6 +159,35 @@ router.post('/payment/reprove/purchases', (req, res) => {
   .catch(error => {
     console.error('Error updating payment:', error);
   });
+
+emails.forEach(async (email) => {
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Setor de compras recusou a solicitação de pagamento.\n"
+  + "Motivo: " + motivo
+  + "\n\n Comprador(a): " + purchase.name + 
+  "\n E-mail: " + purchase.email;
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+
+});
 
   res.redirect('/dashboard?error=true');
 
@@ -172,12 +226,27 @@ router.get('/payment/reprove/directors/:id', (req, res) => {
 
 });
 
-router.post('/payment/reprove/directors', (req, res) => {
+router.post('/payment/reprove/directors', async (req, res) => {
 
   const id = req.body.id;
+
   const motivo = req.body.motivo;
 
   console.log("Motivo:" + motivo);
+
+  const payment = await Payment.findByPk(id);
+
+  const manager = await Employee.findByPk(payment.employee_id);
+
+  const director = await Employee.findByPk(req.session.user.employee.id);
+
+  const leader = await Employee.findByPk(payment.leader_id);
+
+  //const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+const emails = [manager.email, leader.email, director.email];
 
   Payment.update({
 
@@ -195,9 +264,39 @@ router.post('/payment/reprove/directors', (req, res) => {
     console.error('Error updating payment:', error);
   });
 
+emails.forEach(async (email) => {
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Diretor recusou a solicitação de pagamento.\n"
+  + "Motivo: " + motivo
+  + "\n\n Diretor(a): " + director.name + 
+  "\n E-mail: " + director.email;
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+});
+
   res.redirect('/dashboard?error=true');
 
 });
+
+
 
 
 router.get('/payment/accept/leaders/:id', (req, res) => {
@@ -232,11 +331,36 @@ router.get('/payment/reprove/leaders/:id', (req, res) => {
 });
 
 
-router.post('/payment/reprove/leaders', (req, res) => {
+router.post('/payment/reprove/leaders', async (req, res) => {
 
   const id = req.body.id;
+
   const motivo = req.body.motivo;
+
   console.log("Motivo:" + motivo);
+
+  const payment = await Payment.findByPk(id);
+
+  const manager = await Employee.findByPk(payment.employee_id);
+
+  //const director = await Employee.findByPk(payment.director_id);
+
+  const leader = await Employee.findByPk(req.session.user.employee.id);
+
+  //const purchase = await Employee.findByPk(req.session.user.employee.id);
+
+  //const financial = await Employee.findByPk(payment.financial_id);
+
+if(payment == undefined){
+  console.log("Payment undefinied")
+}else if(manager == undefined){
+  console.log("Manager undefinied")
+}else if(leader == undefined){
+  console.log("Leader undefinied")
+}
+
+
+const emails = [manager.email, leader.email];
 
   Payment.update({
 
@@ -253,6 +377,36 @@ router.post('/payment/reprove/leaders', (req, res) => {
   .catch(error => {
     console.error('Error updating payment:', error);
   });
+
+emails.forEach(async (email) => {
+
+  console.log("Email: " + email);
+
+  let from = "nao-responda@provida.med.br";
+  let to = email;
+  let subject = `Solicitação #${id}`;
+  let text = "Gestor recusou a solicitação de pagamento.\n"
+  + "Motivo: " + motivo
+  + "\n\n Diretor(a): " + leader.name + 
+  "\n E-mail: " + leader.email;
+
+  let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+
+      console.log("Erro ao enviar o email: " + error);
+
+  }
+
+});
 
   res.redirect('/dashboard?error=true');
 
