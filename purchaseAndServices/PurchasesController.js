@@ -408,7 +408,6 @@ router.get('/purchase/accept/directors/:id', (req, res) => {
 
   const id = req.params.id;
 
-
   Purchase.update({
 
     status: 'Pagamento em andamento',
