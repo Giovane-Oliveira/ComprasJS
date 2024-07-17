@@ -64,6 +64,11 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
   var count = 1;
   var total = 0.00;
 
+  const purchase = await Purchase.findByPk(req.body.purchase_id);
+  const manager = await Employee.findByPk(purchase.employee_id);
+  const leader = await Employee.findByPk(purchase.leader_id);
+  const purchases = await Employee.findByPk(req.session.user.employee.id);
+
   while (item != undefined && value != undefined) {
 
     let valorF = req.body['newvalue' + count].replace('.', ' ');
@@ -212,6 +217,54 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
   } else {
     console.error('No files were uploaded.');
   }
+
+  const director = await Profile.findAll({
+    where: {
+      description: 'directors'
+    }
+  });
+ 
+  const directorsLoginsPromises = director.map(async (dir) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: dir.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  const directorLogins = await Promise.all(directorsLoginsPromises);
+
+  
+  const emails = [manager.email, leader.email, purchases.email, ...directorLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+
+    console.log("Email: " + email);
+
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${req.body.purchase_id}`;
+    let text = "Compras aceitou a solicitação de pagamento.\n"
+    + "\n\n Comprador(a): " + purchases.name + 
+    "\n E-mail: " + purchases.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
   
   res.redirect('/dashboard/pending?success=true');
 
@@ -316,61 +369,120 @@ router.post('/purchase/accept/financial', upload.array('files'), async (req, res
   }
 
 
+  const purchase = await Purchase.findByPk(id);
+   const manager = await Employee.findByPk(purchase.employee_id);
+   const leader = await Employee.findByPk(purchase.leader_id);
+   const director = await Employee.findByPk(purchase.director_id);
+   const purchases = await Employee.findByPk(purchase.purchase_id);
+   const financial = await Employee.findByPk(req.session.user.employee.id);
+  
+   const emails = [manager.email, leader.email, director.email, purchases.email, financial.email];
+ 
+   // Send emails to all recipients
+   emails.forEach(async (email) => {
+ 
+     console.log("Email: " + email);
+ 
+     let from = "nao-responda@provida.med.br";
+     let to = email;
+     let subject = `Solicitação #${id}`;
+     let text = "Finaceiro efetuou o pagamento.\n"
+     + "\n\n Colaborador(a): " + financial.name + 
+     "\n E-mail: " + financial.email +
+     "\n\n Acesse: http://10.0.16.17:3000";
+ 
+     let mailOptions = {
+         from,
+         to,
+         subject,
+         text
+     };
+ 
+     try {
+         await transporter.sendMail(mailOptions);
+         console.log('Email sent successfully!');
+     } catch (error) {
+       console.log("Erro ao enviar o email: " + error);
+     }
+   });
+
+
   res.redirect('/dashboard/pending?success=true');
 
 });
 
 
 
+router.get('/purchase/accept/leaders/:id', async (req, res) => {
 
+  const id = req.params.id;
+  const purchase = await Purchase.findByPk(id);
+  const manager = await Employee.findByPk(purchase.employee_id);
+  const leader = await Employee.findByPk(req.session.user.employee.id);
 
-router.post('/purchase/accept/leaders', upload.array('files'), async (req, res) => {
+  // Fetch all directors asynchronously
+  const purchases = await Profile.findAll({
+    where: {
+      description: 'purchases'
+    }
+  });
 
-  const id = req.body.purchase_id;
-  const files = req.files;
+  // Now you can use map on the directors array
+  const purchaseLoginsPromises = purchases.map(async (purchase) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: purchase.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
 
+  // Wait for all director logins to be fetched
+  const purchaseLogins = await Promise.all(purchaseLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [manager.email, leader.email, ...purchaseLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Gestor aceitou a solicitação de pagamento.\n"
+    + "\n\n Diretor(a): " + leader.name + 
+    "\n E-mail: " + leader.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  // Update payment status
   Purchase.update({
-
     status: 'Em análise pelo compras',
     leader_id: req.session.user.employee.id
-
   }, {
     where: {
       id: id
     }
   })
-    .catch(error => {
-      console.error('Error updating purchase:', error);
-    });
-
-
-  // Check if any files were uploaded
-  if (files && files.length > 0) {
-    // Processar os dados e o arquivo aqui
-    //console.log(`Nome: ${nome}`);
-    // Processar arquivos
-    for (const file of files) {
-      // Salvar o arquivo
-      const fileName = file.originalname;
-      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-      fs.moveSync(file.path, filePath);
-      console.log(`Arquivo recebido: ${file.originalname}`);
-      // Salvar arquivo no diretório de destino 
-
-      await File.create({
-        fileName: uniqueFileName,
-        purchase_id: id
-      }).catch(error => {
-        console.error('Error creating file:', error);
-      });
-
-    }
-
-  } else {
-    console.error('No files were uploaded.');
-  }
-
+  .then(result => {
+    console.log('Purchase updated successfully:', result);
+  })
+  .catch(error => {
+    console.error('Error updating purchase:', error);
+  });
 
   res.redirect('/dashboard/pending?success=true');
 
@@ -469,9 +581,61 @@ emails.forEach(async (email) => {
 });
 
 
-router.get('/purchase/accept/directors/:id', (req, res) => {
+router.get('/purchase/accept/directors/:id', async (req, res) => {
 
   const id = req.params.id;
+  const purchase = await Purchase.findByPk(id);
+  const manager = await Employee.findByPk(purchase.employee_id);
+  const leader = await Employee.findByPk(purchase.leader_id);
+  const director = await Employee.findByPk(req.session.user.employee.id);
+  const purchases = await Employee.findByPk(purchase.purchase_id);
+
+
+ 
+  const financial = await Profile.findAll({
+    where: {
+      description: 'financial'
+    }
+  });
+ 
+  const financialLoginsPromises = financial.map(async (finance) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: finance.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  const financialLogins = await Promise.all(financialLoginsPromises);
+
+  
+  const emails = [manager.email, leader.email, director.email, purchases.email, ...financialLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Diretor aceitou a solicitação de pagamento.\n"
+    + "\n\n Diretor(a): " + director.name + 
+    "\n E-mail: " + director.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
 
   Purchase.update({
 
@@ -543,7 +707,6 @@ if(purchase == undefined){
 const emails = [manager.email, leader.email, director.email, purchases.email];
 
   Purchase.update({
-
     status: 'REPROVADO',
     director_id: req.session.user.employee.id
   }, {
