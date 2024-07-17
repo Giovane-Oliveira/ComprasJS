@@ -983,7 +983,7 @@ router.post('/upload/purchases', upload.array('files'), async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${newPurchase.id}`;
-    let text = "Nova solicitação de pagamento gerada.\n"
+    let text = "Nova solicitação de compras/serviços gerada.\n"
     + "\n\n Gerente: " + req.session.user.employee.name + 
     "\n E-mail: " + req.session.user.employee.email +
     "\n\n Acesse: http://10.0.16.17:3000";
