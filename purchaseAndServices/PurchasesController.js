@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create the upload middleware
 
 
-router.get('/purchases', (req, res) => {
+router.get('/purchases', adminAuth, (req, res) => {
 
   let message = "Requisição de compras/serviços criada com sucesso";
 

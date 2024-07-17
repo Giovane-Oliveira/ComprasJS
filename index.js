@@ -18,7 +18,7 @@ app.use(express.static('public'));
 app.use(session({
   secret: 'secret', //qualquer coisa além do secret
   cookie: {
-      maxAge: 900000000 //ms   15min
+      maxAge: 60000 //ms   15min
   },
    resave: false,
    saveUninitialized: false

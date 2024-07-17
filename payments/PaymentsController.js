@@ -15,6 +15,7 @@ const Unit = require('../users/Unit');
 const nodemailer = require('nodemailer');
 const Profile = require('../users/Profile');
 const User = require('../users/User');
+const adminAuth = require('../middlewares/adminAuth');
 
 
 
@@ -727,7 +728,7 @@ router.get('/payment/download/:arquivo', (req, res) => {
   res.sendFile(fileName,  { root: 'uploads' });
 });
 
-router.get('/payments', (req, res) => {
+router.get('/payments', adminAuth, (req, res) => {
 
   Supplier.findAll({}).then(suppliers => {
 
