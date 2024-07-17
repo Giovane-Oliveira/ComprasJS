@@ -954,6 +954,58 @@ router.post('/upload/purchases', upload.array('files'), async (req, res) => {
     console.error('No files were uploaded.');
   }
 
+
+   // Fetch all directors asynchronously
+   const leaders = await Profile.findAll({
+    where: {
+      description: 'leaders'
+    }
+  });
+
+  // Now you can use map on the directors array
+  const leaderLoginsPromises = leaders.map(async (leader) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: leader.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  // Wait for all director logins to be fetched
+  const leaderLogins = await Promise.all(leaderLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [req.session.user.employee.email, ...leaderLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${newPurchase.id}`;
+    let text = "Nova solicitação de pagamento gerada.\n"
+    + "\n\n Gerente: " + req.session.user.employee.name + 
+    "\n E-mail: " + req.session.user.employee.email +
+    "\n\n Acesse: http://10.0.16.17:3000";
+
+    let mailOptions = {
+        from,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+
+
+
   res.redirect('/purchases/?success=true');
 
 });
