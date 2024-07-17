@@ -147,24 +147,38 @@ router.post("/authenticate", async (req, res) => {
             //Validar senha
             var correct = bcrypt.compareSync(password, user.password);
 
+            console.log("Usuário econtrado");
+
 
             if(user.active == 1){
 
+                console.log("Usuário ativo");
+
             if (correct) {
 
-                req.session.user = {
+                console.log("Usuário com senha correta");
 
-                    user: user,
-                    profile: profile,
-                    employee: employee,
-                    permissions: permissions,
-                    sector: sector,
-                    unit: unit
 
+                try {
+
+                    req.session.user = {
+
+                        user: user,
+                        profile: profile,
+                        employee: employee,
+                        permissions: permissions,
+                        sector: sector,
+                        unit: unit
+    
+                    }
+    
+                    res.redirect("/dashboard");
+                    return;
+                    
+                } catch (error) {
+                    console.log("Erro! " + error);
                 }
-
-                res.redirect("/dashboard");
-                return;
+            
 
 
             } else {
