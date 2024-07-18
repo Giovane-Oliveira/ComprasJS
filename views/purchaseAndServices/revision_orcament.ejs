@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs') %>
-<div class="formSpace">
-  <div class="sobreposicaoForm">
+  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+  <div class="sobreposicaoForm" style="width: 335px;">
     <h2>Revisão Orçamentária</h2>
   </div>
 
@@ -20,33 +20,30 @@
       </thead>
       <tbody>
 
-        <% 
-            let count = 1;
-           
-            items.forEach(item => { %>
-        <script>
-          $.jMaskGlobals.watchDataMask = true;
-        </script>
-        <tr>
-          <td class="col-md-1"><input type="number" min=1 name="amount<%=count %>" class="form-control" id="quantidade1" value="<%= item.amount %>" required placeholder="0" disabled /></td>
+        <% let count=1; items.forEach(item=> { %>
+          <script>
+            $.jMaskGlobals.watchDataMask = true;
+          </script>
+          <tr>
+            <td class="col-md-1"><input type="number" min=1 name="amount<%=count %>" class="form-control" id="quantidade1" value="<%= item.amount %>" required placeholder="0" disabled /></td>
 
-          <td class="col-md-3"><input type="text" name="item<%=count %>" class="form-control" id="item1" value="<%= item.item %>" required placeholder="Item" disabled /></td>
+            <td class="col-md-3"><input type="text" name="item<%=count %>" class="form-control" id="item1" value="<%= item.item %>" required placeholder="Item" disabled /></td>
 
-          <td class="col-md-4"><input type="text" name="description<%=count %>" class="form-control" id="especificacao1" value="<%= item.description %>" required placeholder="Especificação" disabled /></td>
+            <td class="col-md-4"><input type="text" name="description<%=count %>" class="form-control" id="especificacao1" value="<%= item.description %>" required placeholder="Especificação" disabled /></td>
 
-          <td class="col-md-2"><input type="text" name="value<%=count %>" class="form-control" id="valor1" value="<%= item.value %>" required placeholder="Valor" disabled /></td>
+            <td class="col-md-2"><input type="text" name="value<%=count %>" class="form-control" id="valor1" value="<%= item.value %>" required placeholder="Valor" disabled /></td>
 
-          <td class="col-md-2"><input type="text" name="newvalue<%=count %>" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="newvalor<%=count %>" required placeholder="Altere o valor" /></td>
-        </tr>
+            <td class="col-md-2"><input type="text" name="newvalue<%=count %>" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="newvalor<%=count %>" required placeholder="Altere o valor" /></td>
+          </tr>
 
-        <tr>
-          <td class="col-md-1"><input type="number" min=1 name="newamount<%=count %>" class="form-control" id="newquantidade<%=count %>" value="<%= item.amount %>" required placeholder="0" hidden/></td>
-          <td class="col-md-3"><input type="text" name="newitem<%=count %>" class="form-control" id="newitem<%=count %>" value="<%= item.item %>" required placeholder="Item" hidden/></td>
-          <td class="col-md-4"><input type="text" name="newdescription<%=count %>" class="form-control" id="newespecificacao<%=count %>" value="<%= item.description %>" required placeholder="Especificação" hidden/></td>
-          
-        </tr>
+          <tr>
+            <td class="col-md-1"><input type="number" min=1 name="newamount<%=count %>" class="form-control" id="newquantidade<%=count %>" value="<%= item.amount %>" required placeholder="0" hidden /></td>
+            <td class="col-md-3"><input type="text" name="newitem<%=count %>" class="form-control" id="newitem<%=count %>" value="<%= item.item %>" required placeholder="Item" hidden /></td>
+            <td class="col-md-4"><input type="text" name="newdescription<%=count %>" class="form-control" id="newespecificacao<%=count %>" value="<%= item.description %>" required placeholder="Especificação" hidden /></td>
 
-        <% count++;  }); %>
+          </tr>
+
+          <% count++; }); %>
 
 
 
@@ -61,6 +58,6 @@
     <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180" disabled> <%= purchase.justification %>  </textarea>
     <button style="margin-top:10px; margin-bottom:15px;" type="submit" class="btn btn-info">Enviar</button>
   </form>
-</div>
-</div>
-<%- include('../partials/footer.ejs') %>
+  </div>
+  </div>
+  <%- include('../partials/footer.ejs') %>

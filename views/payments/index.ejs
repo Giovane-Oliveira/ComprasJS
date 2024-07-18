@@ -1,250 +1,253 @@
-<%-  include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 
 
 
 
-<% if(message) {  %>
-  <script>
-       $(document).ready(function() {
-         $('#message').modal('show');
+  <% if(message) { %>
+    <script>
+      $(document).ready(function () {
+        $('#message').modal('show');
       });
-  </script>
-  <% } %>
+    </script>
+    <% } %>
 
 
 
+      <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+      <div class="sobreposicaoForm">
+        <h2 class='mb-4' style="width: 550px; background-color: #fff;">Autorização de Pagamentos Diversos</h2>
+      </div>
 
-<h2 class='mb-4'>Autorização de Pagamentos Diversos</h2>
-<form id="payment" action="/upload/payments" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="inputText">Fornecedor</label>
-      <select name="supplier" class="form-control" required>
-        <% suppliers.forEach(function(supplier) {%>
-          <% if(supplier.status == 1){ %>
-        <option value=<%= supplier.id %>><%= supplier.name %></option>
-        <% } %>
-        <% });%>
-      </select>
-    </div>
-    <div class="form-group col-md-6">
-      <label for="inputText">Empresa</label>
-      <select name="company" class="form-control" required>
-        <% companies.forEach(function(company) {%>
-        <option value=<%= company.id %>><%= company.name %></option>
-        <% });%>
-      </select>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlTextarea1">Descrição</label>
-    <textarea name="description" class="form-control" id="exampleFormControlTextarea1" rows="6" required placeholder="Descreva sobre o pagamento"></textarea>
-  </div>
-  <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="inputEmail4">Vencimento</label>
-      <input name="expiration" type="text" class="form-control" id="vencimento" required placeholder="Informe o vencimento">
-      <script>
-        $("#vencimento").mask("00/00/0000");
-      </script>
-    </div>
-    <div class="form-group col-md-6">
-      <label for="inputText">Valor</label>
-      <input name="value" type="text" class="form-control" id="valor" required placeholder="Informe o valor">
-      <script>
-        $('#valor').maskMoney({
-          prefix: 'R$ ',
-          allowNegative: true,
-          thousands: '.',
-          decimal: ',',
-          affixesStay: true
+      <form id="payment" action="/upload/payments" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputText">Fornecedor</label>
+            <select name="supplier" class="form-control" required>
+              <% suppliers.forEach(function(supplier) {%>
+                <% if(supplier.status==1){ %>
+                  <option value=<%=supplier.id %>><%= supplier.name %>
+                  </option>
+                  <% } %>
+                    <% });%>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="inputText">Empresa</label>
+            <select name="company" class="form-control" required>
+              <% companies.forEach(function(company) {%>
+                <option value=<%=company.id %>><%= company.name %>
+                </option>
+                <% });%>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">Descrição</label>
+          <textarea name="description" class="form-control" id="exampleFormControlTextarea1" rows="6" required placeholder="Descreva sobre o pagamento"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputEmail4">Vencimento</label>
+            <input name="expiration" type="text" class="form-control" id="vencimento" required placeholder="Informe o vencimento">
+            <script>
+              $("#vencimento").mask("00/00/0000");
+            </script>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="inputText">Valor</label>
+            <input name="value" type="text" class="form-control" id="valor" required placeholder="Informe o valor">
+            <script>
+              $('#valor').maskMoney({
+                prefix: 'R$ ',
+                allowNegative: true,
+                thousands: '.',
+                decimal: ',',
+                affixesStay: true
+              });
+            </script>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Formas de Pagamento</label>
+          <select id="sl" class="form-control" id="exampleFormControlSelect1" required>
+            <option value="" disabled="disabled" selected="selected" required>Selecione o tipo de pagamento</option>
+            <option value="Boleto">Boleto</option>
+            <option value="Avista">À vista</option>
+            <option value="Deposito">Depósito</option>
+            <option value="Pix">Pix</option>
+          </select>
+        </div>
+        <div id="formadePagamento">
+
+        </div>
+
+        <div id="chavesPix">
+
+        </div>
+
+        <script type="text/javascript">
+          $.jMaskGlobals.watchDataMask = true;
+
+          $("#sl").on("change", function () {
+            var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+            if (valor == "Deposito") {
+              document.getElementById("chavesPix").innerHTML = "";
+              document.getElementById("formadePagamento").innerHTML = "" +
+                "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Deposito'>\n" +
+                "<div class='form-row'>\n" +
+                "<div class='form-group col-md-3'>\n" +
+                "<label for='inputEmail4'>Banco</label>\n" +
+                "<input name='bank' type='text' class='form-control' id='inputEmail4' required placeholder='Informe o Banco'>\n" +
+                "</div>\n" +
+                "<div class='form-group col-md-3'>\n" +
+                "<label for='inputText'>Agência</label>\n" +
+                "<input name='agency' type='text' class='form-control' id='inputPassword4' data-mask='0000'  required placeholder='Informe a agência'>\n" +
+                "</div>\n" +
+                "<div class='form-group col-md-3'>\n" +
+                "<label for='inputText'>Conta Corrente</label>\n" +
+                "<input name='currency_account' type='text' class='form-control' id='inputPassword4' data-mask='00000000-0' required placeholder='Informe a conta corrente'>\n" +
+                "</div>\n" +
+                "</div>\n";
+
+            } else if (valor == "Pix") {
+              document.getElementById("chavesPix").innerHTML = "";
+              document.getElementById("formadePagamento").innerHTML = "" +
+                "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Pix'>\n" +
+                "<div class='form-group'>\n" +
+                "<label for='exampleFormControlSelect1'>Chaves Pix</label>\n" +
+                "<select id='selectPix' class='form-control' id='exampleFormControlSelect1' required>\n" +
+                "<option value=''>Selecione</option>\n" +
+                "<option value='CPF'>CPF</option>\n" +
+                "<option value='CNPJ'>CNPJ</option>\n" +
+                "<option value='EMAIL'>EMAIL</option>\n" +
+                "<option value='TELEFONE'>TELEFONE</option>\n" +
+                "</select>\n" +
+                "</div>\n";
+
+              $("#selectPix").on("change", function () {
+                var value = $(this).val();
+                if (value == "CPF") {
+
+                  document.getElementById("chavesPix").innerHTML = "" +
+                    "<div class='form-group col-md-3'>\n" +
+                    "<label for='inputEmail4'>CPF</label>\n" +
+                    "<input name='cpf' type='text' class='form-control' id='cpf'  data-mask='000.000.000-00' required placeholder='Informe o CPF'>\n" +
+                    "</div>";
+
+
+                } else if (value == "CNPJ") {
+
+                  document.getElementById("chavesPix").innerHTML = "" +
+                    "<div class='form-group col-md-3'>\n" +
+                    "<label for='inputText'>CNPJ</label>\n" +
+                    "<input name='cnpj' type='text' class='form-control' id='inputPassword4' data-mask='00.000.000/0000-00'  required placeholder='Informe o CNPJ'>\n" +
+                    "</div>\n";
+
+                } else if (value == "EMAIL") {
+
+                  document.getElementById("chavesPix").innerHTML = "" +
+                    "<div class='form-group col-md-3'>\n" +
+                    "<label for='inputText'>Email</label>\n" +
+                    "<input name='email' type='text' class='form-control' id='inputPassword4' required placeholder='Informe o EMAIL'>\n" +
+                    "</div>\n";
+
+                } else if (value == "TELEFONE") {
+
+                  document.getElementById("chavesPix").innerHTML = "" +
+                    "<div class='form-group col-md-3'>\n" +
+                    "<label for='inputText'>Telefone</label>\n" +
+                    "<input name='phone' type='text' class='form-control' id='inputPassword4' data-mask='(00) 0 0000-0000'  required placeholder='Informe o TELEFONE'>\n" +
+                    "</div>\n";
+                } else {
+
+                  document.getElementById("chavesPix").innerHTML = "";
+
+                }
+              })
+
+            } else if (valor == "Boleto") {
+
+              document.getElementById("chavesPix").innerHTML = "";
+              document.getElementById("formadePagamento").innerHTML = "" +
+
+                "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
+
+            } else if (valor == "Avista") {
+
+              document.getElementById("chavesPix").innerHTML = "";
+              document.getElementById("formadePagamento").innerHTML = "" +
+                "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='avista'>\n";
+
+            } else {
+
+              document.getElementById("chavesPix").innerHTML = "";
+              document.getElementById("formadePagamento").innerHTML = "";
+
+            }
+
+          })
+        </script>
+        <hr style="width: 90%;">
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+        <hr style="width: 90%;">
+        <button type="submit" class="btn btn-info">Enviar</button>
+      </form>
+
+
+
+      <script type="text/javascript">
+
+        $("#payment").submit(function () {
+
+          $(document).ready(function () {
+            $('#loadingModal').modal('show');
+          })
         });
+
+
       </script>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlSelect1">Formas de Pagamento</label>
-    <select id="sl" class="form-control" id="exampleFormControlSelect1" required>
-      <option value="" disabled="disabled" selected="selected" required>Selecione o tipo de pagamento</option>
-      <option value="Boleto">Boleto</option>
-      <option value="Avista">À vista</option>
-      <option value="Deposito">Depósito</option>
-      <option value="Pix">Pix</option>
-    </select>
-  </div>
-  <div id="formadePagamento">
-
-  </div>
-
-  <div id="chavesPix">
-
-  </div>
-
-  <script type="text/javascript">
-    $.jMaskGlobals.watchDataMask = true;
-
-    $("#sl").on("change", function() {
-      var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
-      if (valor == "Deposito") {
-        document.getElementById("chavesPix").innerHTML = "";
-        document.getElementById("formadePagamento").innerHTML = "" +
-          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Deposito'>\n" +
-          "<div class='form-row'>\n" +
-          "<div class='form-group col-md-3'>\n" +
-          "<label for='inputEmail4'>Banco</label>\n" +
-          "<input name='bank' type='text' class='form-control' id='inputEmail4' required placeholder='Informe o Banco'>\n" +
-          "</div>\n" +
-          "<div class='form-group col-md-3'>\n" +
-          "<label for='inputText'>Agência</label>\n" +
-          "<input name='agency' type='text' class='form-control' id='inputPassword4' data-mask='0000'  required placeholder='Informe a agência'>\n" +
-          "</div>\n" +
-          "<div class='form-group col-md-3'>\n" +
-          "<label for='inputText'>Conta Corrente</label>\n" +
-          "<input name='currency_account' type='text' class='form-control' id='inputPassword4' data-mask='00000000-0' required placeholder='Informe a conta corrente'>\n" +
-          "</div>\n" +
-          "</div>\n";
-
-      } else if (valor == "Pix") {
-        document.getElementById("chavesPix").innerHTML = "";
-        document.getElementById("formadePagamento").innerHTML = "" +
-          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='Pix'>\n" +
-          "<div class='form-group'>\n" +
-          "<label for='exampleFormControlSelect1'>Chaves Pix</label>\n" +
-          "<select id='selectPix' class='form-control' id='exampleFormControlSelect1' required>\n" +
-          "<option value=''>Selecione</option>\n" +
-          "<option value='CPF'>CPF</option>\n" +
-          "<option value='CNPJ'>CNPJ</option>\n" +
-          "<option value='EMAIL'>EMAIL</option>\n" +
-          "<option value='TELEFONE'>TELEFONE</option>\n" +
-          "</select>\n" +
-          "</div>\n";
-
-        $("#selectPix").on("change", function() {
-          var value = $(this).val();
-          if (value == "CPF") {
-
-            document.getElementById("chavesPix").innerHTML = "" +
-              "<div class='form-group col-md-3'>\n" +
-              "<label for='inputEmail4'>CPF</label>\n" +
-              "<input name='cpf' type='text' class='form-control' id='cpf'  data-mask='000.000.000-00' required placeholder='Informe o CPF'>\n" +
-              "</div>";
 
 
-          } else if (value == "CNPJ") {
-
-            document.getElementById("chavesPix").innerHTML = "" +
-              "<div class='form-group col-md-3'>\n" +
-              "<label for='inputText'>CNPJ</label>\n" +
-              "<input name='cnpj' type='text' class='form-control' id='inputPassword4' data-mask='00.000.000/0000-00'  required placeholder='Informe o CNPJ'>\n" +
-              "</div>\n";
-
-          } else if (value == "EMAIL") {
-
-            document.getElementById("chavesPix").innerHTML = "" +
-              "<div class='form-group col-md-3'>\n" +
-              "<label for='inputText'>Email</label>\n" +
-              "<input name='email' type='text' class='form-control' id='inputPassword4' required placeholder='Informe o EMAIL'>\n" +
-              "</div>\n";
-
-          } else if (value == "TELEFONE") {
-
-            document.getElementById("chavesPix").innerHTML = "" +
-              "<div class='form-group col-md-3'>\n" +
-              "<label for='inputText'>Telefone</label>\n" +
-              "<input name='phone' type='text' class='form-control' id='inputPassword4' data-mask='(00) 0 0000-0000'  required placeholder='Informe o TELEFONE'>\n" +
-              "</div>\n";
-          } else {
-
-            document.getElementById("chavesPix").innerHTML = "";
-
-          }
-        })
-
-      } else if (valor == "Boleto") {
-
-        document.getElementById("chavesPix").innerHTML = "";
-        document.getElementById("formadePagamento").innerHTML = "" +
-
-          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='boleto'>\n";
-
-      } else if (valor == "Avista") {
-
-        document.getElementById("chavesPix").innerHTML = "";
-        document.getElementById("formadePagamento").innerHTML = "" +
-          "<input hidden name='payment_method' type='text' class='form-control' id='inputEmail4' value='avista'>\n";
-
-      } else {
-
-        document.getElementById("chavesPix").innerHTML = "";
-        document.getElementById("formadePagamento").innerHTML = "";
-
-      }
-
-    })
-  </script>
-  <hr>
-  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
-  <hr>
-  <button type="submit" class="btn btn-info">Enviar</button>
-</form>
-</div>
-</div>
-
-
-
-<script type="text/javascript">
-
-  $("#payment").submit(function(){
-        
-    $(document).ready(function() {
-         $('#loadingModal').modal('show');
-      })	
-    });
-  
-  
-  </script>
-
-
-			    <!-- Modal -->
-          <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  Aguarde...
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
+      <!-- Modal -->
+      <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Aguarde...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
+        </div>
+      </div>
 
 
-          
-			    <!-- Modal -->
-          <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <%= message %>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <%= message %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
+        </div>
+      </div>
 
-<%- include('../partials/footer.ejs') %>
+      <%- include('../partials/footer.ejs') %>

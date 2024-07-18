@@ -24,6 +24,23 @@ let transporter = nodemailer.createTransport({
   }
 });
 
+/*
+let transporter = nodemailer.createTransport({
+  host: 'smtp-mail.outlook.com', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  tls: {
+    ciphers:'SSLv3',
+    rejectUnauthorized: false,
+ },
+  auth: {
+      user: 'naoresponda@grupoprovida.com.br', // Substitua pelo seu email corporativo
+      pass: 'Daruma@2024' // Substitua pela senha do seu email corporativo
+  },
+  debug: true,
+  logger:true
+}); */
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -54,7 +71,7 @@ router.get('/purchases', adminAuth, (req, res) => {
 
 
 
-router.post('/upload/purchases/revision_orcament', upload.array('files'), async (req, res) => {
+router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('files'), async (req, res) => {
 
 
   const files = req.files;
@@ -272,7 +289,7 @@ router.post('/upload/purchases/revision_orcament', upload.array('files'), async 
 
 
 
-router.get('/revision_orcament/:id', async (req, res) => {
+router.get('/revision_orcament/:id', adminAuth, async (req, res) => {
   const id = req.params.id;
 
   var leader_employee = null;
@@ -315,7 +332,7 @@ router.get('/revision_orcament/:id', async (req, res) => {
 });
 
 
-router.post('/purchase/accept/financial', upload.array('files'), async (req, res) => {
+router.post('/purchase/accept/financial', upload.array('files'), adminAuth, async (req, res) => {
 
   const id = req.body.purchase_id;
   const files = req.files;
@@ -413,7 +430,7 @@ router.post('/purchase/accept/financial', upload.array('files'), async (req, res
 
 
 
-router.get('/purchase/accept/leaders/:id', async (req, res) => {
+router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
   const purchase = await Purchase.findByPk(id);
@@ -449,7 +466,7 @@ router.get('/purchase/accept/leaders/:id', async (req, res) => {
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Gestor aceitou a solicitação de pagamento.\n"
-    + "\n\n Diretor(a): " + leader.name + 
+    + "\n\n Gestor(a): " + leader.name + 
     "\n E-mail: " + leader.email +
     "\n\n Acesse: http://10.0.16.17:3000";
 
@@ -489,7 +506,7 @@ router.get('/purchase/accept/leaders/:id', async (req, res) => {
 });
 
 //parei aqui
-router.get('/purchase/reprove/leaders/:id', (req, res) => {
+router.get('/purchase/reprove/leaders/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
@@ -498,7 +515,7 @@ router.get('/purchase/reprove/leaders/:id', (req, res) => {
 
 });
 
-router.post('/purchase/reprove/leaders', async(req, res) => {
+router.post('/purchase/reprove/leaders', adminAuth, async(req, res) => {
 
   const id = req.body.id;
 
@@ -581,7 +598,7 @@ emails.forEach(async (email) => {
 });
 
 
-router.get('/purchase/accept/directors/:id', async (req, res) => {
+router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
   const purchase = await Purchase.findByPk(id);
@@ -659,7 +676,7 @@ router.get('/purchase/accept/directors/:id', async (req, res) => {
 });
 
 
-router.get('/purchase/reprove/directors/:id', (req, res) => {
+router.get('/purchase/reprove/directors/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
@@ -667,7 +684,7 @@ router.get('/purchase/reprove/directors/:id', (req, res) => {
 
 });
 
-router.post('/purchase/reprove/directors', async (req, res) => {
+router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
 
   const id = req.body.id;
 
@@ -761,7 +778,7 @@ emails.forEach(async (email) => {
 
 
 
-router.get('/purchase/download/:arquivo', (req, res) => {
+router.get('/purchase/download/:arquivo', adminAuth, (req, res) => {
   // Obter o nome do arquivo
   const fileName = req.params.arquivo;
   const filePath = `uploads/${fileName}`;
@@ -852,7 +869,7 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
 
 
-router.post('/upload/purchases', upload.array('files'), async (req, res) => {
+router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, res) => {
 
   const justification = req.body.justification;
   console.log(justification);

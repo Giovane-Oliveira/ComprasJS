@@ -22,7 +22,8 @@ let transporter = nodemailer.createTransport({
         user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
         pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
     }
-});
+  });
+  
 
 router.get('/registration', (req, res) => {
 
@@ -51,7 +52,7 @@ router.get('/users', adminAuth, async (req, res) => {
 
 });
 
-router.get('/activate_user/:id', (req, res) => {
+router.get('/activate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
@@ -73,7 +74,7 @@ router.get('/activate_user/:id', (req, res) => {
 });
 
 
-router.get('/desactivate_user/:id', (req, res) => {
+router.get('/desactivate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
@@ -147,38 +148,24 @@ router.post("/authenticate", async (req, res) => {
             //Validar senha
             var correct = bcrypt.compareSync(password, user.password);
 
-            console.log("Usuário econtrado");
-
 
             if(user.active == 1){
 
-                console.log("Usuário ativo");
-
             if (correct) {
 
-                console.log("Usuário com senha correta");
+                req.session.user = {
 
+                    user: user,
+                    profile: profile,
+                    employee: employee,
+                    permissions: permissions,
+                    sector: sector,
+                    unit: unit
 
-                try {
-
-                    req.session.user = {
-
-                        user: user,
-                        profile: profile,
-                        employee: employee,
-                        permissions: permissions,
-                        sector: sector,
-                        unit: unit
-    
-                    }
-    
-                    res.redirect("/dashboard");
-                    return;
-                    
-                } catch (error) {
-                    console.log("Erro! " + error);
                 }
-            
+
+                res.redirect("/dashboard");
+                return;
 
 
             } else {

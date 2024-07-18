@@ -1,324 +1,360 @@
 <%- include('../partials/header.ejs') %>
 
-<% let formattedDate = new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+  <% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 
-<% if(modal == 'leaders') {  %>
-  <script>
-    $(document).ready(function() {
-      $('#reproveLeaderModal').modal('show');
-    });
-  </script>
-  <% }else if(modal == 'directors'){%>
-  
-    <script>
-      $(document).ready(function() {
-        $('#reproveDirectorModal').modal('show');
-      });
-    </script>
-  
-    <% }else if(modal == 'purchases'){%>
-  
+    <% if(modal=='leaders' ) { %>
       <script>
-        $(document).ready(function() {
-          $('#reprovePurchaseModal').modal('show');
+        $(document).ready(function () {
+          $('#reproveLeaderModal').modal('show');
         });
       </script>
-    
-      <% } %>
+      <% }else if(modal=='directors' ){%>
+
+        <script>
+          $(document).ready(function () {
+            $('#reproveDirectorModal').modal('show');
+          });
+        </script>
+
+        <% }else if(modal=='purchases' ){%>
+
+          <script>
+            $(document).ready(function () {
+              $('#reprovePurchaseModal').modal('show');
+            });
+          </script>
+
+          <% } %>
 
 
+            <div class="space">
+              <div class="cabecalho">
+                <a href="/dashboard"><img src="../../images/fav-icon2-150x150.png" alt=""></a>
+                <h1>Relatório de Pagamentos</h1>
+                <h6>Nome: <label name="nome">
+                    <%= employee.name %>
+                  </label></h6>
+                <p>Data: <label name="data">
+                    <%= formattedDate %>
+                      <% if(unit.description=='Sede Ramiro' ){%>
+                  </label> | <label name="setor">Setor: <%= sector.description %> | Cidade: Cachoeira do Sul</label>
+                  <% } else if(unit.description=='Medicina do Trabalho' ){%>
+                    | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+                    <% } else if(unit.description=='Clínica' ){%>
+                      | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+                      <% }else{%>
+                        | <label name="setor">Unidade: <%= unit.description %> </label>
+                </p>
+                <% } %>
+              </div>
+              <hr>
+              <br>
+              <div class="conteudo">
+                <table id="tabelaPagamento">
+                  <tbody>
+                    <tr>
+                      <td class="destaque"><strong>Fornecedor:</strong></td>
+                      <td><span name="fornecedor">
+                          <%= supplier.name %>
+                        </span></td>
+                      <td class="destaque"><strong>Empresa:</strong></td>
+                      <td><span name="empresa">
+                          <%= company.name %>
+                        </span></td>
+                    </tr>
+                    <tr>
+                      <td class="destaque"><strong>Descrição:</strong></span></td>
+                      <td colspan="3"><span name="descricao">
+                          <%= payment.description %>
+                        </span></td>
+                    </tr>
+                    <tr>
+                      <td class="destaque"><strong>Vencimento:</strong></td>
+                      <td><span name="vencimento">
+                          <%= expiration_formattedDate %>
+                        </span></td>
+                      <td class="destaque"><strong>Valor:</strong></td>
+                      <td><span name="valor">
+                          <%= payment.value %>
+                        </span></td>
+                    </tr>
+                    <tr>
+                      <td colspan="5" class="destaque pagamento"><strong>Forma de Pagamento</strong></td>
+                    </tr>
+                    <% if(payment_method.payment_method=="Boleto" ){ %>
+                      <tr name="boleto">
+                        <td colspan="5">Boleto</td>
+                      </tr>
+                      <% } else if(payment_method.payment_method=="Avista" ){ %>
+                        <tr name="avista">
+                          <td colspan="5">A Vista</td>
+                        </tr>
+                        <% } else if(payment_method.payment_method=="Deposito" ){ %>
+                          <tr name="deposito">
+                            <td colspan="2">Depósito</td>
+                            <td><span name="banco">Banco: <%= payment_method.bank %> </span></td>
+                            <td colspan="1"><span name="agencia">agencia: <%= payment_method.agency %> </span></td>
+                            <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
+                          </tr>
+                          <% } else if(payment_method.payment_method=="Pix" ){ %>
+                            <%if(payment_method.cpf !=null){ %>
+                              <tr name="cpf">
+                                <td colspan="2">Pix</td>
+                                <td colspan="2">Chave CPF: <%= payment_method.cpf %>
+                                </td>
+                              </tr>
+                              <% } else if(payment_method.cnpj !=null){ %>
+                                <tr name="cnpj">
+                                  <td colspan="2">Pix</td>
+                                  <td colspan="2">Chave CNPJ: <%= payment_method.cnpj %>
+                                  </td>
+                                </tr>
+                                <% }else if(payment_method.email !=null){%>
+                                  <tr name="email">
+                                    <td colspan="2">Pix</td>
+                                    <td colspan="2">Chave e-mail: <%= payment_method.email %>
+                                    </td>
+                                  </tr>
+                                  <% }else if(payment_method.phone !=null){%>
+                                    <tr name="phone">
+                                      <td colspan="2">Pix</td>
+                                      <td colspan="2">Chave fone: <%= payment_method.phone %>
+                                      </td>
+                                    </tr>
+                                    <% } }%>
+                                      <tr>
+                                        <td colspan="5" class="destaque pagamento"><strong>Status</strong></td>
+                                      </tr>
+                                      <tr>
+                                        <td colspan="5">
+                                          <%= payment.status %>
+                                        </td>
+                                      </tr>
 
-<div class="cabecalho">
-  <img src="../../images/fav-icon2-150x150.png" alt="">
-  <h1>Relatório de Pagamentos</h1>
-  <h6>Nome: <label name="nome">
-      <%= employee.name %>
-    </label></h6>
-  <p>Data: <label name="data">
-      <%= formattedDate %>
-      <% if(unit.description == 'Sede Ramiro'){%>
-    </label> | <label name="setor">Setor: <%= sector.description %> Cidade: Cachoeira do Sul</label></p>
-  <% } else if(unit.description == 'Medicina do Trabalho'){%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-  <% } else if(unit.description == 'Clínica'){%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-  <% }else{%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: <%= unit.city %> </label></p>
-  <% } %>
-</div>
-<hr>
-<br>
-<div class="conteudo">
-  <table id="tabelaPagamento">
-    <tbody>
-      <tr>
-        <td class="destaque"><strong>Fornecedor:</strong></td>
-        <td><span name="fornecedor">
-            <%= supplier.name %>
-          </span></td>
-        <td class="destaque"><strong>Empresa:</strong></td>
-        <td><span name="empresa">
-            <%= company.name %>
-          </span></td>
-      </tr>
-      <tr>
-        <td class="destaque"><strong>Descrição:</strong></span></td>
-        <td colspan="3"><span name="descricao">
-            <%= payment.description %>
-          </span></td>
-      </tr>
-      <tr>
-        <td class="destaque"><strong>Vencimento:</strong></td>
-        <td><span name="vencimento">
-            <%= expiration_formattedDate %>
-          </span></td>
-        <td class="destaque"><strong>Valor:</strong></td>
-        <td><span name="valor">
-            <%= payment.value %>
-          </span></td>
-      </tr>
-      <tr>
-        <td colspan="5" class="destaque pagamento"><strong>Forma de Pagamento</strong></td>
-      </tr>
-      <% if(payment_method.payment_method=="Boleto" ){ %>
-      <tr name="boleto">
-        <td class="pagamento" colspan="5">Boleto</td>
-      </tr>
-      <% } else if(payment_method.payment_method=="Avista" ){ %>
-      <tr name="avista">
-        <td class="pagamento" colspan="5">A Vista</td>
-      </tr>
-      <% } else if(payment_method.payment_method=="Deposito" ){ %>
-      <tr name="deposito">
-        <td class="pagamento" colspan="2">Depósito</td>
-        <td><span name="banco">Banco: <%= payment_method.bank %> </span></td>
-        <td colspan="1"><span name="agencia">agencia: <%= payment_method.agency %> </span></td>
-        <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
-      </tr>
-      <% } else if(payment_method.payment_method=="Pix" ){ %>
-      <%if(payment_method.cpf !=null){ %>
-      <tr name="cpf">
-        <td class="pagamento" colspan="2">Pix</td>
-        <td colspan="2">Chave CPF: <%= payment_method.cpf %>
-        </td>
-      </tr>
-      <% } else if(payment_method.cnpj !=null){ %>
-      <tr name="cnpj">
-        <td class="pagamento" colspan="2">Pix</td>
-        <td colspan="2">Chave CNPJ: <%= payment_method.cnpj %>
-        </td>
-      </tr>
-      <% }else if(payment_method.email !=null){%>
-      <tr name="email">
-        <td class="pagamento" colspan="2">Pix</td>
-        <td colspan="2">Chave e-mail: <%= payment_method.email %>
-        </td>
-      </tr>
-      <% }else if(payment_method.phone !=null){%>
-      <tr name="phone">
-        <td class="pagamento" colspan="2">Pix</td>
-        <td colspan="2">Chave fone: <%= payment_method.phone %>
-        </td>
-      </tr>
-      <% } }%>
-    </tbody>
-  </table>
-  <hr>
-  <table id="tabelaCompras">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Anexo</th>
-        <th>Data</th>
-        <th>Abrir</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% files.forEach(file => { %>
-      <tr>
-        <td><%= file.id %></td>
-        <td><%= file.fileName %></td>
-        <% 
-      let formattedDate = new Date(file.createdAt).toLocaleDateString('pt-BR', {
-           day: '2-digit',
-           month: '2-digit',
-           year: 'numeric'
-         });
-   %>
-        <td><%= formattedDate %></td>
-        <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-      </tr>
-      <% }); %>
-    </tbody>
+                  </tbody>
+                </table>
+                <hr>
+                <table id="tabelaCompras">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Anexo</th>
+                      <th>Data</th>
+                      <th>Abrir</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% files.forEach(file=> { %>
+                      <tr>
+                        <td>
+                          <%= file.id %>
+                        </td>
+                        <td>
+                          <%= file.fileName %>
+                        </td>
+                        <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                          <td>
+                            <%= formattedDate %>
+                          </td>
+                          <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+                      </tr>
+                      <% }); %>
+                  </tbody>
 
-  </table>
+                </table>
 
-  <div class="assinaturas">
-    <% if(payment.status == "Em análise pelo diretor") {%>
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-    <br>
-    <% } else if(payment.status == "Pagamento em andamento") { %>
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-    <br>
-    <p>Diretor: <label name="diretor"> <%= director_employee.name %> </label><br>
-      Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
-    <br>
-    <% } else if(payment.status == "REPROVADO") { %>
+                <div class="assinaturas">
+                  <% if(payment.status=="Em análise pelo diretor" ) {%>
+                    <p>Gestor: <label name="gestor">
+                        <%= leader_employee.name %>
+                      </label><br>
+                      Email: <label name="emailgestor">
+                        <%= leader_employee.email %>
+                      </label></p>
+                    <br>
+                    <% } else if(payment.status=="Pagamento em andamento" ) { %>
+                      <p>Gestor: <label name="gestor">
+                          <%= leader_employee.name %>
+                        </label><br>
+                        Email: <label name="emailgestor">
+                          <%= leader_employee.email %>
+                        </label></p>
+                      <br>
+                      <p>Diretor: <label name="diretor">
+                          <%= director_employee.name %>
+                        </label><br>
+                        Email: <label name="emaildiretor">
+                          <%= director_employee.email %>
+                        </label></p>
+                      <br>
+                      <% } else if(payment.status=="REPROVADO" ) { %>
 
-    <% if(leader_employee != undefined) { %>
+                        <% if(leader_employee !=undefined) { %>
 
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-    <br>
+                          <p>Gestor: <label name="gestor">
+                              <%= leader_employee.name %>
+                            </label><br>
+                            Email: <label name="emailgestor">
+                              <%= leader_employee.email %>
+                            </label></p>
+                          <br>
 
-    <% } if(director_employee != undefined) {  %>
+                          <% } if(director_employee !=undefined) { %>
 
-    <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= director_employee.email %></label></p>
+                            <p>Diretor: <label name="gestor">
+                                <%= director_employee.name %>
+                              </label><br>
+                              Email: <label name="emailgestor">
+                                <%= director_employee.email %>
+                              </label></p>
 
-    <% } if(purchase_employee != undefined) { %>
-    <p>Comprador(a): <label name="diretor"> <%= director_employee.name %> </label><br>
-      Email: <label name="emaildiretor"> <%= director_employee.email %> </label></p>
+                            <% } if(purchase_employee !=undefined) { %>
+                              <p>Comprador(a): <label name="diretor">
+                                  <%= director_employee.name %>
+                                </label><br>
+                                Email: <label name="emaildiretor">
+                                  <%= director_employee.email %>
+                                </label></p>
 
-    <br>
+                              <br>
 
-    <% } } else{ %>
+                              <% } } else{ %>
 
-    <% if(leader_employee != undefined) { %>
+                                <% if(leader_employee !=undefined) { %>
 
-    <p>Gestor: <label name="gestor"> <%= leader_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= leader_employee.email %></label></p>
-    <br>
+                                  <p>Gestor: <label name="gestor">
+                                      <%= leader_employee.name %>
+                                    </label><br>
+                                    Email: <label name="emailgestor">
+                                      <%= leader_employee.email %>
+                                    </label></p>
+                                  <br>
 
-    <% } if(director_employee != undefined) {  %>
+                                  <% } if(director_employee !=undefined) { %>
 
-    <p>Diretor: <label name="gestor"> <%= director_employee.name %> </label><br>
-      Email: <label name="emailgestor"><%= director_employee.email %></label></p>
+                                    <p>Diretor: <label name="gestor">
+                                        <%= director_employee.name %>
+                                      </label><br>
+                                      Email: <label name="emailgestor">
+                                        <%= director_employee.email %>
+                                      </label></p>
 
-    <% } %>
+                                    <% } %>
 
-    <%  } %>
-  </div>
+                                      <% } %>
+                </div>
 
-  <% if(user.profile.description == "leaders" && payment.leader_id == "" && payment.director_id == "" &&
-      payment.purchase_id == "" && payment.financial_id == "" ){%>
-  <div>
-    <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
-  <% }else if(user.profile.description == "directors" && payment.director_id == "" && payment.leader_id != ""
-   && payment.purchase_id == "" && payment.financial_id == "" &&
-   payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
+                <% if(user.profile.description=="leaders" && payment.leader_id=="" && payment.director_id=="" && payment.purchase_id=="" && payment.financial_id=="" ){%>
+                  <div class="botoes">
+                    <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+                    <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+                  </div>
+                  <% }else if(user.profile.description=="directors" && payment.director_id=="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
 
-  <div>
-    <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
+                    <div class="botoes">
+                      <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+                      <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+                    </div>
 
-  <% }else if(user.profile.description == "purchases" && payment.director_id != "" && payment.leader_id != ""
-   && payment.purchase_id == "" && payment.financial_id == "" 
-  && payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
+                    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
 
-  <div>
-    <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
+                      <div class="botoes">
+                        <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+                        <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+                      </div>
 
-  <% }else if(user.profile.description == "financial" && payment.director_id != "" && payment.leader_id != ""
-   && payment.purchase_id != "" && payment.financial_id == "" 
-  && payment.status != "REPROVADO" &&  payment.status != "APROVADO") { %>
+                      <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+                        <div id="anexoFinanceiroP">
+                          <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
+                            <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
+                            <hr>
+                            <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+                            <hr>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                          </form>
+                        </div>
+                        <div>
+                          <% } %>
 
-  <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
-    <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
-    <hr>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
-    <hr>
-    <button type="submit" class="btn btn-primary">Enviar</button>
-  </form>
+                        </div>
+              </div>
 
-  <% } %>
+              <div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="/payment/reprove/leaders" method="post">
 
-</div>
+                        <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+                        <label for="message-text" class="col-form-label">Motivo:</label>
+                        <textarea name="motivo" class="form-control" id="message-text"></textarea>
 
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-danger">Recusar</button>
+                    </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
 
-<div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/payment/reprove/leaders" method="post">
+              <div class="modal fade" id="reproveDirectorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="/payment/reprove/directors" method="post">
 
-          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
-          <label for="message-text" class="col-form-label">Motivo:</label>
-          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+                        <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+                        <label for="message-text" class="col-form-label">Motivo:</label>
+                        <textarea name="motivo" class="form-control" id="message-text"></textarea>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger">Recusar</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-danger">Recusar</button>
+                    </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
 
-<div class="modal fade" id="reproveDirectorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/payment/reprove/directors" method="post">
+              <div class="modal fade" id="reprovePurchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="/payment/reprove/purchases" method="post">
 
-          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
-          <label for="message-text" class="col-form-label">Motivo:</label>
-          <textarea name="motivo" class="form-control" id="message-text"></textarea>
+                        <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
+                        <label for="message-text" class="col-form-label">Motivo:</label>
+                        <textarea name="motivo" class="form-control" id="message-text"></textarea>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger">Recusar</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-danger">Recusar</button>
+                    </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
 
-<div class="modal fade" id="reprovePurchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/payment/reprove/purchases" method="post">
-
-          <input type="text" name="id" class="form-control" value="<%= payment.id %>" hidden>
-          <label for="message-text" class="col-form-label">Motivo:</label>
-          <textarea name="motivo" class="form-control" id="message-text"></textarea>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger">Recusar</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<%- include('../partials/footer.ejs') %>
+              <%- include('../partials/footer.ejs') %>

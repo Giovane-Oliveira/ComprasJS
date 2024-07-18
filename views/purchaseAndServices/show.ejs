@@ -1,244 +1,251 @@
 <%- include('../partials/header.ejs') %>
 
-<% let formattedDate=new Date(purchase.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+  <% let formattedDate=new Date(purchase.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 
-<% if(modal == 'leaders') {  %>
-<script>
-  $(document).ready(function() {
-    $('#reproveLeaderModal').modal('show');
-  });
-</script>
-<% }else if(modal == 'directors'){%>
+    <% if(modal=='leaders' ) { %>
+      <script>
+        $(document).ready(function () {
+          $('#reproveLeaderModal').modal('show');
+        });
+      </script>
+      <% }else if(modal=='directors' ){%>
 
-  <script>
-    $(document).ready(function() {
-      $('#reproveDirectorModal').modal('show');
-    });
-  </script>
+        <script>
+          $(document).ready(function () {
+            $('#reproveDirectorModal').modal('show');
+          });
+        </script>
 
-  <% } %>
-
-
+        <% } %>
 
 
-<div class="buySpace"">
+
+
+          <div class="space"">
 <div class=" cabecalho">
-  <img src="../../images/fav-icon2-150x150.png" alt="">
-  <h1>Relatório de Compras</h1>
-  <h6>Nome: <label name="nome">
-      <%= employee.name %>
-    </label></h6>
-  <p>Data: <label name="data">
-      <%= formattedDate %>
-      <% if(unit.description == 'Sede Ramiro'){%>
-    </label> | <label name="setor">Setor: <%= sector.description %> Cidade: Cachoeira do Sul</label></p>
-  <% } else if(unit.description == 'Medicina do Trabalho'){%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-  <% } else if(unit.description == 'Clínica'){%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: Cachoeira do Sul</label></p>
-  <% }else{%>
-  </label> | <label name="setor">Unidade: <%= unit.description %> Cidade: <%= unit.city %> </label></p>
-  <% } %>
-</div>
-<hr>
-<br>
-<div class="conteudo">
-  <table id="tabelaCompras">
-    <thead>
-      <tr>
-        <th>Quantidade</th>
-        <th>Item</th>
-        <th>Especificações</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% item.forEach(item=> { %>
-      <tr>
-        <td>
-          <%= item.amount %>
-        </td>
-        <td>
-          <%= item.item %>
-        </td>
-        <td>
-          <%= item.description %>
-        </td>
-        <td>
-          <%= item.value %>
-        </td>
-      </tr>
-      <% }); %>
-    </tbody>
-  </table>
-  <hr>
-  <table id="tabelaCompras">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Anexo</th>
-        <th>Data</th>
-        <th>Abrir</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% files.forEach(file=> { %>
-      <tr>
-        <td>
-          <%= file.id %>
-        </td>
-        <td>
-          <%= file.fileName %>
-        </td>
-        <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-        <td>
-          <%= formattedDate %>
-        </td>
-        <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-      </tr>
-      <% }); %>
-    </tbody>
+            <a href="/dashboard"><img src="../../images/fav-icon2-150x150.png" alt=""></a>
+            <h1>Relatório de Compras</h1>
+            <h6>Nome: <label name="nome">
+                <%= employee.name %>
+              </label></h6>
+            <p>Data: <label name="data">
+                <%= formattedDate %>
+                  <% if(unit.description=='Sede Ramiro' ){%>
+              </label> | <label name="setor">Setor: <%= sector.description %> | Cidade: Cachoeira do Sul</label>
+              <% } else if(unit.description=='Medicina do Trabalho' ){%>
+                | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+                <% } else if(unit.description=='Clínica' ){%>
+                  | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+                  <% }else{%>
+                    | <label name="setor">Unidade: <%= unit.description %> </label>
+                    <% } %>
+            </p>
+          </div>
+          <hr>
+          <br>
+          <div class="conteudo">
+            <table id="tabelaCompras">
+              <thead>
+                <tr>
+                  <th>Quantidade</th>
+                  <th>Item</th>
+                  <th>Especificações</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% item.forEach(item=> { %>
+                  <tr>
+                    <td>
+                      <%= item.amount %>
+                    </td>
+                    <td>
+                      <%= item.item %>
+                    </td>
+                    <td>
+                      <%= item.description %>
+                    </td>
+                    <td>
+                      <%= item.value %>
+                    </td>
+                  </tr>
+                  <% }); %>
+                    <tr>
+                      <td colspan="5" class="destaque"><strong>Status</strong></td>
+                    </tr>
+                    <tr>
+                      <td colspan="5">
+                        <%= purchase.status %>
+                      </td>
+                    </tr>
+              </tbody>
+            </table>
+            <hr>
+            <table id="tabelaCompras">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Anexo</th>
+                  <th>Data</th>
+                  <th>Abrir</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% files.forEach(file=> { %>
+                  <tr>
+                    <td>
+                      <%= file.id %>
+                    </td>
+                    <td>
+                      <%= file.fileName %>
+                    </td>
+                    <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                      <td>
+                        <%= formattedDate %>
+                      </td>
+                      <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+                  </tr>
+                  <% }); %>
+              </tbody>
 
-  </table>
+            </table>
 
-  <div class="valor-total">
-    <label>Valor Total:</label>
-    <label name="total" id="valor-display">
-      <%= purchase.total %>
-    </label>
-  </div>
+            <div class="valor-total">
+              <label>Valor Total:</label>
+              <label name="total" id="valor-display">
+                <%= purchase.total %>
+              </label>
+            </div>
 
-  <div class="assinaturas">
-    <% if(purchase.status=="Em análise pelo diretor" ) {%>
-    <p>Gestor: <label name="gestor">
-        <%= leader_employee.name %>
-      </label><br>
-      Email: <label name="emailgestor">
-        <%= leader_employee.email %>
-      </label></p>
-    <br>
-    <% } else if(purchase.status=="Pagamento em andamento" ) { %>
-    <p>Gestor: <label name="gestor">
-        <%= leader_employee.name %>
-      </label><br>
-      Email: <label name="emailgestor">
-        <%= leader_employee.email %>
-      </label></p>
-    <br>
-    <p>Diretor: <label name="diretor">
-        <%= director_employee.name %>
-      </label><br>
-      Email: <label name="emaildiretor">
-        <%= director_employee.email %>
-      </label></p>
-    <br>
-    <% }else{ 
-              if(purchase.leader_id!=null){
-              %>
-    <p>Gestor: <label name="gestor">
-        <%= leader_employee.name %>
-      </label><br>
-      Email: <label name="emailgestor">
-        <%= leader_employee.email %>
-      </label></p>
-    <br>
-    <% } if(purchase.director_id!=null){%>
+            <div class="assinaturas">
+              <% if(purchase.status=="Em análise pelo diretor" ) {%>
+                <p>Gestor: <label name="gestor">
+                    <%= leader_employee.name %>
+                  </label><br>
+                  Email: <label name="emailgestor">
+                    <%= leader_employee.email %>
+                  </label></p>
+                <br>
+                <% } else if(purchase.status=="Pagamento em andamento" ) { %>
+                  <p>Gestor: <label name="gestor">
+                      <%= leader_employee.name %>
+                    </label><br>
+                    Email: <label name="emailgestor">
+                      <%= leader_employee.email %>
+                    </label></p>
+                  <br>
+                  <p>Diretor: <label name="diretor">
+                      <%= director_employee.name %>
+                    </label><br>
+                    Email: <label name="emaildiretor">
+                      <%= director_employee.email %>
+                    </label></p>
+                  <br>
+                  <% }else{ if(purchase.leader_id!=null){ %>
+                    <p>Gestor: <label name="gestor">
+                        <%= leader_employee.name %>
+                      </label><br>
+                      Email: <label name="emailgestor">
+                        <%= leader_employee.email %>
+                      </label></p>
+                    <br>
+                    <% } if(purchase.director_id!=null){%>
 
-    <p>Diretor: <label name="diretor">
-        <%= director_employee.name %>
-      </label><br>
-      Email: <label name="emaildiretor">
-        <%= director_employee.email %>
-      </label></p>
-    <br>
-    <% } }%>
-  </div>
+                      <p>Diretor: <label name="diretor">
+                          <%= director_employee.name %>
+                        </label><br>
+                        Email: <label name="emaildiretor">
+                          <%= director_employee.email %>
+                        </label></p>
+                      <br>
+                      <% } }%>
+            </div>
 
-  <% if(user.profile.description=="leaders" && purchase.leader_id==null && purchase.director_id==null && purchase.purchase_id==null && purchase.financial_id==null ){%>
-  <div>
-    <a href="/purchase/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
-  <% }else if(user.profile.description=="purchases" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id==null && purchase.financial_id==null ) { %>
+            <% if(user.profile.description=="leaders" && purchase.leader_id==null && purchase.director_id==null && purchase.purchase_id==null && purchase.financial_id==null ){%>
+              <div class="botoes">
+                <a href="/purchase/accept/leaders/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+                <a href="/purchase/reprove/leaders/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+              </div>
+              <% }else if(user.profile.description=="purchases" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id==null && purchase.financial_id==null ) { %>
 
-  <script>
-    window.location.href = '/revision_orcament/<%= purchase.id %>'
-  </script>
+                <script>
+                  window.location.href = '/revision_orcament/<%= purchase.id %>'
+                </script>
 
-  <% }else if(user.profile.description=="directors" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
+                <% }else if(user.profile.description=="directors" && purchase.director_id==null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
 
-  <div>
-    <a href="/purchase/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
-    <a href="/purchase/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-  </div>
+                  <div class="botoes">
+                    <a href="/purchase/accept/directors/<%= purchase.id %>" class="btn btn-primary">Aceitar</a>
+                    <a href="/purchase/reprove/directors/<%= purchase.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+                  </div>
 
-  <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
+                  <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
+                    <div id='anexoFinanceiroC'>
+                      <form action="/purchase/accept/financial" method="post" enctype="multipart/form-data">
+                        <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
+                        <hr width="90%">
+                        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+                        <hr width="90%"">
+                        <button type=" submit" class="btn btn-primary">Aceitar</button>
+                      </form>
+                    </div>
+                    <% } %>
 
-  <form action="/purchase/accept/financial" method="post" enctype="multipart/form-data">
-    <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
-    <hr>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
-    <hr>
-    <button type="submit" class="btn btn-primary">Aceitar</button>
-  </form>
-
-  <% } %>
-
-</div>
-
-
-
-<div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/purchase/reprove/leaders" method="post">
-
-          <input type="text" name="id" class="form-control" value="<%= purchase.id %>" hidden>
-          <label for="message-text" class="col-form-label">Motivo:</label>
-          <textarea name="motivo" class="form-control" id="message-text"></textarea>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger">Recusar</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="reproveDirectorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="/purchase/reprove/directors" method="post">
-
-          <input type="text" name="id" class="form-control" value="<%= purchase.id %>" hidden>
-          <label for="message-text" class="col-form-label">Motivo:</label>
-          <textarea name="motivo" class="form-control" id="message-text"></textarea>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger">Recusar</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
+          </div>
+          </div>
 
 
-<%- include('../partials/footer.ejs') %>
+          <div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="/purchase/reprove/leaders" method="post">
+
+                    <input type="text" name="id" class="form-control" value="<%= purchase.id %>" hidden>
+                    <label for="message-text" class="col-form-label">Motivo:</label>
+                    <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-danger">Recusar</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="reproveDirectorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Recusar solicitação</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="/purchase/reprove/directors" method="post">
+
+                    <input type="text" name="id" class="form-control" value="<%= purchase.id %>" hidden>
+                    <label for="message-text" class="col-form-label">Motivo:</label>
+                    <textarea name="motivo" class="form-control" id="message-text"></textarea>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-danger">Recusar</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+
+          <%- include('../partials/footer.ejs') %>

@@ -24,48 +24,47 @@
   <script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
   <script src="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css"></script>
 
+  <!-- switch button bootstrap -->
+  <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
   <link rel="stylesheet" href="../../css/estiloPagamentos.css">
   <link rel="stylesheet" href="../../css/estiloCompras.css">
   <link rel="stylesheet" href="../../css/sidebar.css">
-
-   <!-- switch button bootstrap -->
-   <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
-   <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
-
 </head>
 
 <body>
 
-  <body>
-
-    <div class="wrapper d-flex align-items-stretch">
-      <nav id="sidebar">
-        <div class="custom-menu">
-          <button type="button" id="sidebarCollapse" class="btn btn-primary">
-            <i class="fa fa-bars"></i>
-            <span class="sr-only">Toggle Menu</span>
-          </button>
-        </div>
-        <a class="navbar-brand" href="#">
-          <img src="../images/logo_oficial_sf.png" alt="">
-        </a>
-
-        <ul class="list-unstyled components mb-5">
+  <div class="wrapper d-flex align-items-stretch">
+    <nav id="sidebar">
+      <div class="custom-menu">
+        <button type="button" id="sidebarCollapse" class="btn btn-primary">
+          <i class="fa fa-bars"></i>
+          <span class="sr-only">Toggle Menu</span>
+        </button>
+      </div>
+      <ul class="list-unstyled components mb-5">
+        <div id="userIcon">
           <li class="active">
-            <a href="/dashboard"><span class="fa fa-user mr-3"></span>
-              <%= user.employee.name %>
+            <a href="/dashboard">
+              <img src="../images/user.png">
+              <br>
+              <span>
+                <%= user.employee.name %>
+              </span>
             </a>
           </li>
-          <li>
-            <a href="/dashboard"><span class="fa fa-home mr-3"></span> Dashboard</a>
-          </li>
-          <li>
-            <a href="/purchases"><span class="fa fa-sticky-note mr-3"></span>Compras/Serviços</a>
-          </li>
-          <li>
-            <a href="/payments"><span class="fa fa-sticky-note mr-3"></span>Pagamentos</a>
-          </li>
-          <%  if(user.permissions.user_registration == 1){ %>
+        </div>
+        <li>
+          <a href="/dashboard"><span class="fa fa-home mr-3"></span> Dashboard</a>
+        </li>
+        <li>
+          <a href="/purchases"><span class="fa fa-sticky-note mr-3"></span>Compras/Serviços</a>
+        </li>
+        <li>
+          <a href="/payments"><span class="fa fa-sticky-note mr-3"></span>Pagamentos</a>
+        </li>
+        <% if(user.permissions.user_registration==1){ %>
           <li>
             <a href="/registrations_token"><span class="fa fa-address-book mr-3"></span>Cadastro</a>
           </li>
@@ -79,14 +78,14 @@
             <a href=" /suppliers"><span class="fa fa-address-book mr-3""></span>Fornecedores</a>
             </li>
             <li>
-              <a href="/suppliers_register"><span class="fa fa-address-book mr-3""></span>Cadastrar Fornecedores</a>
+              <a href=" /suppliers_register"><span class="fa fa-address-book mr-3""></span>Cadastrar Fornecedores</a>
               </li>   
             <% } %>
             <li>
               <a href=" /logout"><span class="fa fa-sign-out mr-3"></span>Logout</a>
           </li>
-        </ul>
-      </nav>
+      </ul>
+    </nav>
 
-      <div id="content" class="p-4 p-md-5 pt-5">
-        <!-- Page Content  -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+      <!-- Page Content  -->

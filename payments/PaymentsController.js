@@ -17,8 +17,6 @@ const Profile = require('../users/Profile');
 const User = require('../users/User');
 const adminAuth = require('../middlewares/adminAuth');
 
-
-
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
@@ -42,7 +40,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create the upload middleware
 
 
-router.post('/payment/accept/financial', upload.array('files'), async (req, res) => {
+router.post('/payment/accept/financial', upload.array('files'), adminAuth, async (req, res) => {
 
    const id = req.body.payment_id;
    const files = req.files;
@@ -136,7 +134,7 @@ res.redirect('/dashboard/pending?success=true');
 
 
 
-router.get('/payment/accept/purchases/:id', async (req, res) => {
+router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
@@ -216,7 +214,7 @@ router.get('/payment/accept/purchases/:id', async (req, res) => {
 
 });
 
-router.get('/payment/reprove/purchases/:id', (req, res) => {
+router.get('/payment/reprove/purchases/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
@@ -224,7 +222,7 @@ router.get('/payment/reprove/purchases/:id', (req, res) => {
 
 });
 
-router.post('/payment/reprove/purchases', async (req, res) => {
+router.post('/payment/reprove/purchases', adminAuth, async (req, res) => {
 
   const id = req.body.id;
 
@@ -297,7 +295,7 @@ emails.forEach(async (email) => {
 });
 
 
-router.get('/payment/accept/directors/:id', async (req, res) => {
+router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
@@ -373,7 +371,7 @@ router.get('/payment/accept/directors/:id', async (req, res) => {
 
 });
 
-router.get('/payment/reprove/directors/:id', (req, res) => {
+router.get('/payment/reprove/directors/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
@@ -382,7 +380,7 @@ router.get('/payment/reprove/directors/:id', (req, res) => {
 
 });
 
-router.post('/payment/reprove/directors', async (req, res) => {
+router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   const id = req.body.id;
 
@@ -455,7 +453,7 @@ emails.forEach(async (email) => {
 
 
 
-router.get('/payment/accept/leaders/:id', async (req, res) => {
+router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
   
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
@@ -530,7 +528,7 @@ router.get('/payment/accept/leaders/:id', async (req, res) => {
 });
 
 
-router.get('/payment/reprove/leaders/:id', (req, res) => {
+router.get('/payment/reprove/leaders/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
@@ -539,7 +537,7 @@ router.get('/payment/reprove/leaders/:id', (req, res) => {
 });
 
 
-router.post('/payment/reprove/leaders', async (req, res) => {
+router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   const id = req.body.id;
 
@@ -623,7 +621,7 @@ emails.forEach(async (email) => {
 
 
 
-router.get('/payments/:id', async (req, res) => {
+router.get('/payments/:id', adminAuth, async (req, res) => {
  
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
@@ -712,7 +710,7 @@ router.get('/payments/:id', async (req, res) => {
 });
 
 
-router.get('/payment/download/:arquivo', (req, res) => {
+router.get('/payment/download/:arquivo', adminAuth, (req, res) => {
   // Obter o nome do arquivo
   const fileName = req.params.arquivo;
   const filePath = `uploads/${fileName}`;
@@ -758,7 +756,7 @@ router.get('/payments', adminAuth, (req, res) => {
   });
 });
 
-router.post('/upload/payments', upload.array('files'), async(req, res) => {
+router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res) => {
   const supplier = req.body.supplier;
   console.log("supplier: " + supplier);
   const company = req.body.company;

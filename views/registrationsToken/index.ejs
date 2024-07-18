@@ -1,90 +1,93 @@
-<%-  include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs') %>
 
-<h2>Gerar Token</h2>
-
-<form id="form" action="/generate_token" method="post">
-  <div class="form-row">
-    <div class="form-group col-md-4">
-      <label for="inputState">Tipo usuário:</label>
-      <select name="length" id="inputState" class="form-control" required>
-        <option value="" selected>Selecione</option>
-        <option value="5">Gerente</option>
-        <option value="6">Gestor</option>
-        <option value="7">Diretor</option>
-        <option value="8">Compras</option>
-        <option value="9">Financeiro</option>
-        <option value="10">T.I</option>
-      </select>
-    </div>
+  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+  <div class="sobreposicaoFormToken">
+    <h2>Gerar Token</h2>
   </div>
-  <input type="email" name="email" class="form-control" placeholder="Informe o email:" required>
-  <hr>
-  <button type="submit" class="btn btn-info">Gerar Token</button>
-</form>
 
-<hr>
+  <form id="form" action="/generate_token" method="post" style="border: 1px solid #000; padding: 40px 15px 10px 50px;width: 50%; margin-left: auto; margin-right: auto;">
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="inputState">Tipo usuário:</label>
+        <select name="length" id="inputState" class="form-control" required>
+          <option value="" selected>Selecione</option>
+          <option value="5">Gerente</option>
+          <option value="6">Gestor</option>
+          <option value="7">Diretor</option>
+          <option value="8">Compras</option>
+          <option value="9">Financeiro</option>
+          <option value="10">T.I</option>
+        </select>
+      </div>
+    </div>
+    <input type="email" name="email" class="form-control" placeholder="Informe o email:" required style="width: 60%;">
+    <br>
+    <button type="submit" class="btn btn-info">Gerar Token</button>
+  </form>
 
-<% if(message) {  %>
-  <script>
-       $(document).ready(function() {
-         $('#message').modal('show');
+  <hr style="width: 90%;">
+
+  <% if(message) { %>
+    <script>
+      $(document).ready(function () {
+        $('#message').modal('show');
       });
-  </script>
-  <% } %>
-
-
-  <script type="text/javascript">
-
-    $("#form").submit(function(){
-          
-      $(document).ready(function() {
-           $('#loadingModal').modal('show');
-        })	
-      });
-    
-    
     </script>
-  
+    <% } %>
 
-  <!-- Modal -->
-  <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <%= message %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            Aguarde, gerando token...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <script type="text/javascript">
+
+        $("#form").submit(function () {
+
+          $(document).ready(function () {
+            $('#loadingModal').modal('show');
+          })
+        });
+
+
+      </script>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <%= message %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Aguarde, gerando token...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
-<%- include('../partials/footer.ejs') %>
+      <%- include('../partials/footer.ejs') %>

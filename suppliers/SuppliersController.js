@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const Supplier = require('./Supplier')
+const Supplier = require('./Supplier');
+const adminAuth = require('../middlewares/adminAuth');
 
 
 
-router.get('/suppliers', async (req, res) => {
+router.get('/suppliers', adminAuth, async (req, res) => {
 
     const suppliers = await Supplier.findAll();
 
@@ -20,14 +21,14 @@ router.get('/suppliers', async (req, res) => {
 
 });
 
-router.get('/suppliers_register', async (req, res) => {
+router.get('/suppliers_register', adminAuth, async (req, res) => {
 
     res.render('suppliers/register.ejs', { user: req.session.user, message: '' });
 
 });
 
 
-router.get('/activate_supplier/:id', (req, res) => {
+router.get('/activate_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
@@ -46,7 +47,7 @@ router.get('/activate_supplier/:id', (req, res) => {
 });
 
 
-router.get('/desactivate_supplier/:id', (req, res) => {
+router.get('/desactivate_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
@@ -65,10 +66,7 @@ router.get('/desactivate_supplier/:id', (req, res) => {
 });
 
 
-
-
-
-router.get('/delete_supplier/:id', (req, res) => {
+router.get('/delete_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
@@ -85,7 +83,7 @@ router.get('/delete_supplier/:id', (req, res) => {
 
 })
 
-router.post('/register_supplier', (req, res) => {
+router.post('/register_supplier', adminAuth, (req, res) => {
     const name = req.body.name;
     const cnpj = req.body.cnpj;
 
