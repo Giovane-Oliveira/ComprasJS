@@ -709,7 +709,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = req.body.email;
     let subject = "Cadastro";
-    let text = "Complete seu cadastro: \n" + "http://10.0.16.17:3000/registrations/" + token + "\n";
+    let text = "Complete seu cadastro: \n" + "http://52.156.72.125:3001/registrations/" + token + "\n";
 
     let mailOptions = {
         from,
@@ -898,7 +898,7 @@ router.post('/recover/alter_password', async (req, res) => {
             let from = "nao-responda@provida.med.br";
             let to = email;
             let subject = "Recuperação da Conta";
-            let text = "Altere sua senha: \n" + "http://10.0.16.17:3000/recover/alter_password/" + email + "/" + token + "\n";
+            let text = "Altere sua senha: \n" + "http://52.156.72.125:3001/recover/alter_password/" + email + "/" + token + "\n";
 
             let mailOptions = {
                 from,

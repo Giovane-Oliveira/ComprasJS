@@ -266,7 +266,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
     let text = "Compras aceitou a solicitação de pagamento.\n"
     + "\n\n Comprador(a): " + purchases.name + 
     "\n E-mail: " + purchases.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+    "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
         from,
@@ -406,7 +406,7 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
      let text = "Finaceiro efetuou o pagamento.\n"
      + "\n\n Colaborador(a): " + financial.name + 
      "\n E-mail: " + financial.email +
-     "\n\n Acesse: http://10.0.16.17:3000";
+     "\n\n Acesse: http://52.156.72.125:3001";
  
      let mailOptions = {
          from,
@@ -468,7 +468,7 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
     let text = "Gestor aceitou a solicitação de pagamento.\n"
     + "\n\n Gestor(a): " + leader.name + 
     "\n E-mail: " + leader.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+    "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
         from,
@@ -573,7 +573,7 @@ emails.forEach(async (email) => {
   + "Motivo: " + motivo
   + "\n\n Gestor(a): " + leader.name + 
   "\n E-mail: " + leader.email +
-  "\n\n Acesse: http://10.0.16.17:3000";
+  "\n\n Acesse: http://52.156.72.125:3001";
 
   let mailOptions = {
       from,
@@ -637,7 +637,7 @@ router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
     let text = "Diretor aceitou a solicitação de pagamento.\n"
     + "\n\n Diretor(a): " + director.name + 
     "\n E-mail: " + director.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+    "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
         from,
@@ -749,7 +749,7 @@ emails.forEach(async (email) => {
   + "Motivo: " + motivo
   + "\n\n Diretor(a): " + director.name + 
   "\n E-mail: " + director.email +
-  "\n\n Acesse: http://10.0.16.17:3000";
+  "\n\n Acesse: http://52.156.72.125:3001";
 
   let mailOptions = {
       from,
@@ -1003,7 +1003,7 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
     let text = "Nova solicitação de compras/serviços gerada.\n"
     + "\n\n Gerente: " + req.session.user.employee.name + 
     "\n E-mail: " + req.session.user.employee.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+    "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
         from,

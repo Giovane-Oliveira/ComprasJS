@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 const Supplier = require('../suppliers/Supplier');
 const Company = require('../companies/Company');
 const Payment_Method = require('../payments/Payment_method');
-const File =  require( '../users/File');
+const File = require('../users/File');
 const Employee = require('../employees/Employee');
 const Sector = require('../users/Sector');
 const Unit = require('../users/Unit');
@@ -16,14 +16,17 @@ const nodemailer = require('nodemailer');
 const Profile = require('../users/Profile');
 const User = require('../users/User');
 const adminAuth = require('../middlewares/adminAuth');
+const Payment_Condition = require('../payments/Payment_condition')
+const Movement = require('../movements/Movement');
+
 
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
   secure: false, // Use TLS ou SSL
   auth: {
-      user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
-      pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+    user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+    pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
   }
 });
 
@@ -42,93 +45,104 @@ const upload = multer({ storage: storage }); // Create the upload middleware
 
 router.post('/payment/accept/financial', upload.array('files'), adminAuth, async (req, res) => {
 
-   const id = req.body.payment_id;
-   const files = req.files;
+  const id = req.body.payment_id;
+  const files = req.files;
 
-   const payment = await Payment.findByPk(id);
-   const manager = await Employee.findByPk(payment.employee_id);
-   const leader = await Employee.findByPk(payment.leader_id);
-   const director = await Employee.findByPk(payment.director_id);
-   const purchase = await Employee.findByPk(payment.purchase_id);
-   const financial = await Employee.findByPk(req.session.user.employee.id);
-  
-   const emails = [manager.email, leader.email, director.email, purchase.email, financial.email];
- 
-   // Send emails to all recipients
-   emails.forEach(async (email) => {
- 
-     console.log("Email: " + email);
- 
-     let from = "nao-responda@provida.med.br";
-     let to = email;
-     let subject = `Solicitação #${id}`;
-     let text = "Finaceiro efetuou o pagamento.\n"
-     + "\n\n Colaborador(a): " + financial.name + 
-     "\n E-mail: " + financial.email +
-     "\n\n Acesse: http://10.0.16.17:3000";
- 
-     let mailOptions = {
-         from,
-         to,
-         subject,
-         text
-     };
- 
-     try {
-         await transporter.sendMail(mailOptions);
-         console.log('Email sent successfully!');
-     } catch (error) {
-       console.log("Erro ao enviar o email: " + error);
-     }
-   });
- 
-   // Update payment status
-   Payment.update({
-     status: 'APROVADO',
-     financial_id: req.session.user.employee.id
-   }, {
-     where: {
-       id: id
-     }
-   })
-   .then(result => {
-     console.log('Payment updated successfully:', result);
-   })
-   .catch(error => {
-     console.error('Error updating payment:', error);
-   });
+  const payment = await Payment.findByPk(id);
+  const manager = await Employee.findByPk(payment.employee_id);
+  const leader = await Employee.findByPk(payment.leader_id);
+  const director = await Employee.findByPk(payment.director_id);
+  const purchase = await Employee.findByPk(payment.purchase_id);
+  const financial = await Employee.findByPk(req.session.user.employee.id);
 
-// APROVADO financial_id
+  const emails = [manager.email, leader.email, director.email, purchase.email, financial.email];
 
-// Check if any files were uploaded
-if (files && files.length > 0) {
-  // Processar os dados e o arquivo aqui
-  //console.log(`Nome: ${nome}`);
-  // Processar arquivos
-  for (const file of files) {
-    // Salvar o arquivo
-    const fileName = file.originalname;
-    const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-    const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-    fs.moveSync(file.path, filePath);
-    console.log(`Arquivo recebido: ${file.originalname}`);
-    // Salvar arquivo no diretório de destino 
 
-  await File.create({
-      fileName: uniqueFileName,
-      payment_id: id
-    }).catch(error => {
-      console.error('Error creating file:', error);
+  await Movement.create({
+
+    financial_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'APROVADO'
+
+  });
+
+
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+
+    console.log("Email: " + email);
+
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Finaceiro efetuou o pagamento.\n"
+      + "\n\n Colaborador(a): " + financial.name +
+      "\n E-mail: " + financial.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
+
+    let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  // Update payment status
+  Payment.update({
+    status: 'APROVADO',
+    financial_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
     });
 
+  // APROVADO financial_id
+
+  // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      await File.create({
+        fileName: uniqueFileName,
+        payment_id: id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+
+  } else {
+    console.error('No files were uploaded.');
   }
 
-} else {
-  console.error('No files were uploaded.');
-}
 
-
-res.redirect('/dashboard/pending?success=true');
+  res.redirect('/dashboard/pending?success=true');
 
 });
 
@@ -142,14 +156,23 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
   const leader = await Employee.findByPk(payment.leader_id);
   const director = await Employee.findByPk(payment.director_id);
   const purchase = await Employee.findByPk(req.session.user.employee.id);
-  
+
+  //movements
+  await Movement.create({
+
+    purchase_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'Pagamento em andamento',
+
+  });
+  //movements
 
   const financial = await Profile.findAll({
     where: {
       description: 'financial'
     }
   });
- 
+
   const financialLoginsPromises = financial.map(async (finance) => {
     let user = await User.findOne({
       where: {
@@ -161,7 +184,7 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
 
   const financialLogins = await Promise.all(financialLoginsPromises);
 
-  
+
   const emails = [manager.email, leader.email, director.email, purchase.email, ...financialLogins];
 
   // Send emails to all recipients
@@ -173,20 +196,20 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Compras aceitou a solicitação de pagamento.\n"
-    + "\n\n Comprador(a): " + purchase.name + 
-    "\n E-mail: " + purchase.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+      + "\n\n Comprador(a): " + purchase.name +
+      "\n E-mail: " + purchase.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+      from,
+      to,
+      subject,
+      text
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
     } catch (error) {
       console.log("Erro ao enviar o email: " + error);
     }
@@ -201,12 +224,12 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-  })
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
   //Pagamento em andamento purchase_id
 
@@ -242,7 +265,17 @@ router.post('/payment/reprove/purchases', adminAuth, async (req, res) => {
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
-const emails = [manager.email, director.email, leader.email, purchase.email];
+  const emails = [manager.email, director.email, leader.email, purchase.email];
+
+  //movement
+  await Movement.create({
+
+    purchase_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'REPROVADO'
+
+  });
+  //movement
 
   Payment.update({
 
@@ -253,42 +286,42 @@ const emails = [manager.email, director.email, leader.email, purchase.email];
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-})
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
-emails.forEach(async (email) => {
+  emails.forEach(async (email) => {
 
-  let from = "nao-responda@provida.med.br";
-  let to = email;
-  let subject = `Solicitação #${id}`;
-  let text = "Setor de compras recusou a solicitação de pagamento.\n"
-  + "Motivo: " + motivo
-  + "\n\n Comprador(a): " + purchase.name + 
-  "\n E-mail: " + purchase.email +
-  "\n\n Acesse: http://10.0.16.17:3000";
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Setor de compras recusou a solicitação de pagamento.\n"
+      + "Motivo: " + motivo
+      + "\n\n Comprador(a): " + purchase.name +
+      "\n E-mail: " + purchase.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
-  let mailOptions = {
+    let mailOptions = {
       from,
       to,
       subject,
       text
-  };
+    };
 
-  try {
+    try {
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully!');
     } catch (error) {
 
       console.log("Erro ao enviar o email: " + error);
 
-  }
+    }
 
 
-});
+  });
 
   res.redirect('/dashboard?error=true');
 
@@ -303,13 +336,23 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
   const leader = await Employee.findByPk(payment.leader_id);
   const director = await Employee.findByPk(req.session.user.employee.id);
 
- 
+
+  //movements
+  await Movement.create({
+
+    director_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'Em análise pelo compras',
+
+  });
+  //movements
+
   const purchases = await Profile.findAll({
     where: {
       description: 'purchases'
     }
   });
- 
+
   const purchaseLoginsPromises = purchases.map(async (purchase) => {
     let user = await User.findOne({
       where: {
@@ -321,7 +364,7 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
 
   const purchaseLogins = await Promise.all(purchaseLoginsPromises);
 
-  
+
   const emails = [manager.email, leader.email, director.email, ...purchaseLogins];
 
   // Send emails to all recipients
@@ -330,20 +373,20 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Diretor aceitou a solicitação de pagamento.\n"
-    + "\n\n Diretor(a): " + director.name + 
-    "\n E-mail: " + director.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+      + "\n\n Diretor(a): " + director.name +
+      "\n E-mail: " + director.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+      from,
+      to,
+      subject,
+      text
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
     } catch (error) {
       console.log("Erro ao enviar o email: " + error);
     }
@@ -358,16 +401,16 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-  })
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
   res.redirect('/dashboard/pending?success=true');
 
-//Em análise pelo compras director_id
+  //Em análise pelo compras director_id
 
 });
 
@@ -400,7 +443,17 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
-const emails = [manager.email, leader.email, director.email];
+  const emails = [manager.email, leader.email, director.email];
+
+  //movement
+  await Movement.create({
+
+    director_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'REPROVADO'
+
+  });
+  //movement
 
   Payment.update({
 
@@ -411,41 +464,41 @@ const emails = [manager.email, leader.email, director.email];
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-})
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
-emails.forEach(async (email) => {
+  emails.forEach(async (email) => {
 
-  let from = "nao-responda@provida.med.br";
-  let to = email;
-  let subject = `Solicitação #${id}`;
-  let text = "Diretor recusou a solicitação de pagamento.\n"
-  + "Motivo: " + motivo
-  + "\n\n Diretor(a): " + director.name + 
-  "\n E-mail: " + director.email +
-  "\n\n Acesse: http://10.0.16.17:3000";
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Diretor recusou a solicitação de pagamento.\n"
+      + "Motivo: " + motivo
+      + "\n\n Diretor(a): " + director.name +
+      "\n E-mail: " + director.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
-  let mailOptions = {
+    let mailOptions = {
       from,
       to,
       subject,
       text
-  };
+    };
 
-  try {
+    try {
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully!');
     } catch (error) {
 
       console.log("Erro ao enviar o email: " + error);
 
-  }
+    }
 
-});
+  });
 
   res.redirect('/dashboard?error=true');
 
@@ -454,11 +507,21 @@ emails.forEach(async (email) => {
 
 
 router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
-  
+
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
   const manager = await Employee.findByPk(payment.employee_id);
   const leader = await Employee.findByPk(req.session.user.employee.id);
+
+  //movements
+  await Movement.create({
+
+    leader_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'Em análise pelo diretor'
+
+  });
+  //movements
 
   // Fetch all directors asynchronously
   const directors = await Profile.findAll({
@@ -489,20 +552,20 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Gestor aceitou a solicitação de pagamento.\n"
-    + "\n\n Diretor(a): " + leader.name + 
-    "\n E-mail: " + leader.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+      + "\n\n Diretor(a): " + leader.name +
+      "\n E-mail: " + leader.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+      from,
+      to,
+      subject,
+      text
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
     } catch (error) {
       console.log("Erro ao enviar o email: " + error);
     }
@@ -517,12 +580,12 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-  })
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
   res.redirect('/dashboard/pending?success=true');
 });
@@ -557,16 +620,25 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
-if(payment == undefined){
-  console.log("Payment undefinied")
-}else if(manager == undefined){
-  console.log("Manager undefinied")
-}else if(leader == undefined){
-  console.log("Leader undefinied")
-}
+  if (payment == undefined) {
+    console.log("Payment undefinied")
+  } else if (manager == undefined) {
+    console.log("Manager undefinied")
+  } else if (leader == undefined) {
+    console.log("Leader undefinied")
+  }
 
+  //movement
+  await Movement.create({
 
-const emails = [manager.email, leader.email];
+    leader_id: req.session.user.employee.id,
+    payment_id: payment.id,
+    status: 'REPROVADO'
+
+  });
+  //movement
+
+  const emails = [manager.email, leader.email];
 
   Payment.update({
 
@@ -577,43 +649,43 @@ const emails = [manager.email, leader.email];
       id: id
     }
   })
-  .then(result => {
-    console.log('Payment updated successfully:', result);
-})
-  .catch(error => {
-    console.error('Error updating payment:', error);
-  });
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
 
-emails.forEach(async (email) => {
+  emails.forEach(async (email) => {
 
-  console.log("Email: " + email);
+    console.log("Email: " + email);
 
-  let from = "nao-responda@provida.med.br";
-  let to = email;
-  let subject = `Solicitação #${id}`;
-  let text = "Gestor recusou a solicitação de pagamento.\n"
-  + "Motivo: " + motivo
-  + "\n\n Diretor(a): " + leader.name + 
-  "\n E-mail: " + leader.email +
-  "\n\n Acesse: http://10.0.16.17:3000";
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${id}`;
+    let text = "Gestor recusou a solicitação de pagamento.\n"
+      + "Motivo: " + motivo
+      + "\n\n Diretor(a): " + leader.name +
+      "\n E-mail: " + leader.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
-  let mailOptions = {
+    let mailOptions = {
       from,
       to,
       subject,
       text
-  };
+    };
 
-  try {
+    try {
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully!');
     } catch (error) {
 
       console.log("Erro ao enviar o email: " + error);
 
-  }
+    }
 
-});
+  });
 
   res.redirect('/dashboard?error=true');
 
@@ -622,46 +694,49 @@ emails.forEach(async (email) => {
 
 
 router.get('/payments/:id', adminAuth, async (req, res) => {
- 
+
   const id = req.params.id;
   const payment = await Payment.findByPk(id);
 
 
-  if(payment.leader_id != null){
+  if (payment.leader_id != null) {
 
     console.log("leader_id: " + payment.leader_id);
     leader_employee = await Employee.findByPk(payment.leader_id);
 
- }
- 
- if(payment.director_id != null){
+  }
 
-   director_employee = await Employee.findByPk(payment.director_id);
+  if (payment.director_id != null) {
 
- }
+    director_employee = await Employee.findByPk(payment.director_id);
 
- if(payment.purchase_id != null){
+  }
 
-     purchase_employee = await Employee.findByPk(payment.purchase_id);
+  if (payment.purchase_id != null) {
+
+    purchase_employee = await Employee.findByPk(payment.purchase_id);
 
     console.log("purchase_employee: " + purchase_employee)
 
 
- }
+  }
 
- if(payment.financial_id != null){
+  if (payment.financial_id != null) {
 
-      financial_employee = await Employee.findByPk(payment.financial_id);
+    financial_employee = await Employee.findByPk(payment.financial_id);
 
- }
-
-
+  }
 
   const employee = await Employee.findByPk(payment.employee_id);
   const supplier = await Supplier.findByPk(payment.supplier_id);
   const sector = await Sector.findByPk(employee.sector_id);
   const unit = await Unit.findByPk(employee.unit_id);
   const payment_method = await Payment_Method.findByPk(payment.id);
+  const payment_condition = await Payment_Condition.findOne({
+    where: {
+      payment_method_id: payment_method.id
+    }
+  });
   const company = await Company.findByPk(payment.company_id);
 
 
@@ -670,42 +745,118 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
       payment_id: payment.id
     }
   });
-  
+
   if (payment == undefined) {
     console.log("Payment undefinied")
-  }else if (employee == undefined) {
+  } else if (employee == undefined) {
     console.log("Employee undefinied")
-  }else if (supplier == undefined) {
+  } else if (supplier == undefined) {
     console.log("Supplier undefinied")
-  }else if (sector == undefined) {
+  } else if (sector == undefined) {
     console.log("Sector undefinied")
-  }else if (unit == undefined) {
+  } else if (unit == undefined) {
     console.log("Unit undefinied")
-  }else if (payment_method == undefined) {
+  } else if (payment_method == undefined) {
     console.log("Payment_method undefinied")
-  }else if (company == undefined) {
+  } else if (company == undefined) {
     console.log("Company undefinied")
-  }
-
-  if(req.query.modal == 'leaders'){
-
-    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders'});
-
-  }else if(req.query.modal == 'directors'){
-
-    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors'});
-
-  }else if(req.query.modal == 'purchases'){
-
-    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases'});
-
-  }else{
-
-    res.render('payments/show.ejs', { leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: ''});
-
+  } else if (payment_condition == undefined) {
+    console.log("Payment_condition undefinied")
   }
 
 
+    const movements = await Movement.findAll({
+      where: {
+        payment_id: payment.id
+      }
+    });
+
+    if (movements == undefined) {
+      console.log("Movements undefinied")
+
+    }
+
+
+
+
+     const movement_users =  movements.map(async (movement) => {
+
+      if (movement.employee_id != undefined) {
+
+       let manager_employee = await Employee.findOne({
+          where: {
+            id: movement.employee_id
+          }
+        });
+        console.log('Gerente carregado!')
+        return manager_employee; 
+
+      } else if (movement.leader_id != undefined) {
+
+       let leader_employee = await Employee.findOne({
+          where: {
+            id: movement.leader_id
+          }
+        });
+
+        console.log('Gestor carregado!');
+        return leader_employee;
+       
+      } else if (movement.director_id != undefined) {
+
+       let director_employee = await Employee.findOne({
+          where: {
+            id: movement.director_id
+          }
+        });
+
+        console.log('Diretor carregado!');
+        return director_employee;
+    
+      } else if (movement.purchase_id != undefined) {
+
+        let purchase_employee = await Employee.findOne({
+          where: {
+            id: movement.purchase_id
+          }
+        });
+        console.log('Compras carregado!');
+        return purchase_employee;
+
+      } else if (movement.financial_id != undefined) {
+
+       let financial_employee = await Employee.findOne({
+          where: {
+            id: movement.financial_id
+          }
+        });
+        console.log('Financeiro carregado!');
+        return financial_employee;
+
+      }
+
+    });
+
+    const move_users = await Promise.all(movement_users);
+   
+  if (req.query.modal == 'leaders') {
+
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
+
+  } else if (req.query.modal == 'directors') {
+
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors' });
+
+  } else if (req.query.modal == 'purchases') {
+
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases' });
+
+  } else {
+
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: '' });
+
+  }
 
 });
 
@@ -723,7 +874,7 @@ router.get('/payment/download/:arquivo', adminAuth, (req, res) => {
 
   // Enviar o arquivo como download
   res.header('Content-Disposition', `inline; filename="${fileName}"`);
-  res.sendFile(fileName,  { root: 'uploads' });
+  res.sendFile(fileName, { root: 'uploads' });
 });
 
 router.get('/payments', adminAuth, (req, res) => {
@@ -738,16 +889,16 @@ router.get('/payments', adminAuth, (req, res) => {
       }
     }).then(companies => {
 
-      if(req.query.success){
+      if (req.query.success) {
         let message = "Solicitação de pagamento gerada com sucesso!";
         res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: message });
 
-      }else{
+      } else {
         res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: '' });
 
       }
 
-      
+
 
     });
 
@@ -756,7 +907,7 @@ router.get('/payments', adminAuth, (req, res) => {
   });
 });
 
-router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res) => {
+router.post('/upload/payments', upload.array('files'), adminAuth, async (req, res) => {
   const supplier = req.body.supplier;
   console.log("supplier: " + supplier);
   const company = req.body.company;
@@ -788,12 +939,18 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res
   const cnpj = req.body.cnpj;
   console.log("cnpj: " + cnpj);
 
+  const payment_condition = req.body.payment_condition;
+  console.log("payment_condition: " + payment_condition);
+  const amount_parcelable = req.body.amount_parcelable;
+  console.log("amount_parcelable: " + amount_parcelable);
+
+
   const files = req.files;
 
   var dateFormat = expiration.split("/").reverse().join("-");
   console.log("dataFormata: " + dateFormat);
 
- const newPayment = await Payment.create({
+  const newPayment = await Payment.create({
     /*where: {
       employee_id: req.session.user.employee.id
     },*/
@@ -808,7 +965,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res
     console.error('Error creating payment:', error);
   });
 
-  await Payment_Method.create({
+  const newPayment_Method = await Payment_Method.create({
 
     payment_method: payment_method,
     bank: bank,
@@ -827,6 +984,81 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res
     console.error('Error creating payment_method:', error);
   });
 
+  await Payment_Condition.create({
+    type_condition: payment_condition,
+    amount_parcelable: amount_parcelable,
+    payment_method_id: newPayment_Method.id
+  }).catch(error => {
+    console.error('Error creating payment_condition:', error);
+  });
+
+  const newUser = await User.findOne({
+    where: {
+      employee_id: newPayment.employee_id
+    }
+  });
+
+  const newProfile = await Profile.findOne({
+    where: {
+      id: newUser.profile_id
+    }
+  });
+
+  if (newProfile.description == 'managers') {
+
+    await Movement.create({
+
+      employee_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+
+    });
+
+  } else if (newProfile.description == 'leaders') {
+
+
+    await Movement.create({
+
+      leader_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'Em análise pelo diretor',
+
+    });
+
+
+  } else if (newProfile.description == 'directors') {
+
+    await Movement.create({
+
+      director_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'Em análise pelo compras',
+
+    });
+
+  } else if (newProfile.description == 'purchases') {
+
+    await Movement.create({
+
+      purchase_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'Pagamento em andamento',
+
+    });
+
+  } else if (newProfile.description == 'financial') {
+
+    await Movement.create({
+
+      financial_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'APROVADO',
+
+    });
+
+
+  }
+
+
   // Check if any files were uploaded
   if (files && files.length > 0) {
     // Processar os dados e o arquivo aqui
@@ -841,7 +1073,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res
       console.log(`Arquivo recebido: ${file.originalname}`);
       // Salvar arquivo no diretório de destino 
 
-    await File.create({
+      await File.create({
         fileName: uniqueFileName,
         payment_id: newPayment.id
       }).catch(error => {
@@ -882,20 +1114,20 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async(req, res
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
     let text = "Nova solicitação de pagamento gerada.\n"
-    + "\n\n Gerente: " + req.session.user.employee.name + 
-    "\n E-mail: " + req.session.user.employee.email +
-    "\n\n Acesse: http://10.0.16.17:3000";
+      + "\n\n Gerente: " + req.session.user.employee.name +
+      "\n E-mail: " + req.session.user.employee.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
 
     let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+      from,
+      to,
+      subject,
+      text
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
     } catch (error) {
       console.log("Erro ao enviar o email: " + error);
     }
