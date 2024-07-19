@@ -134,7 +134,7 @@
                  
                     movements.forEach(movement => { 
                     move_users.forEach(move_user => { 
-                   if (movement.leader_id == move_user.id && movement.status == 'Em análise pelo diretor' && gestor == false) { 
+                   if (movement.leader_id == move_user.id && movement.status == 'Em análise pelo compras' && gestor == false) { 
                      let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
                   <tr>
                     <td colspan="5">
@@ -150,7 +150,7 @@
                       <%= formattedDate %>
                       </td>
                   </tr>
-                  <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Em análise pelo compras' && diretor == false) {
+                  <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Pagamento em andamento' && diretor == false) {
                     let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });  %>
                   <tr>
                     <td colspan="5">
@@ -166,7 +166,7 @@
                       <%= formattedDate %>
                       </td>
                   </tr>
-                  <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Pagamento em andamento' && compras == false) { 
+                  <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Em análise pelo diretor' && compras == false) { 
                     let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
                   <tr>
                     <td colspan="5">

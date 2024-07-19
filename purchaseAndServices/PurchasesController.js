@@ -261,7 +261,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
     await Movement.create({
 
       purchase_id: req.session.user.employee.id,
-      purchase_id: purchase.id,
+      purchases_id: purchase.id,
       status: 'Em análise pelo diretor'
   
     });
@@ -354,7 +354,7 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
     await Movement.create({
 
       financial_id: req.session.user.employee.id,
-      purchases_id: purchase.id,
+      purchases_id: id,
       status: 'APROVADO'
   
     });
@@ -967,6 +967,20 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
   });
 
   const move_users = await Promise.all(movement_users);
+   let gestor = false;
+  movements.forEach(movement => {
+
+    move_users.forEach(user => {
+
+      if (movement.leader_id == user.id && movement.status == 'Em análise pelo compras' && gestor == false) { 
+
+        console.log("Gestor:" + user.name);
+
+      }
+
+    });
+
+  });
 
   if(req.query.modal == 'leaders'){
 
