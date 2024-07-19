@@ -777,8 +777,6 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
     }
 
 
-
-
      const movement_users =  movements.map(async (movement) => {
 
       if (movement.employee_id != undefined) {

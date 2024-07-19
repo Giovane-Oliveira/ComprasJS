@@ -117,49 +117,143 @@
               </label>
             </div>
 
-            <div class="assinaturas">
-              <% if(purchase.status=="Em análise pelo diretor" ) {%>
-                <p>Gestor: <label name="gestor">
-                    <%= leader_employee.name %>
-                  </label><br>
-                  Email: <label name="emailgestor">
-                    <%= leader_employee.email %>
-                  </label></p>
-                <br>
-                <% } else if(purchase.status=="Pagamento em andamento" ) { %>
-                  <p>Gestor: <label name="gestor">
-                      <%= leader_employee.name %>
-                    </label><br>
-                    Email: <label name="emailgestor">
-                      <%= leader_employee.email %>
-                    </label></p>
-                  <br>
-                  <p>Diretor: <label name="diretor">
-                      <%= director_employee.name %>
-                    </label><br>
-                    Email: <label name="emaildiretor">
-                      <%= director_employee.email %>
-                    </label></p>
-                  <br>
-                  <% }else{ if(purchase.leader_id!=null){ %>
-                    <p>Gestor: <label name="gestor">
-                        <%= leader_employee.name %>
-                      </label><br>
-                      Email: <label name="emailgestor">
-                        <%= leader_employee.email %>
-                      </label></p>
-                    <br>
-                    <% } if(purchase.director_id!=null){%>
-
-                      <p>Diretor: <label name="diretor">
-                          <%= director_employee.name %>
-                        </label><br>
-                        Email: <label name="emaildiretor">
-                          <%= director_employee.email %>
-                        </label></p>
-                      <br>
-                      <% } }%>
-            </div>
+            <hr>
+            <table  id="tabelaPagamento">
+           
+              <tbody>
+               
+                  <%
+           
+                  let gestor = false;
+                  let diretor = false;
+                  let compras = false;
+                  let financeiro = false;
+                  let reprove_gestor = false;
+                  let reprove_diretor = false;
+                  let reprove_compras = false;
+                 
+                    movements.forEach(movement => { 
+                    move_users.forEach(move_user => { 
+                   if (movement.leader_id == move_user.id && movement.status == 'Em análise pelo diretor' && gestor == false) { 
+                     let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <tr>
+                    <td colspan="5">
+                      Gestor: <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      APROVADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Em análise pelo compras' && diretor == false) {
+                    let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });  %>
+                  <tr>
+                    <td colspan="5">
+                      Diretor: <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      APROVADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Pagamento em andamento' && compras == false) { 
+                    let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <tr>
+                    <td colspan="5">
+                     Compras: <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      APROVADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% compras = true; }else if (movement.financial_id == move_user.id && movement.status == 'APROVADO' && financeiro == false) { 
+                  let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <tr>
+                    <td colspan="5">
+                     Financeiro: <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      PAG. REALIZADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% financeiro = true; }else if (movement.leader_id == move_user.id && movement.status == 'REPROVADO' && reprove_gestor == false) { 
+                    let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+                  <tr>
+                    <td colspan="5">
+                     <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      REPROVADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% reprove_gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'REPROVADO' && reprove_diretor == false) { 
+                    let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <tr>
+                    <td colspan="5">
+                     Diretor reprovou <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      REPROVADO
+                    </td>
+                    <td >
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
+                    let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <tr>
+                    <td colspan="5">
+                    Compras reprovou  <%= move_user.name %>
+                    </td>
+                    <td>
+                      <%= move_user.email %>
+                    </td>
+                    <td>
+                      REPROVADO
+                    </td>
+                    <td>
+                      <%= formattedDate %>
+                      </td>
+                  </tr>
+                  <% reprove_compras = true;}
+                                                   });
+                                                }); %>
+          
+                                      
+                                              </tbody>
+                        
+                                              </table>
 
             <% if(user.profile.description=="leaders" && purchase.leader_id==null && purchase.director_id==null && purchase.purchase_id==null && purchase.financial_id==null ){%>
               <div class="botoes">

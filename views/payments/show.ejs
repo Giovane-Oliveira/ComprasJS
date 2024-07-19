@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs') %>
 
-<% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+<% let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });  %>
 
 <% if(modal=='leaders' ) { %>
 <script>
@@ -71,7 +71,7 @@
         <tr>
           <td class="destaque"><strong>Vencimento:</strong></td>
           <td><span name="vencimento">
-              <%= expiration_formattedDate %>
+              <%= formattedDate %>
             </span></td>
           <td class="destaque"><strong>Valor:</strong></td>
           <td><span name="valor">
@@ -198,7 +198,7 @@
             movements.forEach(movement => { 
             move_users.forEach(move_user => { 
            if (movement.leader_id == move_user.id && movement.status == 'Em análise pelo diretor' && gestor == false) { 
-             let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
               Gestor: <%= move_user.name %>
@@ -214,7 +214,7 @@
               </td>
           </tr>
           <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Em análise pelo compras' && diretor == false) {
-            let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });  %>
           <tr>
             <td colspan="5">
               Diretor: <%= move_user.name %>
@@ -230,7 +230,7 @@
               </td>
           </tr>
           <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Pagamento em andamento' && compras == false) { 
-            let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
              Compras: <%= move_user.name %>
@@ -246,7 +246,7 @@
               </td>
           </tr>
           <% compras = true; }else if (movement.financial_id == move_user.id && movement.status == 'APROVADO' && financeiro == false) { 
-          let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+          let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
              Financeiro: <%= move_user.name %>
@@ -262,7 +262,7 @@
               </td>
           </tr>
           <% financeiro = true; }else if (movement.leader_id == move_user.id && movement.status == 'REPROVADO' && reprove_gestor == false) { 
-            let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
           <tr>
             <td colspan="5">
              <%= move_user.name %>
@@ -278,7 +278,7 @@
               </td>
           </tr>
           <% reprove_gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'REPROVADO' && reprove_diretor == false) { 
-            let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
              Diretor reprovou <%= move_user.name %>
@@ -294,7 +294,7 @@
               </td>
           </tr>
           <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
-            let formattedDate=new Date(payment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); let expiration_formattedDate=new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
             Compras reprovou  <%= move_user.name %>

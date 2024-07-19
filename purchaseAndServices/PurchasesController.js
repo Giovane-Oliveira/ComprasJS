@@ -13,6 +13,8 @@ const { where } = require('sequelize');
 const nodemailer = require('nodemailer');
 const Profile = require('../users/Profile');
 const User = require('../users/User');
+const Movement = require('../movements/Movement');
+
 
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -255,6 +257,17 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
   
   const emails = [manager.email, leader.email, purchases.email, ...directorLogins];
 
+    //movements
+    await Movement.create({
+
+      purchase_id: req.session.user.employee.id,
+      purchase_id: purchase.id,
+      status: 'Em análise pelo diretor'
+  
+    });
+    //movements
+
+
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
@@ -336,6 +349,16 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
 
   const id = req.body.purchase_id;
   const files = req.files;
+
+    //movements
+    await Movement.create({
+
+      financial_id: req.session.user.employee.id,
+      purchases_id: purchase.id,
+      status: 'APROVADO'
+  
+    });
+    //movements
 
   Purchase.update({
 
@@ -437,6 +460,16 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
   const manager = await Employee.findByPk(purchase.employee_id);
   const leader = await Employee.findByPk(req.session.user.employee.id);
 
+    //movements
+    await Movement.create({
+
+      leader_id: req.session.user.employee.id,
+      purchases_id: purchase.id,
+      status: 'Em análise pelo compras'
+  
+    });
+    //movements
+
   // Fetch all directors asynchronously
   const purchases = await Profile.findAll({
     where: {
@@ -485,7 +518,7 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
     }
   });
 
-  // Update payment status
+  // Update purchase status
   Purchase.update({
     status: 'Em análise pelo compras',
     leader_id: req.session.user.employee.id
@@ -536,12 +569,22 @@ router.post('/purchase/reprove/leaders', adminAuth, async(req, res) => {
   //const financial = await Employee.findByPk(payment.financial_id);
 
 if(purchase == undefined){
-  console.log("Payment undefinied")
+  console.log("Purchase undefinied")
 }else if(manager == undefined){
   console.log("Manager undefinied")
 }else if(leader == undefined){
   console.log("Leader undefinied")
 }
+
+ //movement
+ await Movement.create({
+
+  leader_id: req.session.user.employee.id,
+  purchases_id: purchase.id,
+  status: 'REPROVADO'
+
+});
+//movement
 
 
 const emails = [manager.email, leader.email];
@@ -556,10 +599,10 @@ const emails = [manager.email, leader.email];
     }
   })
   .then(result => {
-    console.log('Payment updated successfully:', result);
+    console.log('Purchase updated successfully:', result);
 })
   .catch(error => {
-    console.error('Error updating payment:', error);
+    console.error('Error updating purchase:', error);
   });
 
 emails.forEach(async (email) => {
@@ -607,7 +650,15 @@ router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
   const director = await Employee.findByPk(req.session.user.employee.id);
   const purchases = await Employee.findByPk(purchase.purchase_id);
 
+   //movements
+   await Movement.create({
 
+    director_id: req.session.user.employee.id,
+    purchases_id: purchase.id,
+    status: 'Pagamento em andamento'
+
+  });
+  //movements
  
   const financial = await Profile.findAll({
     where: {
@@ -701,16 +752,12 @@ router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
 
   const leader = await Employee.findByPk(purchase.leader_id);
 
-  const purchases = await Employee.findByPk(purchase.purchase_id);
-
-
-
- 
+  const purchases = await Employee.findByPk(purchase.purchase_id); 
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
 if(purchase == undefined){
-  console.log("Payment undefinied")
+  console.log("Purchase undefinied")
 }else if(manager == undefined){
   console.log("Manager undefinied")
 }else if(leader == undefined){
@@ -720,6 +767,17 @@ if(purchase == undefined){
 }else if(purchases == undefined){
   console.log("Purchase undefinied")
 }
+
+ //movement
+ await Movement.create({
+
+  director_id: req.session.user.employee.id,
+  purchases_id: purchase.id,
+  status: 'REPROVADO'
+
+});
+//movement
+
 
 const emails = [manager.email, leader.email, director.email, purchases.email];
 
@@ -836,7 +894,7 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
 
   if (purchase == undefined) {
-    console.log("Payment undefinied")
+    console.log("Purchase undefinied")
   }else if (employee == undefined) {
     console.log("Employee undefinied")
   }else if (sector == undefined) {
@@ -849,18 +907,78 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
     console.log("Files undefinied")
   }
 
+  const movements = await Movement.findAll({
+    where: {
+      purchases_id: purchase.id
+    }
+  });
+
+  if (movements == undefined) {
+    console.log("Movements undefinied")
+
+  }
+
+   const movement_users =  movements.map(async (movement) => {
+
+    if (movement.leader_id != undefined) {
+
+     let leader_employee = await Employee.findOne({
+        where: {
+          id: movement.leader_id
+        }
+      });
+
+      console.log('Gestor carregado!');
+      return leader_employee;
+     
+    } else if (movement.director_id != undefined) {
+
+     let director_employee = await Employee.findOne({
+        where: {
+          id: movement.director_id
+        }
+      });
+
+      console.log('Diretor carregado!');
+      return director_employee;
+  
+    } else if (movement.purchase_id != undefined) {
+
+      let purchase_employee = await Employee.findOne({
+        where: {
+          id: movement.purchase_id
+        }
+      });
+      console.log('Compras carregado!');
+      return purchase_employee;
+
+    } else if (movement.financial_id != undefined) {
+
+     let financial_employee = await Employee.findOne({
+        where: {
+          id: movement.financial_id
+        }
+      });
+      console.log('Financeiro carregado!');
+      return financial_employee;
+
+    }
+
+  });
+
+  const move_users = await Promise.all(movement_users);
 
   if(req.query.modal == 'leaders'){
 
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'leaders' });
+    res.render('purchaseAndServices/show.ejs', { movements, move_users, leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'leaders' });
 
   }else if(req.query.modal == 'directors'){
   
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'directors' });
+    res.render('purchaseAndServices/show.ejs', { movements, move_users, leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'directors' });
 
   }else{
 
-    res.render('purchaseAndServices/show.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: '' });
+    res.render('purchaseAndServices/show.ejs', { movements, move_users, leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: '' });
 
   }
 
