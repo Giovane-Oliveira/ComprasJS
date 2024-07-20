@@ -20,7 +20,11 @@ const Item = connection.define('Item', {
   value: {
     type: Sequelize.STRING,
     allowNull: false
-  }
+  },
+  city: {
+    type: Sequelize.TEXT,
+    allowNull: false
+   }
 });
 
 //1-1 user_id

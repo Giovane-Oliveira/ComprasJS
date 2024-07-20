@@ -137,6 +137,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
       console.log(req.body['newitem' + count]);
       console.log(req.body['newdescription' + count]);
       console.log(req.body['newvalue' + count]);
+      
 
       let valorF = req.body['newvalue' + count].replace('.', ' ');
       let arrValor = valorF.split(" ");
@@ -254,7 +255,6 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
 
   const directorLogins = await Promise.all(directorsLoginsPromises);
 
-  
   const emails = [manager.email, leader.email, purchases.email, ...directorLogins];
 
     //movements
@@ -1050,6 +1050,7 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
     console.log(req.body['item' + count]);
     console.log(req.body['description' + count]);
     console.log(req.body['value' + count]);
+    console.log(req.body['city' + count]);
 
     let valorF = req.body['value' + count].replace('.', ' ');
     let arrValor = valorF.split(" ");
@@ -1068,6 +1069,7 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
       item: req.body['item' + count],
       description: req.body['description' + count],
       value: parseFloat(valorF).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      city: req.body['city' + count],
       purchase_id: newPurchase.id
 
     }).catch(err => console.log(err));

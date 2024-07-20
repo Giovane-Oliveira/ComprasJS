@@ -24,6 +24,7 @@
               <td>Quantidade</td>
               <td>Item</td>
               <td>Especificação</td>
+              <td>Unidade</td>
               <td>R$</td>
               <td>&nbsp;</td>
             </tr>
@@ -35,6 +36,30 @@
               <td class="col-md-3"><input type="text" name="item1" class="form-control" id="item1" required placeholder="Item" /></td>
 
               <td class="col-md-4"><input type="text" name="description1" class="form-control" id="especificacao1" required placeholder="Especificação" /></td>
+
+              <td>
+                <select id="unidade" name="city1" class="form-control" required>
+                  <option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>
+                  <option value="Cachoeira do Sul">Cachoeira do Sul</option>
+                  <option value="Vera Cruz">Vera Cruz</option>
+                  <option value="Arroio do Tigre">Arroio do Tigre</option>
+                  <option value="Candelaria">Candelaria</option>
+                  <option value="Canguçu">Canguçu</option>
+                  <option value="Caçapava do Sul">Caçapava do Sul</option>
+                  <option value="Agudo">Agudo</option>
+                  <option value="Salto Jacuí">Salto Jacuí</option>
+                  <option value="Pantano Grande">Pantano Grande</option>
+                  <option value="Faxinal do Soturno">Faxinal do Saturno</option>
+                  <option value="Paraiso do Sul">Paraiso do Sul</option>
+                  <option value="Nova Palma">Nova palma</option>
+                  <option value="Restinga Seca">Restinga Seca</option>
+                  <option value="Encruzilhada do Sul">Encruzilhada do Sul</option>
+                  <option value="Espumoso">Espumoso</option>
+                  <option value="Sobradinho">Sobradinho</option>
+                  <option value="Pelotas">Pelotas</option>
+                  <option value="Pelotas">Rio Pardo</option>
+                </select>
+              </td>
 
               <td class="col-md-2"><input type="text" name="value1" data-mask='###.###.##0,00' data-mask-reverse='true' class="form-control" id="valor1" required placeholder="Valor" /></td>
             </tr>
@@ -57,6 +82,29 @@
             $('#principal').append("<tr><td class='col-md-1'><input type='number' min=1 name='amount" + count + "' class='form-control' id='inputEmail4' required placeholder='0'/></td>" +
               "<td class='col-md-3'><input type='text' name='item" + count + "' class='form-control' id='item" + count + "' required placeholder='Item' /></td>" +
               "<td class='col-md-4'><input type='text' name='description" + count + "' class='form-control' id='especificacao" + count + "' required placeholder='Especificação'  /></td>" +
+              '<td>' +
+                '<select id="unidade" name="city'+ count +'"class="form-control" required>' +
+                  '<option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>' +
+                  '<option value="Cachoeira do Sul">Cachoeira do Sul</option>' +
+                  '<option value="Vera Cruz">Vera Cruz</option>' +
+                  '<option value="Arroio do Tigre">Arroio do Tigre</option>' +
+                  '<option value="Candelaria">Candelaria</option>' +
+                  '<option value="Canguçu">Canguçu</option>' +
+                  '<option value="Caçapava do Sul">Caçapava do Sul</option>' +
+                  '<option value="Agudo">Agudo</option>' +
+                  '<option value="Salto Jacuí">Salto Jacuí</option>' +
+                  '<option value="Pantano Grande">Pantano Grande</option>' +
+                  '<option value="Faxinal do Soturno">Faxinal do Saturno</option>' +
+                  '<option value="Paraiso do Sul">Paraiso do Sul</option>' +
+                  '<option value="Nova Palma">Nova palma</option>' +
+                  '<option value="Restinga Seca">Restinga Seca</option>' +
+                  '<option value="Encruzilhada do Sul">Encruzilhada do Sul</option>' +
+                  '<option value="Espumoso">Espumoso</option>' +
+                  '<option value="Sobradinho">Sobradinho</option>' +
+                  '<option value="Pelotas">Pelotas</option>' +
+                  '<option value="Pelotas">Rio Pardo</option>' +
+                '</select>' +
+              '</td>' +
               "<td class='col-md-2'><input type='text' data-mask='###.###.##0,00' data-mask-reverse='true' name='value" + count + "' class='form-control' id='valor" + count + "' required placeholder='Valor'/></td>" +
               "<td class='col-md-2'><button type='button' class='btn btn-danger btn-sm'>Excluir</button></td></tr>");
             count++;

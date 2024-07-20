@@ -20,7 +20,7 @@ const Purchase = connection.define('Purchase', {
     type: Sequelize.TEXT,
     allowNull: false
    },
- total: {
+  total: {
     type: Sequelize.TEXT,
     allowNull: false
   },
