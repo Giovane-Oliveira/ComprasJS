@@ -265,7 +265,7 @@
             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
           <tr>
             <td colspan="5">
-             <%= move_user.name %>
+             Gestor: <%= move_user.name %>
             </td>
             <td>
               <%= move_user.email %>
@@ -281,7 +281,7 @@
             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
-             Diretor reprovou <%= move_user.name %>
+             Diretor: <%= move_user.name %>
             </td>
             <td>
               <%= move_user.email %>
@@ -293,11 +293,11 @@
               <%= formattedDate %>
               </td>
           </tr>
-          <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
+          <% reprove_diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <tr>
             <td colspan="5">
-            Compras reprovou  <%= move_user.name %>
+            Compras: <%= move_user.name %>
             </td>
             <td>
               <%= move_user.email %>
