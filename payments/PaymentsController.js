@@ -157,6 +157,23 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
   const director = await Employee.findByPk(payment.director_id);
   const purchase = await Employee.findByPk(req.session.user.employee.id);
 
+  // Update payment status
+  Payment.update({
+    status: 'Pagamento em andamento',
+    purchase_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
+
+
   //movements
   await Movement.create({
 
@@ -215,23 +232,6 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
     }
   });
 
-  // Update payment status
-  Payment.update({
-    status: 'Pagamento em andamento',
-    purchase_id: req.session.user.employee.id
-  }, {
-    where: {
-      id: id
-    }
-  })
-    .then(result => {
-      console.log('Payment updated successfully:', result);
-    })
-    .catch(error => {
-      console.error('Error updating payment:', error);
-    });
-
-  //Pagamento em andamento purchase_id
 
   res.redirect('/dashboard/pending?success=true');
 
@@ -776,10 +776,9 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
 
     }
 
-
      const movement_users =  movements.map(async (movement) => {
 
-      if (movement.employee_id != undefined) {
+    /*  if (movement.employee_id != undefined) {
 
        let manager_employee = await Employee.findOne({
           where: {
@@ -789,7 +788,8 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
         console.log('Gerente carregado!')
         return manager_employee; 
 
-      } else if (movement.leader_id != undefined) {
+      } else */
+       if (movement.leader_id != undefined) {
 
        let leader_employee = await Employee.findOne({
           where: {
@@ -1001,7 +1001,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       id: newUser.profile_id
     }
   });
-
+/*
   if (newProfile.description == 'managers') {
 
     await Movement.create({
@@ -1054,7 +1054,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
     });
 
 
-  }
+  }*/
 
 
   // Check if any files were uploaded
