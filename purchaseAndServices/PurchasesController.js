@@ -409,14 +409,24 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
   }
 
 
-  const purchase = await Purchase.findByPk(id);
-   const manager = await Employee.findByPk(purchase.employee_id);
-   const leader = await Employee.findByPk(purchase.leader_id);
-   const director = await Employee.findByPk(purchase.director_id);
-   const purchases = await Employee.findByPk(purchase.purchase_id);
-   const financial = await Employee.findByPk(req.session.user.employee.id);
+   var purchase = await Purchase.findByPk(id);
+   var manager = await Employee.findByPk(purchase.employee_id);
+   var leader = await Employee.findByPk(purchase.leader_id);
+   var director = await Employee.findByPk(purchase.director_id);
+   var purchases = await Employee.findByPk(purchase.purchase_id);
+   var financial = await Employee.findByPk(req.session.user.employee.id);
+
+   var emails = [];
+
+    if(leader == undefined && director != undefined && purchases == undefined && financial != undefined){
+
+        emails = [director.email, financial.email];
+
+    }else{
+      emails = [manager.email, leader.email, director.email, purchases.email, financial.email];
+
+    }
   
-   const emails = [manager.email, leader.email, director.email, purchases.email, financial.email];
  
    // Send emails to all recipients
    emails.forEach(async (email) => {
@@ -779,7 +789,15 @@ if(purchase == undefined){
 //movement
 
 
-const emails = [manager.email, leader.email, director.email, purchases.email];
+var emails = [];
+
+if(manager.email == leader.email){
+  emails = [leader.email, director.email, purchases.email];
+}else{
+
+  emails = [leader.email, director.email, purchases.email];
+}
+
 
   Purchase.update({
     status: 'REPROVADO',
@@ -1006,6 +1024,7 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
   const justification = req.body.justification;
   console.log(justification);
   const files = req.files;
+  var newPurchase = undefined;
 
   var item = req.body.item1;
   var count = 1;
@@ -1035,12 +1054,29 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
   console.log("Total: " + total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
-  const newPurchase = await Purchase.create({
+
+if(req.session.user.profile.description == 'managers' || req.session.user.profile.description == 'ti' 
+  || req.session.user.profile.description == 'financial' || req.session.user.profile.description == 'purchases'){
+
+
+  newPurchase = await Purchase.create({
     justification: justification,
     total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     employee_id: req.session.user.employee.id
   }).catch(err => console.log(err));
 
+
+      //movements
+      await Movement.create({
+
+        employee_id: req.session.user.employee.id,
+        purchases_id: newPurchase.id,
+        status: 'Em análise pelo gestor'
+    
+      });
+      //movements
+
+  
   item = req.body.item1;
   count = 1;
 
@@ -1063,6 +1099,7 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
     }
 
     valorF = valorF.replace(',', '.');
+ 
 
     Item.create({
       amount: req.body['amount' + count],
@@ -1154,6 +1191,283 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
     }
   });
 
+
+}else if(req.session.user.profile.description == 'leaders'){
+
+
+  newPurchase = await Purchase.create({
+    justification: justification,
+    total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    leader_id: req.session.user.employee.id,
+    status: 'Em análise pelo compras',
+    employee_id: req.session.user.employee.id
+  }).catch(err => console.log(err));
+
+
+      //movements
+      await Movement.create({
+
+        leader_id: req.session.user.employee.id,
+        purchases_id: newPurchase.id,
+        status: 'Em análise pelo compras'
+    
+      });
+      //movements
+  
+  item = req.body.item1;
+  count = 1;
+
+  while (item != undefined) {
+
+    console.log(req.body['amount' + count]);
+    console.log(req.body['item' + count]);
+    console.log(req.body['description' + count]);
+    console.log(req.body['value' + count]);
+    console.log(req.body['city' + count]);
+
+    let valorF = req.body['value' + count].replace('.', ' ');
+    let arrValor = valorF.split(" ");
+    if (arrValor.length == 3) {
+      valorF = arrValor[0] + arrValor[1] + arrValor[2];
+    } else if (arrValor.length == 2) {
+
+      valorF = arrValor[0] + arrValor[1];
+
+    }
+
+    valorF = valorF.replace(',', '.');
+ 
+
+    Item.create({
+      amount: req.body['amount' + count],
+      item: req.body['item' + count],
+      description: req.body['description' + count],
+      value: parseFloat(valorF).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      city: req.body['city' + count],
+      purchase_id: newPurchase.id
+
+    }).catch(err => console.log(err));
+
+    count++;
+    item = req.body['item' + count];
+
+  }
+
+    // Check if any files were uploaded
+    if (files && files.length > 0) {
+      // Processar os dados e o arquivo aqui
+      //console.log(`Nome: ${nome}`);
+      // Processar arquivos
+      for (const file of files) {
+        // Salvar o arquivo
+        const fileName = file.originalname;
+        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+        fs.moveSync(file.path, filePath);
+        console.log(`Arquivo recebido: ${file.originalname}`);
+        // Salvar arquivo no diretório de destino 
+  
+        File.create({
+          fileName: uniqueFileName,
+          purchase_id: newPurchase.id
+        }).catch(error => {
+          console.error('Error creating file:', error);
+        });
+  
+      }
+    } else {
+      console.error('No files were uploaded.');
+    }
+  
+  
+     // Fetch all directors asynchronously
+     const directors = await Profile.findAll({
+      where: {
+        description: 'directors'
+      }
+    });
+  
+    // Now you can use map on the directors array
+    const directorLoginsPromises = directors.map(async (director) => {
+      let user = await User.findOne({
+        where: {
+          profile_id: director.id
+        }
+      });
+      return user.login; // Return the user's login
+    });
+  
+    // Wait for all director logins to be fetched
+    const directorLogins = await Promise.all(directorLoginsPromises);
+  
+    // Combine all emails into a single array
+    const emails = [req.session.user.employee.email, ...directorLogins];
+  
+    // Send emails to all recipients
+    emails.forEach(async (email) => {
+      let from = "nao-responda@provida.med.br";
+      let to = email;
+      let subject = `Solicitação #${newPurchase.id}`;
+      let text = "Nova solicitação de compras/serviços gerada.\n"
+      + "\n\n Gestor: " + req.session.user.employee.name + 
+      "\n E-mail: " + req.session.user.employee.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
+  
+      let mailOptions = {
+          from,
+          to,
+          subject,
+          text
+      };
+  
+      try {
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully!');
+      } catch (error) {
+        console.log("Erro ao enviar o email: " + error);
+      }
+    });
+
+}else if(req.session.user.profile.description == 'directors'){
+
+
+  newPurchase = await Purchase.create({
+    justification: justification,
+    total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    director_id: req.session.user.employee.id,
+    status: 'Pagamento em andamento',
+    employee_id: req.session.user.employee.id
+  }).catch(err => console.log(err));
+
+   //movements
+   await Movement.create({
+
+    director_id: req.session.user.employee.id,
+    purchases_id: newPurchase.id,
+    status: 'Pagamento em andamento'
+
+  });
+  //movements
+
+  item = req.body.item1;
+  count = 1;
+
+  while (item != undefined) {
+
+    console.log(req.body['amount' + count]);
+    console.log(req.body['item' + count]);
+    console.log(req.body['description' + count]);
+    console.log(req.body['value' + count]);
+    console.log(req.body['city' + count]);
+
+    let valorF = req.body['value' + count].replace('.', ' ');
+    let arrValor = valorF.split(" ");
+    if (arrValor.length == 3) {
+      valorF = arrValor[0] + arrValor[1] + arrValor[2];
+    } else if (arrValor.length == 2) {
+
+      valorF = arrValor[0] + arrValor[1];
+
+    }
+
+    valorF = valorF.replace(',', '.');
+ 
+
+    Item.create({
+      amount: req.body['amount' + count],
+      item: req.body['item' + count],
+      description: req.body['description' + count],
+      value: parseFloat(valorF).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      city: req.body['city' + count],
+      purchase_id: newPurchase.id
+
+    }).catch(err => console.log(err));
+
+    count++;
+    item = req.body['item' + count];
+
+  }
+
+    // Check if any files were uploaded
+    if (files && files.length > 0) {
+      // Processar os dados e o arquivo aqui
+      //console.log(`Nome: ${nome}`);
+      // Processar arquivos
+      for (const file of files) {
+        // Salvar o arquivo
+        const fileName = file.originalname;
+        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+        fs.moveSync(file.path, filePath);
+        console.log(`Arquivo recebido: ${file.originalname}`);
+        // Salvar arquivo no diretório de destino 
+  
+        File.create({
+          fileName: uniqueFileName,
+          purchase_id: newPurchase.id
+        }).catch(error => {
+          console.error('Error creating file:', error);
+        });
+  
+      }
+    } else {
+      console.error('No files were uploaded.');
+    }
+  
+  
+     // Fetch all directors asynchronously
+     const financial = await Profile.findAll({
+      where: {
+        description: 'financial'
+      }
+    });
+  
+    // Now you can use map on the directors array
+    const financialLoginsPromises = financial.map(async (finance) => {
+      let user = await User.findOne({
+        where: {
+          profile_id: finance.id
+        }
+      });
+      return user.login; // Return the user's login
+    });
+  
+    // Wait for all director logins to be fetched
+    const financialLogins = await Promise.all(financialLoginsPromises);
+  
+    // Combine all emails into a single array
+    const emails = [req.session.user.employee.email, ...financialLogins];
+  
+    // Send emails to all recipients
+    emails.forEach(async (email) => {
+      let from = "nao-responda@provida.med.br";
+      let to = email;
+      let subject = `Solicitação #${newPurchase.id}`;
+      let text = "Nova solicitação de compras/serviços gerada.\n"
+      + "\n\n Diretor: " + req.session.user.employee.name + 
+      "\n E-mail: " + req.session.user.employee.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
+  
+      let mailOptions = {
+          from,
+          to,
+          subject,
+          text
+      };
+  
+      try {
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully!');
+      } catch (error) {
+        console.log("Erro ao enviar o email: " + error);
+      }
+    });
+
+}
+
+
+
+  
 
 
 

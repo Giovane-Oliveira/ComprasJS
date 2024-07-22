@@ -149,7 +149,7 @@
       </tbody>
     </table>
     <hr>
-   
+
 
     <table id="tabelaCompras">
       <thead>
@@ -181,12 +181,11 @@
     </table>
 
     <hr>
-    <table  id="tabelaPagamento">
-   
+    <table id="tabelaPagamento">
+
       <tbody>
-       
-          <%
-   
+
+        <%
           let gestor = false;
           let diretor = false;
           let compras = false;
@@ -194,131 +193,131 @@
           let reprove_gestor = false;
           let reprove_diretor = false;
           let reprove_compras = false;
-         
+
             movements.forEach(movement => { 
             move_users.forEach(move_user => { 
            if (movement.leader_id == move_user.id && movement.status == 'Em análise pelo diretor' && gestor == false) { 
              let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-          <tr>
-            <td colspan="5">
-              Gestor: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              APROVADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Em análise pelo compras' && diretor == false) {
+        <tr>
+          <td colspan="5">
+            Gestor: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            APROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'Em análise pelo compras' && diretor == false) {
             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });  %>
-          <tr>
-            <td colspan="5">
-              Diretor: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              APROVADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Pagamento em andamento' && compras == false) { 
+        <tr>
+          <td colspan="5">
+            Diretor: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            APROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'Pagamento em andamento' && compras == false) { 
             let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-          <tr>
-            <td colspan="5">
-             Compras: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              APROVADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% compras = true; }else if (movement.financial_id == move_user.id && movement.status == 'APROVADO' && financeiro == false) { 
-          let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-          <tr>
-            <td colspan="5">
-             Financeiro: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              PAG. REALIZADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% financeiro = true; }else if (movement.leader_id == move_user.id && movement.status == 'REPROVADO' && reprove_gestor == false) { 
-            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
-          <tr>
-            <td colspan="5">
-             Gestor: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              REPROVADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% reprove_gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'REPROVADO' && reprove_diretor == false) { 
-            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-          <tr>
-            <td colspan="5">
-             Diretor: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              REPROVADO
-            </td>
-            <td >
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% reprove_diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
-            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-          <tr>
-            <td colspan="5">
+        <tr>
+          <td colspan="5">
             Compras: <%= move_user.name %>
-            </td>
-            <td>
-              <%= move_user.email %>
-            </td>
-            <td>
-              REPROVADO
-            </td>
-            <td>
-              <%= formattedDate %>
-              </td>
-          </tr>
-          <% reprove_compras = true;}
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            APROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% compras = true; }else if (movement.financial_id == move_user.id && movement.status == 'APROVADO' && financeiro == false) { 
+          let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+        <tr>
+          <td colspan="5">
+            Financeiro: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            PAG. REALIZADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% financeiro = true; }else if (movement.leader_id == move_user.id && movement.status == 'REPROVADO' && reprove_gestor == false) { 
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' });%>
+        <tr>
+          <td colspan="5">
+            Gestor: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            REPROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% reprove_gestor = true;}else if (movement.director_id == move_user.id && movement.status == 'REPROVADO' && reprove_diretor == false) { 
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+        <tr>
+          <td colspan="5">
+            Diretor: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            REPROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% reprove_diretor = true; }else if (movement.purchase_id == move_user.id && movement.status == 'REPROVADO' && reprove_compras == false) { 
+            let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+        <tr>
+          <td colspan="5">
+            Compras: <%= move_user.name %>
+          </td>
+          <td>
+            <%= move_user.email %>
+          </td>
+          <td>
+            REPROVADO
+          </td>
+          <td>
+            <%= formattedDate %>
+          </td>
+        </tr>
+        <% reprove_compras = true;}
                                            });
                                         }); %>
-  
-                              
-                                      </tbody>
-                
-                                      </table>
-                                   
-   
+
+
+      </tbody>
+
+    </table>
+
+
 
     <% if(user.profile.description=="leaders" && payment.leader_id=="" && payment.director_id=="" && payment.purchase_id=="" && payment.financial_id=="" ){%>
     <div class="botoes">
@@ -338,8 +337,27 @@
       <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
       <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </div>
+//director pass
+    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+
+    <div class="botoes">
+      <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    </div>
 
     <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <div id="anexoFinanceiroP">
+      <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
+        <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
+        <hr>
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+        <hr>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+    <div>
+      //financial pass
+      <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
     <div id="anexoFinanceiroP">
       <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
         <input type="text" name="payment_id" value="<%= payment.id %>" hidden>

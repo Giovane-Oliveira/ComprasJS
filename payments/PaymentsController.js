@@ -55,7 +55,38 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
   const purchase = await Employee.findByPk(payment.purchase_id);
   const financial = await Employee.findByPk(req.session.user.employee.id);
 
-  const emails = [manager.email, leader.email, director.email, purchase.email, financial.email];
+
+  // Update payment status
+  Payment.update({
+    status: 'APROVADO',
+    financial_id: req.session.user.employee.id
+  }, {
+    where: {
+      id: id
+    }
+  })
+    .then(result => {
+      console.log('Payment updated successfully:', result);
+    })
+    .catch(error => {
+      console.error('Error updating payment:', error);
+    });
+
+  var emails = [];
+
+
+  if(leader == undefined){
+
+    emails = [director.email, purchase.email, req.session.user.employee.email];
+
+
+  }else{
+
+    emails = [manager.email, leader.email, director.email, purchase.email, financial.email];
+
+
+  }
+
 
 
   await Movement.create({
@@ -201,8 +232,17 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
 
   const financialLogins = await Promise.all(financialLoginsPromises);
 
+ var emails = [];
 
-  const emails = [manager.email, leader.email, director.email, purchase.email, ...financialLogins];
+
+  if(leader == undefined){
+
+    emails = [req.session.user.employee.email, ...financialLogins];
+
+  }else{
+    emails = [manager.email, leader.email, director.email, purchase.email, ...financialLogins];
+  }
+
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
@@ -265,7 +305,17 @@ router.post('/payment/reprove/purchases', adminAuth, async (req, res) => {
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
-  const emails = [manager.email, director.email, leader.email, purchase.email];
+  var emails = [];
+
+if(leader == undefined){
+
+  emails = [director.email, req.session.user.employee.email];
+
+}else{
+  emails = [manager.email, director.email, leader.email, purchase.email];
+
+}
+
 
   //movement
   await Movement.create({
@@ -337,6 +387,22 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
   const director = await Employee.findByPk(req.session.user.employee.id);
 
 
+    // Update payment status
+    Payment.update({
+      status: 'Em análise pelo compras',
+      director_id: req.session.user.employee.id
+    }, {
+      where: {
+        id: id
+      }
+    })
+      .then(result => {
+        console.log('Payment updated successfully:', result);
+      })
+      .catch(error => {
+        console.error('Error updating payment:', error);
+      });
+
   //movements
   await Movement.create({
 
@@ -392,21 +458,7 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
     }
   });
 
-  // Update payment status
-  Payment.update({
-    status: 'Em análise pelo compras',
-    director_id: req.session.user.employee.id
-  }, {
-    where: {
-      id: id
-    }
-  })
-    .then(result => {
-      console.log('Payment updated successfully:', result);
-    })
-    .catch(error => {
-      console.error('Error updating payment:', error);
-    });
+
 
   res.redirect('/dashboard/pending?success=true');
 
@@ -443,7 +495,17 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   //const financial = await Employee.findByPk(payment.financial_id);
 
-  const emails = [manager.email, leader.email, director.email];
+  var emails = [];
+
+  if(manager.email == leader.email){
+
+    emails = [leader.email, director.email];
+
+  }else{
+
+    emails = [manager.email, leader.email, director.email];
+  }
+
 
   //movement
   await Movement.create({
@@ -640,6 +702,7 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   const emails = [manager.email, leader.email];
 
+
   Payment.update({
 
     status: 'REPROVADO',
@@ -778,7 +841,7 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
 
      const movement_users =  movements.map(async (movement) => {
 
-    /*  if (movement.employee_id != undefined) {
+    if (movement.employee_id != undefined) {
 
        let manager_employee = await Employee.findOne({
           where: {
@@ -788,8 +851,7 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
         console.log('Gerente carregado!')
         return manager_employee; 
 
-      } else */
-       if (movement.leader_id != undefined) {
+      } else if (movement.leader_id != undefined) {
 
        let leader_employee = await Employee.findOne({
           where: {
@@ -948,61 +1010,55 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   var dateFormat = expiration.split("/").reverse().join("-");
   console.log("dataFormata: " + dateFormat);
 
-  const newPayment = await Payment.create({
-    /*where: {
-      employee_id: req.session.user.employee.id
-    },*/
-    description: description,
-    value: value,
-    expiration_date: dateFormat,
-    employee_id: req.session.user.employee.id,
-    supplier_id: supplier,
-    company_id: company
 
-  }).catch(error => {
-    console.error('Error creating payment:', error);
-  });
 
-  const newPayment_Method = await Payment_Method.create({
+  if (req.session.user.profile.description == 'managers' ||
+    req.session.user.profile.description == 'purchases' ||
+    req.session.user.profile.description == 'financial'
+  ) {
 
-    payment_method: payment_method,
-    bank: bank,
-    agency: agency,
-    currency_account: currency_account,
-    ticket: ticket,
-    cpf: cpf,
-    cnpj: cnpj,
-    phone: phone,
-    email: email,
-    phone: phone,
-    avista: avista,
-    payment_id: newPayment.id
-
-  }).catch(error => {
-    console.error('Error creating payment_method:', error);
-  });
-
-  await Payment_Condition.create({
-    type_condition: payment_condition,
-    amount_parcelable: amount_parcelable,
-    payment_method_id: newPayment_Method.id
-  }).catch(error => {
-    console.error('Error creating payment_condition:', error);
-  });
-
-  const newUser = await User.findOne({
-    where: {
-      employee_id: newPayment.employee_id
-    }
-  });
-
-  const newProfile = await Profile.findOne({
-    where: {
-      id: newUser.profile_id
-    }
-  });
-/*
-  if (newProfile.description == 'managers') {
+    const newPayment = await Payment.create({
+      /*where: {
+        employee_id: req.session.user.employee.id
+      },*/
+      description: description,
+      value: value,
+      expiration_date: dateFormat,
+      employee_id: req.session.user.employee.id,
+      supplier_id: supplier,
+      company_id: company
+  
+    }).catch(error => {
+      console.error('Error creating payment:', error);
+    });
+  
+    const newPayment_Method = await Payment_Method.create({
+  
+      payment_method: payment_method,
+      bank: bank,
+      agency: agency,
+      currency_account: currency_account,
+      ticket: ticket,
+      cpf: cpf,
+      cnpj: cnpj,
+      phone: phone,
+      email: email,
+      phone: phone,
+      avista: avista,
+      payment_id: newPayment.id
+  
+    }).catch(error => {
+      console.error('Error creating payment_method:', error);
+    });
+  
+    await Payment_Condition.create({
+      type_condition: payment_condition,
+      amount_parcelable: amount_parcelable,
+      payment_method_id: newPayment_Method.id
+    }).catch(error => {
+      console.error('Error creating payment_condition:', error);
+    });
+  
 
     await Movement.create({
 
@@ -1011,53 +1067,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
     });
 
-  } else if (newProfile.description == 'leaders') {
-
-
-    await Movement.create({
-
-      leader_id: req.session.user.employee.id,
-      payment_id: newPayment.id,
-      status: 'Em análise pelo diretor',
-
-    });
-
-
-  } else if (newProfile.description == 'directors') {
-
-    await Movement.create({
-
-      director_id: req.session.user.employee.id,
-      payment_id: newPayment.id,
-      status: 'Em análise pelo compras',
-
-    });
-
-  } else if (newProfile.description == 'purchases') {
-
-    await Movement.create({
-
-      purchase_id: req.session.user.employee.id,
-      payment_id: newPayment.id,
-      status: 'Pagamento em andamento',
-
-    });
-
-  } else if (newProfile.description == 'financial') {
-
-    await Movement.create({
-
-      financial_id: req.session.user.employee.id,
-      payment_id: newPayment.id,
-      status: 'APROVADO',
-
-    });
-
-
-  }*/
-
-
-  // Check if any files were uploaded
+     // Check if any files were uploaded
   if (files && files.length > 0) {
     // Processar os dados e o arquivo aqui
     //console.log(`Nome: ${nome}`);
@@ -1130,6 +1140,268 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       console.log("Erro ao enviar o email: " + error);
     }
   });
+
+  } else if (req.session.user.profile.description == 'leaders') {
+
+    const newPayment = await Payment.create({
+      /*where: {
+        employee_id: req.session.user.employee.id
+      },*/
+      description: description,
+      value: value,
+      expiration_date: dateFormat,
+      leader_id: req.session.user.employee.id,
+      status: 'Em análise pelo diretor',
+      employee_id: req.session.user.employee.id,
+      supplier_id: supplier,
+      company_id: company
+  
+    }).catch(error => {
+      console.error('Error creating payment:', error);
+    });
+  
+    const newPayment_Method = await Payment_Method.create({
+  
+      payment_method: payment_method,
+      bank: bank,
+      agency: agency,
+      currency_account: currency_account,
+      ticket: ticket,
+      cpf: cpf,
+      cnpj: cnpj,
+      phone: phone,
+      email: email,
+      phone: phone,
+      avista: avista,
+      payment_id: newPayment.id
+  
+    }).catch(error => {
+      console.error('Error creating payment_method:', error);
+    });
+  
+    await Payment_Condition.create({
+      type_condition: payment_condition,
+      amount_parcelable: amount_parcelable,
+      payment_method_id: newPayment_Method.id
+    }).catch(error => {
+      console.error('Error creating payment_condition:', error);
+    });
+  
+
+    await Movement.create({
+
+      leader_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'Em análise pelo diretor',
+
+    });
+
+     // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      await File.create({
+        fileName: uniqueFileName,
+        payment_id: newPayment.id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+  // Fetch all directors asynchronously
+  const directors = await Profile.findAll({
+    where: {
+      description: 'directors'
+    }
+  });
+
+  // Now you can use map on the directors array
+  const directorLoginsPromises = directors.map(async (director) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: director.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  // Wait for all director logins to be fetched
+  const directorLogins = await Promise.all(directorLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [req.session.user.employee.email, ...directorLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${newPayment.id}`;
+    let text = "Nova solicitação de pagamento gerada.\n"
+      + "\n\n Gestor(a): " + req.session.user.employee.name +
+      "\n E-mail: " + req.session.user.employee.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
+
+    let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  } else if (req.session.user.profile.description == 'directors') {
+
+    const newPayment = await Payment.create({
+      /*where: {
+        employee_id: req.session.user.employee.id
+      },*/
+      description: description,
+      value: value,
+      expiration_date: dateFormat,
+      director_id: req.session.user.employee.id,
+      status: 'Em análise pelo compras',
+      employee_id: req.session.user.employee.id,
+      supplier_id: supplier,
+      company_id: company
+  
+    }).catch(error => {
+      console.error('Error creating payment:', error);
+    });
+  
+    const newPayment_Method = await Payment_Method.create({
+  
+      payment_method: payment_method,
+      bank: bank,
+      agency: agency,
+      currency_account: currency_account,
+      ticket: ticket,
+      cpf: cpf,
+      cnpj: cnpj,
+      phone: phone,
+      email: email,
+      phone: phone,
+      avista: avista,
+      payment_id: newPayment.id
+  
+    }).catch(error => {
+      console.error('Error creating payment_method:', error);
+    });
+  
+    await Payment_Condition.create({
+      type_condition: payment_condition,
+      amount_parcelable: amount_parcelable,
+      payment_method_id: newPayment_Method.id
+    }).catch(error => {
+      console.error('Error creating payment_condition:', error);
+    });
+  
+
+
+    await Movement.create({
+
+      director_id: req.session.user.employee.id,
+      payment_id: newPayment.id,
+      status: 'Em análise pelo compras',
+
+    });
+
+     // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      await File.create({
+        fileName: uniqueFileName,
+        payment_id: newPayment.id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+  // Fetch all directors asynchronously
+  const purchase = await Profile.findAll({
+    where: {
+      description: 'purchases'
+    }
+  });
+
+  // Now you can use map on the directors array
+  const purchaseLoginsPromises = purchase.map(async (compras) => {
+    let user = await User.findOne({
+      where: {
+        profile_id: compras.id
+      }
+    });
+    return user.login; // Return the user's login
+  });
+
+  // Wait for all director logins to be fetched
+  const purchaseLogins = await Promise.all(purchaseLoginsPromises);
+
+  // Combine all emails into a single array
+  const emails = [req.session.user.employee.email, ...purchaseLogins];
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+    let from = "nao-responda@provida.med.br";
+    let to = email;
+    let subject = `Solicitação #${newPayment.id}`;
+    let text = "Nova solicitação de pagamento gerada.\n"
+      + "\n\n Diretor(a): " + req.session.user.employee.name +
+      "\n E-mail: " + req.session.user.employee.email +
+      "\n\n Acesse: http://52.156.72.125:3001";
+
+    let mailOptions = {
+      from,
+      to,
+      subject,
+      text
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+
+  } 
 
   res.redirect('/payments/?success=true');
 

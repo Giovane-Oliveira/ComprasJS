@@ -222,7 +222,7 @@
                     let formattedDate=new Date(movement.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
                   <tr>
                     <td colspan="5">
-                     Diretor reprovou <%= move_user.name %>
+                     Diretor(a): <%= move_user.name %>
                     </td>
                     <td>
                       <%= move_user.email %>
@@ -278,6 +278,16 @@
                   </div>
 
                   <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id !=null && purchase.purchase_id !=null && purchase.financial_id==null ) { %>
+                    <div id='anexoFinanceiroC'>
+                      <form action="/purchase/accept/financial" method="post" enctype="multipart/form-data">
+                        <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
+                        <hr width="90%">
+                        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+                        <hr width="90%"">
+                        <button type=" submit" class="btn btn-primary">Aceitar</button>
+                      </form>
+                    </div>
+                    <% }else if(user.profile.description=="financial" && purchase.director_id !=null && purchase.leader_id ==null && purchase.purchase_id ==null && purchase.financial_id==null ) { %>
                     <div id='anexoFinanceiroC'>
                       <form action="/purchase/accept/financial" method="post" enctype="multipart/form-data">
                         <input type="text" name="purchase_id" value="<%= purchase.id %>" hidden>
