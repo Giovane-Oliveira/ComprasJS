@@ -71,7 +71,8 @@
         <tr>
           <td class="destaque"><strong>Vencimento:</strong></td>
           <td><span name="vencimento">
-              <%= formattedDate %>
+            <% let expiration_formatted =new Date(payment.expiration_date).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+              <%= expiration_formatted %>
             </span></td>
           <td class="destaque"><strong>Valor:</strong></td>
           <td><span name="valor">
