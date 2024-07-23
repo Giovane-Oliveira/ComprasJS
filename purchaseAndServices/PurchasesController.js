@@ -90,7 +90,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
 
   while (item != undefined && value != undefined) {
 
-    let valorF = req.body['newvalue' + count].replace('.', ' ');
+    let valorF = req.body['newvalue' + count].replace('.', ' ').replace('R$', '');
     let arrValor = valorF.split(" ");
     if (arrValor.length == 3) {
       valorF = arrValor[0] + arrValor[1] + arrValor[2];
@@ -139,7 +139,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
       console.log(req.body['newvalue' + count]);
       
 
-      let valorF = req.body['newvalue' + count].replace('.', ' ');
+      let valorF = req.body['newvalue' + count].replace('.', ' ').replace('R$', '');
       let arrValor = valorF.split(" ");
       if (arrValor.length == 3) {
         valorF = arrValor[0] + arrValor[1] + arrValor[2];
@@ -938,7 +938,17 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
    const movement_users =  movements.map(async (movement) => {
 
-    if (movement.leader_id != undefined) {
+    if (movement.employee_id != undefined) {
+
+      let manager_employee = await Employee.findOne({
+         where: {
+           id: movement.employee_id
+         }
+       });
+       console.log('Gerente carregado!')
+       return manager_employee; 
+
+     }else if (movement.leader_id != undefined) {
 
      let leader_employee = await Employee.findOne({
         where: {
@@ -985,21 +995,7 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
   });
 
   const move_users = await Promise.all(movement_users);
-   let gestor = false;
-  movements.forEach(movement => {
-
-    move_users.forEach(user => {
-
-      if (movement.leader_id == user.id && movement.status == 'Em análise pelo compras' && gestor == false) { 
-
-        console.log("Gestor:" + user.name);
-
-      }
-
-    });
-
-  });
-
+   
   if(req.query.modal == 'leaders'){
 
     res.render('purchaseAndServices/show.ejs', { movements, move_users, leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, item, sector, files, user: req.session.user, unit, modal: 'leaders' });
@@ -1032,20 +1028,8 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
   while (item != undefined) {
 
-    let valorF = req.body['value' + count].replace('.', ' ');
-    let arrValor = valorF.split(" ");
-    if (arrValor.length == 3) {
-      valorF = arrValor[0] + arrValor[1] + arrValor[2];
-    } else if (arrValor.length == 2) {
-
-      valorF = arrValor[0] + arrValor[1];
-
-    }
-
-    valorF = valorF.replace(',', '.');
-
-    total += parseFloat(valorF) * req.body['amount' + count];
-
+    let valorF = req.body['totalItem' + count].replace('R$', '');
+    total += parseFloat(valorF);
 
     count++;
     item = req.body['item' + count];
@@ -1088,24 +1072,13 @@ if(req.session.user.profile.description == 'managers' || req.session.user.profil
     console.log(req.body['value' + count]);
     console.log(req.body['city' + count]);
 
-    let valorF = req.body['value' + count].replace('.', ' ');
-    let arrValor = valorF.split(" ");
-    if (arrValor.length == 3) {
-      valorF = arrValor[0] + arrValor[1] + arrValor[2];
-    } else if (arrValor.length == 2) {
-
-      valorF = arrValor[0] + arrValor[1];
-
-    }
-
-    valorF = valorF.replace(',', '.');
  
 
     Item.create({
       amount: req.body['amount' + count],
       item: req.body['item' + count],
       description: req.body['description' + count],
-      value: parseFloat(valorF).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      value: parseFloat(req.body['value' + count].replace('R$', ' ')).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
       city: req.body['city' + count],
       purchase_id: newPurchase.id
 
