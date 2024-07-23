@@ -159,16 +159,16 @@
         var linha = "<tr><td>" + "<input type='number' name='amount" + count + "' value='" + quantidade + "'hidden/>" + quantidade + "</td><td>" + 
           "<input type='text' name='item" + count + "' value='" + produto + "'hidden/>" + produto + "</td><td>" + 
             "<input type='text' name='description" + count + "' value='" + especificacao + "'hidden/>" + especificacao + "</td><td>" + 
-            "<input type='text' name='city" + count + "' value='" + unidade + "'hidden/>"  + unidade + "</td><td>R$" + 
-              "<input type='text' name='value" + count + "' value='" + preco.toFixed(2) + "'hidden/>" + preco.toFixed(2) + "</td><td>R$" +  
-                "<input type='text' name='totalItem" + count + "' value='" + totalItem.toFixed(2) + "'hidden/>"+ totalItem.toFixed(2) + "</td></tr>";
+            "<input type='text' name='city" + count + "' value='" + unidade + "'hidden/>"  + unidade + "</td><td>" + 
+              "<input type='text' name='value" + count + "' value='" + preco.toFixed(2) + "'hidden/>" + preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + "</td><td>" +  
+                "<input type='text' name='totalItem" + count + "' value='" + totalItem.toFixed(2) + "'hidden/>"+ totalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + "</td></tr>";
           
 
           count++;
          
         $("#itens tbody").append(linha);
         totalGeral += totalItem;
-        $("#totalGeral").text("R$ " + totalGeral.toFixed(2));
+        $("#totalGeral").text(totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         $("#produto").val("");
         $("#especificacao").val("");
         $("#unidade").val("");
