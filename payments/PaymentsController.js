@@ -901,20 +901,19 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
    
   if (req.query.modal == 'leaders') {
 
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
 
   } else if (req.query.modal == 'directors') {
 
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors' });
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors' });
 
   } else if (req.query.modal == 'purchases') {
 
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases' });
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases' });
 
-  } else {
+  } else  {
 
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, leader_employee, director_employee, purchase_employee, financial_employee, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: '' });
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: '' });
 
   }
 
@@ -1014,7 +1013,10 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
   if (req.session.user.profile.description == 'managers' ||
     req.session.user.profile.description == 'purchases' ||
-    req.session.user.profile.description == 'financial'
+    req.session.user.profile.description == 'financial' ||
+    req.session.user.profile.description == 'directors' ||
+    req.session.user.profile.description == 'ti'
+
   ) {
 
     const newPayment = await Payment.create({
