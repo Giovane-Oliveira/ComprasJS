@@ -98,25 +98,25 @@
           <td><span name="conta">C/C: <%= payment_method.currency_account %> </span></td>
         </tr>
         <% } else if(payment_method.payment_method=="Pix" ){ %>
-        <%if(payment_method.cpf !=null){ %>
+        <%if(payment_method.cpf != null){ %>
         <tr name="cpf">
           <td colspan="2">Pix</td>
           <td colspan="2">Chave CPF: <%= payment_method.cpf %>
           </td>
-        </tr>
-        <% } else if(payment_method.cnpj !=null){ %>
+        </tr> <%# null %>
+        <% } else if(payment_method.cnpj != null){ %>
         <tr name="cnpj">
           <td colspan="2">Pix</td>
           <td colspan="2">Chave CNPJ: <%= payment_method.cnpj %>
           </td>
         </tr>
-        <% }else if(payment_method.email !=null){%>
+        <% }else if(payment_method.email != null){%>
         <tr name="email">
           <td colspan="2">Pix</td>
           <td colspan="2">Chave e-mail: <%= payment_method.email %>
           </td>
         </tr>
-        <% }else if(payment_method.phone !=null){%>
+        <% }else if(payment_method.phone != null){%>
         <tr name="phone">
           <td colspan="2">Pix</td>
           <td colspan="2">Chave fone: <%= payment_method.phone %>
@@ -318,35 +318,36 @@
 
     </table>
 
+<%# local ""/servidor undefined %>
+    
 
-
-    <% if(user.profile.description=="leaders" && payment.leader_id=="" && payment.director_id=="" && payment.purchase_id=="" && payment.financial_id=="" ){%>
+    <% if(user.profile.description=="leaders" && payment.leader_id==undefined && payment.director_id==undefined && payment.purchase_id==undefined && payment.financial_id==undefined ){%>
     <div class="botoes">
       <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
       <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </div>
-    <% }else if(user.profile.description=="directors" && payment.director_id=="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <% }else if(user.profile.description=="directors" && payment.director_id==undefined && payment.leader_id !=undefined && payment.purchase_id==undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
 
     <div class="botoes">
       <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
       <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </div>
 
-    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
-
-    <div class="botoes">
-      <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
-      <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
-    </div>
-//director pass
-    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <% }else if(user.profile.description=="purchases" && payment.director_id !=undefined && payment.leader_id !=undefined && payment.purchase_id==undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
 
     <div class="botoes">
       <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
       <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </div>
 
-    <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <% }else if(user.profile.description=="purchases" && payment.director_id !=undefined && payment.leader_id ==undefined && payment.purchase_id==undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+
+    <div class="botoes">
+      <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    </div>
+
+    <% }else if(user.profile.description=="financial" && payment.director_id !=undefined && payment.leader_id !=undefined && payment.purchase_id !=undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
     <div id="anexoFinanceiroP">
       <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
         <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
@@ -357,8 +358,8 @@
       </form>
     </div>
     <div>
-      //financial pass
-      <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+  
+      <% }else if(user.profile.description=="financial" && payment.director_id !=undefined && payment.leader_id ==undefined && payment.purchase_id !=undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
     <div id="anexoFinanceiroP">
       <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
         <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
@@ -451,5 +452,36 @@
       </div>
     </div>
   </div>
+
+
+  <script type="text/javascript">
+  $(":button").submit(function() {
+    $(document).ready(function() {
+      $('#loadingModal').modal('show');
+    })
+  });
+</script>
+
+
+<!-- Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Aguarde...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <%- include('../partials/footer.ejs') %>

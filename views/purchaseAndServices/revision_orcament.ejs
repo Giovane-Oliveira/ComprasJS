@@ -50,6 +50,38 @@
 
     </tbody>
   </table>
+<% if(files.length> 0){ %>
+  <hr>
+  <table id="tabelaCompras">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Anexo</th>
+        <th>Data</th>
+        <th>Abrir</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% files.forEach(file=> { %>
+        <tr>
+          <td>
+            <%= file.id %>
+          </td>
+          <td>
+            <%= file.fileName %>
+          </td>
+          <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+            <td>
+              <%= formattedDate %>
+            </td>
+            <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+        </tr>
+        <% }); %>
+    </tbody>
+    <% } %>
+
+  </table>
+
 
 
   <script>
