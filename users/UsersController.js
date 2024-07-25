@@ -31,6 +31,113 @@ router.get('/registration', (req, res) => {
 
 });
 
+router.get('/permission/:id', adminAuth, async (req, res) =>{
+
+    const id = req.params.id;
+    
+   const permissions = await Permissions.findOne({
+        where: {
+            id: id
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+
+   
+
+    if(req.query.activated){
+
+        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: 'Permissão ativada com sucesso!' });
+
+    }else if(req.query.desactivated){
+
+        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: 'Permissão desativada com sucesso!' });
+    }else{
+
+        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: '' });
+    }
+
+    
+
+});
+
+router.get('/activate/permission/:name/:id', adminAuth,  (req, res) =>{
+
+    const id = req.params.id;
+    const name = req.params.name;
+
+    if(name == 'user_registration'){
+
+        Permissions.update({
+            user_registration: 1 
+          }, {
+              where: {
+                  id: id
+              }
+          }).catch((err) => {
+              console.log(err);
+          });
+      
+    }else if(name == 'supplier_registration'){
+
+        Permissions.update({
+            supplier_registration: 1 
+          }, {
+              where: {
+                  id: id
+              }
+          }).catch((err) => {
+              console.log(err);
+          });
+    }
+    
+
+    res.redirect('/permission/' + id + '?activated=true');
+
+
+});
+
+
+
+router.get('/desactivate/permission/:name/:id', adminAuth,  (req, res) =>{
+
+    const id = req.params.id;
+    const name = req.params.name;
+
+
+    if(name == 'user_registration'){
+
+        Permissions.update({
+            user_registration: 0 
+          }, {
+              where: {
+                  id: id
+              }
+          }).catch((err) => {
+              console.log(err);
+          });
+      
+    }else if(name == 'supplier_registration'){
+
+        Permissions.update({
+            supplier_registration: 0
+          }, {
+              where: {
+                  id: id
+              }
+          }).catch((err) => {
+              console.log(err);
+          });
+    }
+    
+    res.redirect('/permission/' + id + '?desactivated=true');
+
+});
+
+
+
+
+
 router.get('/users', adminAuth, async (req, res) => {
 
     const user = await User.findAll().catch(err => {

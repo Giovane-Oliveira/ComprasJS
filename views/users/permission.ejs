@@ -1,7 +1,6 @@
 <%- include('../partials/header.ejs') %>
 
-
-  <% if(message) { %>
+<% if(message) { %>
     <script>
       $(document).ready(function () {
         $('#message').modal('show');
@@ -18,37 +17,31 @@
         <thead>
           <tr>
             <th>Id</th>
-            <th>Login</th>
-            <th>Status</th>
-            <th>Permissões</th>
+            <th>Gerenciar Usuários</th>
+            <th>Cadastrar Fornecedores</th>        
           </tr>
         </thead>
         <tbody>
 
-
-          <% listusers.forEach(usuario=> { %>
-
             <tr>
               <td>
-                <%= usuario.id %>
+                <%= permissions.id %>
               </td>
-              <td>
-                <%= usuario.login %>
-              </td>
-
-              <% if(usuario.active==1){%>
-                <td> <input id=<%=usuario.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+             
+              <% if(permissions.user_registration == 1){%>
+                <td> <input name="user_registration" id=<%=permissions.id %>  type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                 <% }else{ %>
-                  <td> <input id=<%=usuario.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                  <td> <input name="user_registration" id=<%=permissions.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                   <% } %>
 
-                  <td>
-                    <a href="/permission/<%= usuario.id %>" class="btn btn-warning">Abrir</a>
-                  </td>
+              <% if(permissions.supplier_registration == 1){%>
+                <td> <input name="supplier_registration" id=<%=permissions.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                <% }else{ %>
+                  <td> <input name="supplier_registration" id=<%=permissions.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                  <% } %>
 
             </tr>
 
-            <% }); %>
 
               <script type="text/javascript">
 
@@ -57,11 +50,11 @@
                   function () {
                     if ($(this).is(':checked')) {
                       // alert($(this).attr("id"));
-                      window.location.href = "/activate_user/" + $(this).attr("id");
+                      window.location.href = "/activate/permission/" + $(this).attr("name") + "/" + $(this).attr("id");
                     } else {
 
                       //alert($(this).attr("id"));
-                      window.location.href = "/desactivate_user/" + $(this).attr("id");
+                      window.location.href = "/desactivate/permission/" + $(this).attr("name") + "/" + $(this).attr("id");
                     }
                   });
 
@@ -110,6 +103,4 @@
       </div>
 
 
-
-
-      <%- include('../partials/footer.ejs') %>
+<%- include('../partials/footer.ejs') %>
