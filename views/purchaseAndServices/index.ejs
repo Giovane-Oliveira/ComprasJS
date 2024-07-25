@@ -76,8 +76,8 @@
 <hr style="width: 90%;">
 <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
 <hr style="width: 90%;;">
-<label for="exampleFormControlTextarea1">Justificativa</label>
-<textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180"></textarea>
+<label for="exampleFormControlTextarea1">Justificativa</label> <br>
+<textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="50"></textarea>
 <br>
 <button type="submit" class="btn btn-primary" id="submit-button" disabled>Enviar</button>
 </form>
@@ -88,9 +88,9 @@
 <div id="novoItem">
   <h2>Adicionar Novo Item</h2>
   <label for="produto">Item:</label>
-  <input type="text" id="produto" class="form-control">
+  <input type="text" id="produto" class="form-control" placeholder="Nome do Item">
   <label for="especificacao">Especificação:</label>
-  <input type="text" id="especificacao" class="form-control">
+  <input type="text" id="especificacao" class="form-control" placeholder="Especificação">
   <label for="unidade">Unidade:</label>
   <select id="unidade" name="cidade" class="form-control" required>
     <option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>
@@ -114,9 +114,9 @@
     <option value="Pelotas">Rio Pardo</option>
   </select>
   <label for="quantidade">Quantidade:</label>
-  <input type="number" min="1" id="quantidade" class="form-control">
+  <input type="number" min="1" id="quantidade" class="form-control" placeholder="1">
   <label for="preco">Preço:</label>
-  <input type="text" id="preco" class="form-control">
+  <input type="text" id="preco" class="form-control" placeholder="R$ 0,00">
   <button id="adicionar" class="btn btn-success">Adicionar</button>
 </div>
 
