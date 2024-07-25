@@ -52,7 +52,7 @@
 <br>
 <br>
 <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" >
-<table id="itens" border="0px" width="100%">
+<table id="itens" class="table table-bordered" border="0px" width="100%">
   <thead>
     <tr>
       <td>Quantidade</td>
@@ -88,11 +88,11 @@
 <div id="novoItem">
   <h2>Adicionar Novo Item</h2>
   <label for="produto">Item:</label>
-  <input type="text" id="produto">
+  <input type="text" id="produto" class="form-control">
   <label for="especificacao">Especificação:</label>
-  <input type="text" id="especificacao">
+  <input type="text" id="especificacao" class="form-control">
   <label for="unidade">Unidade:</label>
-  <select id="unidade" name="cidade" required>
+  <select id="unidade" name="cidade" class="form-control" required>
     <option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>
     <option value="Cachoeira do Sul">Cachoeira do Sul</option>
     <option value="Vera Cruz">Vera Cruz</option>
@@ -114,10 +114,10 @@
     <option value="Pelotas">Rio Pardo</option>
   </select>
   <label for="quantidade">Quantidade:</label>
-  <input type="number" min="1" id="quantidade">
+  <input type="number" min="1" id="quantidade" class="form-control">
   <label for="preco">Preço:</label>
-  <input type="text" id="preco">
-  <button id="adicionar">Adicionar</button>
+  <input type="text" id="preco" class="form-control">
+  <button id="adicionar" class="btn btn-success">Adicionar</button>
 </div>
 
 

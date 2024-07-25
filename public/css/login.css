@@ -102,21 +102,6 @@ body {
   font-size: 14px !important;
 }
 
-::placeholder {
-  color: #bdbdbd;
-  opacity: 1;
-  font-weight: 300;
-}
-
-:-ms-input-placeholder {
-  color: #bdbdbd;
-  font-weight: 300;
-}
-
-::-ms-input-placeholder {
-  color: #bdbdbd;
-  font-weight: 300;
-}
 
 input,
 textarea {

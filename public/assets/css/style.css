@@ -38,9 +38,7 @@ body {
 .btnsis:hover {
   background-color: #00d0bf;
 }
-input::placeholder {
-  color: #000 !important;
-}
+
 select::placeholder {
   color: #000 !important;
 }
