@@ -810,7 +810,7 @@ router.post('/recover/password', async (req, res) => {
     var token = req.body?.token;
     var password = req.body?.password;
 
-    console.log(email, token);
+    console.log(`Email: ${email} Token: ${token} Password: ${password}`);
 
     User.findOne({ where: { login: email } }).then(async user => {
         if (user != undefined) {
@@ -860,9 +860,9 @@ router.get('/recover/alter_password/:email/:token', async (req, res) => {
         where: {
             managers: token
         }
-    }).then((token) => {
+    }).then((Token) => {
 
-        if (token == undefined) {
+        if (Token == undefined) {
             res.redirect('/?error=true');
             return;
         } else {

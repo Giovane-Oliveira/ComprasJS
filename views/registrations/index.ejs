@@ -38,10 +38,10 @@
           <input type="text" data-mask='000.000.000-00' class="form-control item" name="cpf" required placeholder="Informe o CPF">
         </div>
         <div class="form-group">
-          <input type="text" data-mask='00000-000' class="form-control item" name="cep" required placeholder="Informe o cep">
+          <input type="text" data-mask='00000-000' class="form-control item" name="cep" id="cep" required placeholder="Informe o cep">
         </div>
         <div class="form-group">
-          <input type="text" class="form-control item" name="address" required placeholder="Informe o endereço">
+          <input type="text" class="form-control item" name="address" id="address" required placeholder="Informe o endereço">
         </div>
         <div class="form-group">
           <select id="telefone" class="form-control" required>
@@ -90,105 +90,138 @@
         </div>
       </form>
 
-      <script type="text/javascript">
-        $.jMaskGlobals.watchDataMask = true;
 
-        $("#telefone").on("change", function () {
-          var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
-          if (valor == "Celular") {
-            document.getElementById("seltelefone").innerHTML = "";
-            document.getElementById("seltelefone").innerHTML = "" +
-              "<div class='form-group'>" +
-              "<input type='text' data-mask='(00) 0 0000-0000' class='form-control item' name='phone' required placeholder='Informe seu celular'>" +
-              '</div>'
-          } else {
-            document.getElementById("seltelefone").innerHTML = "";
-            document.getElementById("seltelefone").innerHTML = "" +
-              "<div class='form-group'>" +
-              "<input type='text' data-mask='(00) 0000-0000' class='form-control item' name='phone' required placeholder='Informe seu fixo'>" +
-              '</div>'
-          }
-        });
+      <script>
 
-        $("#unidade").on("change", function () {
-          var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
-          if (valor == "Cachoeira do Sul") {
+$(document).ready(function() {
+    $("#cep").on("blur", function() {
+        var cep = $(this).val().replace(/\D/g, ''); // Remove non-digit characters
 
-            document.getElementById("selestab").innerHTML = "";
-            document.getElementById("selestab").innerHTML = "" +
-              "<div class='form-group'> \n" +
-              "<select id='estab' name='description' class='form-control' required> \n" +
-              "<option value='' disabled='disabled' selected='selected'>Selecione o estabelecimento</option> \n" +
-              "<option value='Sede Ramiro'>Sede Ramiro</option> \n" +
-              "<option value='Medicina do Trabalho'>Medicina do Trabalho</option> \n" +
-              "<option value='Clinica'>Clínica</option> \n" +
-              "</select> \n" +
-              "<div class='select-dropdown'></div> \n" +
-              "</div> \n" +
-              "</div> \n";
-            $("#estab").on("change", function () {
-              var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
-              if (valor == "Sede Ramiro") {
-
-                document.getElementById("selsetor").innerHTML = "";
-                document.getElementById("selsetor").innerHTML = "" +
-                  "<div class='form-group'> \n" +
-                  "<select name='sector' class='form-control' required> \n" +
-                  "<option value='' disabled='disabled' selected='selected'>Selecione o setor</option> \n" +
-                  "<option value='Financeiro'>Financeiro</option> \n" +
-                  "<option value='RH'>RH</option> \n" +
-                  "<option value='Compras'>Compras</option> \n" +
-                  "<option value='T.I'>T.I</option> \n" +
-                  "<option value='SAC'>SAC</option> \n" +
-                  "<option value='Diretoria'>Diretoria</option> \n" +
-                  "<option value='Comunicacao'>Comunicacao</option> \n" +
-                  "<option value='Cobranca'>Cobranca</option> \n" +
-                  "</select> \n" +
-                  "<div class='select-dropdown'></div> \n" +
-                  "</div> \n" +
-                  "</div> \n";
-
-              } else {
-
-                document.getElementById("selsetor").innerHTML = "";
-                //document.getElementById("selestab").innerHTML = "";
-                document.getElementById("selsetor").innerHTML = "   <div hidden class='form-group'>\n" +
-                  "<input type='text' class='form-control item' name='sector' value='Administrativo'>\n" +
-                  "</div>";
-
-              }
-
-
+        if (cep.length == 8) { // Validate CEP length
+            $.ajax({
+                url: 'https://viacep.com.br/ws/' + cep + '/json/',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.erro) {
+                        alert("CEP inválido.");
+                    } else {
+                        $("#address").val(response.logradouro); // Populate address field
+                        // You can also populate other fields like:
+                         $("#unidade").val(response.localidade);
+                         $("#unidade").trigger("change");
+                        // $("#state").val(response.uf);
+                        // $("#neighborhood").val(response.bairro);
+                    }
+                }
             });
-
-          } else {
-            document.getElementById("selsetor").innerHTML = "";
-            document.getElementById("selestab").innerHTML = "";
-            document.getElementById("selestab").innerHTML = "   <div hidden class='form-group'>\n" +
-              "<input type='text' class='form-control item' name='setor' value='Administrativo'>\n" +
-              "</div>";
-          }
-
-        });
-
-        let senha = document.getElementById('senha');
-        let senhaC = document.getElementById('newsenha');
-
-        function validarSenha() {
-          if (senha.value != senhaC.value) {
-            senhaC.setCustomValidity("Senhas diferentes!");
-            senhaC.reportValidity();
-            return false;
-          } else {
-            senhaC.setCustomValidity("");
-            return true;
-          }
         }
+    });
 
-        // verificar também quando o campo for modificado, para que a mensagem suma quando as senhas forem iguais
-        senhaC.addEventListener('input', validarSenha);
+    
+    $.jMaskGlobals.watchDataMask = true;
+
+
+$("#telefone").on("change", function () {
+  var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+  if (valor == "Celular") {
+    document.getElementById("seltelefone").innerHTML = "";
+    document.getElementById("seltelefone").innerHTML = "" +
+      "<div class='form-group'>" +
+      "<input type='text' data-mask='(00) 0 0000-0000' class='form-control item' name='phone' required placeholder='Informe seu celular'>" +
+      '</div>'
+  } else {
+    document.getElementById("seltelefone").innerHTML = "";
+    document.getElementById("seltelefone").innerHTML = "" +
+      "<div class='form-group'>" +
+      "<input type='text' data-mask='(00) 0000-0000' class='form-control item' name='phone' required placeholder='Informe seu fixo'>" +
+      '</div>'
+  }
+});
+
+$("#unidade").on("change", function () {
+  var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+  if (valor == "Cachoeira do Sul") {
+
+    document.getElementById("selestab").innerHTML = "";
+    document.getElementById("selestab").innerHTML = "" +
+      "<div class='form-group'> \n" +
+      "<select id='estab' name='description' class='form-control' required> \n" +
+      "<option value='' disabled='disabled' selected='selected'>Selecione o estabelecimento</option> \n" +
+      "<option value='Sede Ramiro'>Sede Ramiro</option> \n" +
+      "<option value='Medicina do Trabalho'>Medicina do Trabalho</option> \n" +
+      "<option value='Clinica'>Clínica</option> \n" +
+      "</select> \n" +
+      "<div class='select-dropdown'></div> \n" +
+      "</div> \n" +
+      "</div> \n";
+    $("#estab").on("change", function () {
+      var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+      if (valor == "Sede Ramiro") {
+
+        document.getElementById("selsetor").innerHTML = "";
+        document.getElementById("selsetor").innerHTML = "" +
+          "<div class='form-group'> \n" +
+          "<select name='sector' class='form-control' required> \n" +
+          "<option value='' disabled='disabled' selected='selected'>Selecione o setor</option> \n" +
+          "<option value='Financeiro'>Financeiro</option> \n" +
+          "<option value='RH'>RH</option> \n" +
+          "<option value='Compras'>Compras</option> \n" +
+          "<option value='T.I'>T.I</option> \n" +
+          "<option value='SAC'>SAC</option> \n" +
+          "<option value='Diretoria'>Diretoria</option> \n" +
+          "<option value='Comunicacao'>Comunicacao</option> \n" +
+          "<option value='Cobranca'>Cobranca</option> \n" +
+          "</select> \n" +
+          "<div class='select-dropdown'></div> \n" +
+          "</div> \n" +
+          "</div> \n";
+
+      } else {
+
+        document.getElementById("selsetor").innerHTML = "";
+        //document.getElementById("selestab").innerHTML = "";
+        document.getElementById("selsetor").innerHTML = "   <div hidden class='form-group'>\n" +
+          "<input type='text' class='form-control item' name='sector' value='Administrativo'>\n" +
+          "</div>";
+
+      }
+
+
+    });
+
+  } else {
+    document.getElementById("selsetor").innerHTML = "";
+    document.getElementById("selestab").innerHTML = "";
+    document.getElementById("selestab").innerHTML = "   <div hidden class='form-group'>\n" +
+      "<input type='text' class='form-control item' name='setor' value='Administrativo'>\n" +
+      "</div>";
+  }
+
+});
+
+let senha = document.getElementById('senha');
+let senhaC = document.getElementById('newsenha');
+
+function validarSenha() {
+  if (senha.value != senhaC.value) {
+    senhaC.setCustomValidity("Senhas diferentes!");
+    senhaC.reportValidity();
+    return false;
+  } else {
+    senhaC.setCustomValidity("");
+    return true;
+  }
+}
+
+// verificar também quando o campo for modificado, para que a mensagem suma quando as senhas forem iguais
+senhaC.addEventListener('input', validarSenha);
+});
+
+
+
       </script>
 
+ 
       <!--
 
      <div class="social-media">
