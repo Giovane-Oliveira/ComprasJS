@@ -1,23 +1,24 @@
 <%- include('../partials/header.ejs') %>
-  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
-  <div class="sobreposicaoForm" style="width: 490px; margin-bottom: -20px; margin-left: 26%;">
-    <h1>Cadastro de fornecedores</h1>
-  </div>
+<a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+<div class="sobreposicaoForm" style="width: 490px; margin-bottom: -20px; margin-left: 26%;">
+  <h1>Cadastro de fornecedores</h1>
+</div>
+<br>
+<hr>
 
-  <% if(message) { console.log(message) %>
+<% if(message) { console.log(message) %>
+<script>
+  alert("<%=message%>");
+</script>
+<% } %>
+<div class="container">
+  <form action="register_supplier" method="post">
+    <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;" required>
     <script>
-      alert("<%=message%>");
+      $.jMaskGlobals.watchDataMask = true;
     </script>
-    <% } %>
-      <form action="register_supplier" method="post" style="border: 1px solid #000; padding: 40px 15px 10px 50px;width: 50%; margin-left: auto; margin-right: auto;">
-        <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;">
-        <script>
-          $.jMaskGlobals.watchDataMask = true;
-        </script>
-        <input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder=" CNPJ:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;">
-        <input type="submit" class="btn btn-info" value="Cadastrar" style="margin-left: 40%;">
-
-
-      </form>
-
-      <%- include('../partials/footer.ejs') %>
+    <input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder=" CNPJ:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;" required>
+    <button type="submit" class="btn btn-info" style="margin-left: 40%;"> Cadastrar </button>
+  </form>
+</div>
+<%- include('../partials/footer.ejs') %>
