@@ -276,7 +276,7 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${req.body.purchase_id}`;
-    let text = "Compras aceitou a solicitação de pagamento.\n"
+    let text = "Compras aceitou a solicitação de compras/serviços.\n"
     + "\n\n Comprador(a): " + purchases.name + 
     "\n E-mail: " + purchases.email +
     "\n\n Acesse: http://52.156.72.125:3001";
@@ -695,7 +695,7 @@ router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Diretor aceitou a solicitação de pagamento.\n"
+    let text = "Diretor aceitou a solicitação de compras.\n"
     + "\n\n Diretor(a): " + director.name + 
     "\n E-mail: " + director.email +
     "\n\n Acesse: http://52.156.72.125:3001";
