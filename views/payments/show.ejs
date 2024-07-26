@@ -357,7 +357,7 @@
         <button type="submit" class="btn btn-primary">Enviar</button>
       </form>
     </div>
-    <div>
+
   
       <% }else if(user.profile.description=="financial" && payment.director_id !=undefined && payment.leader_id ==undefined && payment.purchase_id !=undefined && payment.financial_id==undefined && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
     <div id="anexoFinanceiroP">
@@ -369,11 +369,57 @@
         <button type="submit" class="btn btn-primary">Enviar</button>
       </form>
     </div>
-    <div>
       <% } %>
 
+      <% if(user.profile.description=="leaders" && payment.leader_id=="" && payment.director_id=="" && payment.purchase_id=="" && payment.financial_id==""){%>
+    <div class="botoes">
+      <a href="/payment/accept/leaders/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/leaders/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
     </div>
-  </div>
+    <% }else if(user.profile.description=="directors" && payment.director_id=="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+
+    <div class="botoes">
+      <a href="/payment/accept/directors/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/directors/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    </div>
+
+    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+
+    <div class="botoes">
+      <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    </div>
+
+    <% }else if(user.profile.description=="purchases" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id=="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+
+    <div class="botoes">
+      <a href="/payment/accept/purchases/<%= payment.id %>" class="btn btn-primary">Aceitar</a>
+      <a href="/payment/reprove/purchases/<%= payment.id %>" class="btn btn-danger" style="color:white;">Recusar</a>
+    </div>
+
+    <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id !="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <div id="anexoFinanceiroP">
+      <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
+        <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
+        <hr>
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+        <hr>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+
+  
+      <% }else if(user.profile.description=="financial" && payment.director_id !="" && payment.leader_id =="" && payment.purchase_id !="" && payment.financial_id=="" && payment.status !="REPROVADO" && payment.status !="APROVADO" ) { %>
+    <div id="anexoFinanceiroP">
+      <form action="/payment/accept/financial" method="post" enctype="multipart/form-data">
+        <input type="text" name="payment_id" value="<%= payment.id %>" hidden>
+        <hr>
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required />
+        <hr>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>
+    </div>
+      <% } %>
 
   <div class="modal fade" id="reproveLeaderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

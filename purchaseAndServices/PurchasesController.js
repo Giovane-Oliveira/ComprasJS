@@ -508,7 +508,7 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Gestor aceitou a solicitação de pagamento.\n"
+    let text = "Gestor aceitou a solicitação de compras.\n"
     + "\n\n Gestor(a): " + leader.name + 
     "\n E-mail: " + leader.email +
     "\n\n Acesse: http://52.156.72.125:3001";
