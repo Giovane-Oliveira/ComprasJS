@@ -45,3 +45,18 @@
   height: 100px;
   margin-left: 70%;
 }
+#userIcon {
+  text-align: center;
+}
+.dashimg img {
+  width: 15% !important;
+  height: 15% !important;
+  margin-right: 3%;
+  margin-top: -2%;
+}
+.dashimg a {
+  color: #e8eaed !important;
+}
+.dashimg {
+  margin-left: -5%;
+}

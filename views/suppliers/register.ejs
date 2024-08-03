@@ -1,24 +1,22 @@
 <%- include('../partials/header.ejs') %>
-<a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
-<div class="sobreposicaoForm" style="width: 490px; margin-bottom: -20px; margin-left: 26%;">
-  <h1>Cadastro de fornecedores</h1>
-</div>
-<br>
-<hr>
+  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+  <div class="sobreposicaoFormToken" style="width: 370px;margin-top:25px; margin-bottom: -48px; margin-left: 32% !important;background-color:#fff !important">
+    <h2 style="font-weight:lighter !important">Cadastro de fornecedores</h2>
+  </div>
 
-<% if(message) { console.log(message) %>
-<script>
-  alert("<%=message%>");
-</script>
-<% } %>
-<div class="container">
-  <form action="register_supplier" method="post">
-    <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;" required>
+  <% if(message) { console.log(message) %>
     <script>
-      $.jMaskGlobals.watchDataMask = true;
+      alert("<%=message%>");
     </script>
-    <input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder=" CNPJ:" style="width: 35%; margin-bottom: 1%; margin-left: 30%;" required>
-    <button type="submit" class="btn btn-info" style="margin-left: 40%;"> Cadastrar </button>
-  </form>
-</div>
-<%- include('../partials/footer.ejs') %>
+    <% } %>
+      <div class="container">
+        <form action="register_supplier" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important">
+          <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 65%; margin-bottom: 3%;" required>
+          <script>
+            $.jMaskGlobals.watchDataMask = true;
+          </script>
+          <input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder=" CNPJ:" style="width: 40%; margin-bottom: 3%;" required>
+          <button type="submit" class="btn accept"> Cadastrar </button>
+        </form>
+      </div>
+      <%- include('../partials/footer.ejs') %>

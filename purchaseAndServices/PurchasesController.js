@@ -340,8 +340,9 @@ router.get('/revision_orcament/:id', adminAuth, async (req, res) => {
   const item = await Item.findAll({ where: { purchase_id: purchase.id } });
   const sector = await Sector.findByPk(employee.sector_id);
   const files = await File.findAll({ where: { purchase_id: purchase.id } });
+  const unit = await Unit.findByPk(employee.unit_id);
 
-  res.render('purchaseAndServices/revision_orcament.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, items: item, sector, files, user: req.session.user, purchase_id: id });
+  res.render('purchaseAndServices/revision_orcament.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, items: item, sector, unit, files, user: req.session.user, purchase_id: id });
 });
 
 

@@ -1,115 +1,177 @@
 <%- include('../partials/header.ejs') %>
-<a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
-<div class="sobreposicaoForm" style="width: 335px;">
-  <h2>Revisão Orçamentária</h2>
-</div>
+  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px;"></a>
 
-<form action="/upload/purchases/revision_orcament" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
+  <% let formattedDate=new Date(purchase.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 
-  <input type="text" name="purchase_id" value="<%= purchase_id %>" hidden>
+    <div class="sobreposicaoForm" style="width: 335px; margin-top:50px">
+      <h2>Revisão Orçamentária</h2>
+    </div>
 
-  <table id="principal" border="0px" width="100%">
-    <thead>
-      <tr>
-        <td>Quantidade</td>
-        <td>Item</td>
-        <td>Especificação</td>
-        <td>Unidade</td>
-        <td>Valor</td>
-        <td>Confirmar/alterar</td>
-      </tr>
-    </thead>
-    <tbody>
+    <form action="/upload/purchases/revision_orcament" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
 
-      <% let count=1; items.forEach(item=> { %>
-      <script>
-        $.jMaskGlobals.watchDataMask = true;
-      </script>
-      <tr>
-        <td class="col-md-1"><input type="number" min=1 name="amount<%=count %>" class="form-control" id="amount<%=count %>" value="<%= item.amount %>" required placeholder="0" disabled /></td>
+      <input type="text" name="purchase_id" value="<%= purchase_id %>" hidden>
 
-        <td class="col-md-3"><input type="text" name="item<%=count %>" class="form-control" id="item1" value="<%= item.item %>" required placeholder="Item" disabled /></td>
 
-        <td class="col-md-4"><input type="text" name="description<%=count %>" class="form-control" id="especificacao1" value="<%= item.description %>" required placeholder="Especificação" disabled /></td>
-
-        <td class="col-md-2"><input type="text" name="city<%=count %>" class="form-control" id="valor1" value="<%= item.city %>" required placeholder="Valor" disabled /></td>
-
-        <td class="col-md-2"><input type="text" name="value<%=count %>" class="form-control" id="valor1" value="<%= item.value %>" required placeholder="Valor" disabled /></td>
-
-        <td class="col-md-2"><input type="text" name="newvalue<%=count %>" class="form-control" id="newvalor<%=count %>" required placeholder="Altere o valor" /></td>
-      </tr>
-
-      <tr>
-        <td class="col-md-1"><input type="number" min=1 name="newamount<%=count %>" class="form-control" id="newquantidade<%=count %>" value="<%= item.amount %>" required placeholder="0" hidden /></td>
-        <td class="col-md-3"><input type="text" name="newitem<%=count %>" class="form-control" id="newitem<%=count %>" value="<%= item.item %>" required placeholder="Item" hidden /></td>
-        <td class="col-md-4"><input type="text" name="newdescription<%=count %>" class="form-control" id="newespecificacao<%=count %>" value="<%= item.description %>" required placeholder="Especificação" hidden /></td>
-
-      </tr>
-
-      <% count++; }); %>
-
-    </tbody>
-  </table>
-<% if(files.length> 0){ %>
-  <hr>
-  <table id="tabelaCompras">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Anexo</th>
-        <th>Data</th>
-        <th>Abrir</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% files.forEach(file=> { %>
-        <tr>
-          <td>
-            <%= file.id %>
-          </td>
-          <td>
-            <%= file.fileName %>
-          </td>
-          <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
-            <td>
-              <%= formattedDate %>
+      <table id="principal" border="0px" width="100%">
+        <thead>
+          <tr>
+            <td>Nome</td>
+            <td>Data</td>
+            <td>Setor</td>
+            <td>Unidade</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-md-2"><input type="text" class="form-control" id="item1" value="<%= employee.name %>" required placeholder="Item" disabled />
             </td>
-            <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
-        </tr>
-        <% }); %>
-    </tbody>
-    <% } %>
+            <td class="col-md-1"><input type="text" class="form-control" id="item1" value="<%=formattedDate %>" required placeholder="Item" disabled />
+            </td>
+            </td>
+            <td class="col-md-1"><input type="text" class="form-control" id="item1" value="<%=sector.description %>" required placeholder="Item" disabled />
+            </td>
+            <td class="col-md-1"><input type="text" class="form-control" id="item1" value="<%=unit.description %>" required placeholder="Item" disabled />
+            </td>
 
-  </table>
+          </tr>
+        </tbody>
+        </tbody>
+      </table>
+
+      <table id="principal" border="0px" width="100%">
+        <thead>
+          <tr>
+            <td>Quantidade</td>
+            <td>Item</td>
+            <td>Especificação</td>
+            <td>Unidade</td>
+            <td>Valor</td>
+            <td>Confirmar/alterar</td>
+          </tr>
+        </thead>
+        <tbody>
+
+          <% let count=1; items.forEach(item=> { %>
+            <script>
+              $.jMaskGlobals.watchDataMask = true;
+            </script>
+            <tr>
+              <td class="col-md-1"><input type="number" min=1 name="amount<%=count %>" class="form-control" id="amount<%=count %>" value="<%= item.amount %>" required placeholder="0" disabled /></td>
+
+              <td class="col-md-3"><input type="text" name="item<%=count %>" class="form-control" id="item1" value="<%= item.item %>" required placeholder="Item" disabled /></td>
+
+              <td class="col-md-4"><input type="text" name="description<%=count %>" class="form-control" id="especificacao1" value="<%= item.description %>" required placeholder="Especificação" disabled /></td>
+
+              <td class="col-md-2"><input type="text" name="city<%=count %>" class="form-control" id="valor1" value="<%= item.city %>" required placeholder="Valor" disabled /></td>
+
+              <td class="col-md-2"><input type="text" name="value<%=count %>" class="form-control" id="valor1" value="<%= item.value %>" required placeholder="Valor" disabled /></td>
+
+              <td class="col-md-2"><input type="text" name="newvalue<%=count %>" class="form-control" id="newvalor<%=count %>" required placeholder="Altere o valor" /></td>
+            </tr>
+
+            <tr>
+              <td class="col-md-1"><input type="number" min=1 name="newamount<%=count %>" class="form-control" id="newquantidade<%=count %>" value="<%= item.amount %>" required placeholder="0" hidden /></td>
+              <td class="col-md-3"><input type="text" name="newitem<%=count %>" class="form-control" id="newitem<%=count %>" value="<%= item.item %>" required placeholder="Item" hidden /></td>
+              <td class="col-md-4"><input type="text" name="newdescription<%=count %>" class="form-control" id="newespecificacao<%=count %>" value="<%= item.description %>" required placeholder="Especificação" hidden /></td>
+
+            </tr>
+
+            <% count++; }); %>
+
+        </tbody>
+      </table>
+      <script>
+        $('.form-control').maskMoney({
+          prefix: 'R$ ',
+          allowNegative: true,
+          thousands: '.',
+          decimal: ',',
+          affixesStay: true
+        });
+
+      </script>
+
+      <div class="valor-revisao">
+        <label style="text-align:center">Valor Total:</label>
+        <label style="text-align:center" name="total" id="valor-display">
+          <%= purchase.total %>
+        </label>
+      </div>
+
+      <div class="valor-total">
+        <label>Novo Valor:</label>
+        <label name="total" id="novovalortotal">
+          R$ 0,00
+        </label>
+        <a class="btn accept" id="calcular">Calcular</a>
+      </div>
+
+      <script>
+        $(document).ready(function () {
+          $('#calcular').click(function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            let newTotal = 0;
+            let count = 1; // Start from 1 as your loop does
+
+            // Loop through each item and calculate the new total
+            while ($('#amount' + count).length > 0) {
+              let amount = parseFloat($('#amount' + count).val());
+              let newValue = parseFloat($('#newvalor' + count).val().replace('R$ ', '').replace('.', '').replace(',', '.')); // Remove currency symbol and format for calculation
+
+              newTotal += amount * newValue;
+              count++;
+            }
+
+            // Update the "novovalortotal" label
+            $('#novovalortotal').text('R$ ' + newTotal.toFixed(2).replace('.', ',')); // Format the total with currency symbol and commas
+          });
+        });
+      </script>
+
+      <% if(files.length> 0){ %>
+        <hr>
+        <table id="tabelaCompras">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Anexo</th>
+              <th>Data</th>
+              <th>Abrir</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <% files.forEach(file=> { %>
+              <tr>
+                <td>
+                  <%= file.id %>
+                </td>
+                <td>
+                  <%= file.fileName %>
+                </td>
+                <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+                  <td>
+                    <%= formattedDate %>
+                  </td>
+                  <td><a href="/purchase/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
+              </tr>
+              <% }); %>
+          </tbody>
+          <% } %>
+
+        </table>
 
 
-
-  <script>
-    $('.form-control').maskMoney({
-      prefix: 'R$ ',
-      allowNegative: true,
-      thousands: '.',
-      decimal: ',',
-      affixesStay: true
-    });
-      
-  </script>
-
-
-  <div class="valor-total">
-    <label>Valor Total:</label>
-    <label name="total" id="valor-display">
-      <%= purchase.total %>
-    </label>
-  </div>
-
-  <hr style="width: 90%;">
-  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
-  <hr style="width: 90%;;">
-  <label for="exampleFormControlTextarea1">Justificativa</label>
-  <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180" disabled> <%= purchase.justification %>  </textarea>
-  <button style="margin-top:10px; margin-bottom:15px;" type="submit" class="btn btn-info">Enviar</button>
-</form>
-</div>
-</div>
-<%- include('../partials/footer.ejs') %>
+        <hr style="width: 90%;">
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
+        <hr style="width: 90%;;">
+        <label for="exampleFormControlTextarea1">Justificativa</label>
+        <br>
+        <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="180" disabled> <%= purchase.justification %>  </textarea>
+        <br>
+        <button style="margin-top:10px; margin-bottom:15px;" type="submit" class="btn accept">Enviar</button>
+    </form>
+    </div>
+    </div>
+    <%- include('../partials/footer.ejs') %>

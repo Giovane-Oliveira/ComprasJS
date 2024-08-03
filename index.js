@@ -21,7 +21,7 @@ app.use(session({
       maxAge: 28800000 //ms   15min
   },
    resave: false,
-   saveUninitialized: false
+   saveUninitialized: true
 }));
 
 // parse application/x-www-form-urlencoded

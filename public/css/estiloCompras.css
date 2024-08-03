@@ -67,9 +67,8 @@
   align-items: center;
   margin-top: 30px; /* Adiciona espaço entre label e tabela*/
   margin-bottom: 30px;
-  margin-left: 120px;
+  margin-left: 0.5%;
 }
-
 .valor-total label {
   margin-right: 10px; /* adiciona espaço entre label */
   font-weight: bold; /* Texto em negrito */
@@ -81,6 +80,54 @@
   border-radius: 3px; /* Arredendoda as bordas */
   font-size: 16px; /* Ajusta tamanho da fonte */
 }
+.valor-total a {
+  color: #fff !important;
+  margin-bottom: 0.5%;
+}
+.valor-relatorio {
+  display: flex;
+  align-items: center;
+  margin-top: 30px; /* Adiciona espaço entre label e tabela*/
+  margin-bottom: 30px;
+  margin-left: 10%;
+}
+.valor-relatorio label {
+  margin-right: 10px; /* adiciona espaço entre label */
+  font-weight: bold; /* Texto em negrito */
+}
+
+.valor-relatorio label[name="total"] {
+  padding: 5px; /* adiciona espaçamento interno */
+  border: 1px solid #000; /* Adiciona borda */
+  border-radius: 3px; /* Arredendoda as bordas */
+  font-size: 16px; /* Ajusta tamanho da fonte */
+}
+
+/*Revisão*/
+
+.valor-revisao {
+  display: grid;
+  align-items: center;
+  margin-top: 30px; /* Adiciona espaço entre label e tabela*/
+  margin-bottom: 30px;
+  margin-left: 0.5%;
+  background-color: #bcbcbc;
+  width: 15%;
+  padding-left: 0.5%;
+  border-radius: 5px;
+}
+.valor-revisao label {
+  margin-right: 10px; /* adiciona espaço entre label */
+  font-weight: bold; /* Texto em negrito */
+}
+.valor-revisao label[name="total"] {
+  padding: 5px; /* adiciona espaçamento interno */
+  border: 1px solid #000; /* Adiciona borda */
+  border-radius: 3px; /* Arredendoda as bordas */
+  font-size: 16px; /* Ajusta tamanho da fonte */
+}
+
+/* Revisão*/
 
 .assinaturas {
   display: grid;

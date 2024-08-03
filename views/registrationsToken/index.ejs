@@ -4,30 +4,29 @@
   <div class="sobreposicaoFormToken">
     <h2>Gerar Token</h2>
   </div>
-  <hr>
-<div class="card" style="width: 30rem;">
-  <div class="card-body" style="width: 30rem;">
-  <form id="form" action="/generate_token" method="post">
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="inputState">Tipo usuário:</label>
-        <select name="length" id="inputState" class="form-control" required>
-          <option value="" selected>Selecione</option>
-          <option value="5">Gerente</option>
-          <option value="6">Gestor</option>
-          <option value="7">Diretor</option>
-          <option value="8">Compras</option>
-          <option value="9">Financeiro</option>
-          <option value="10">T.I</option>
-        </select>
-      </div>
-      <input type="email" name="email" class="form-control" placeholder="Informe o email:">
+  <div class="card" style="width: 40rem; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 27% !important; margin-top: 2% !important">
+    <div class="card-body" style="width: 30rem;">
+      <form id="form" action="/generate_token" method="post">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="inputState">Tipo usuário:</label>
+            <select name="length" id="inputState" class="form-control" required>
+              <option value="" selected>Selecione</option>
+              <option value="5">Gerente</option>
+              <option value="6">Gestor</option>
+              <option value="7">Diretor</option>
+              <option value="8">Compras</option>
+              <option value="9">Financeiro</option>
+              <option value="10">T.I</option>
+            </select>
+          </div>
+          <input type="email" name="email" class="form-control" placeholder="Informe o email:" style="margin-left:1%">
+        </div>
+        <br>
+        <button type="submit" class="btn accept">Gerar</button>
     </div>
-    <br>
-    <button type="submit" class="btn btn-info">Gerar Token</button>
+    </form>
   </div>
-  </form>
-</div>
 
 
   <% if(message) { %>
