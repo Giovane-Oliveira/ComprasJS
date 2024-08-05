@@ -4,11 +4,15 @@
     <h2 style="font-weight:lighter !important">Cadastro de fornecedores</h2>
   </div>
 
-  <% if(message) { console.log(message) %>
+  <% if(message) { %>
     <script>
-      alert("<%=message%>");
+      $(document).ready(function () {
+        $('#message').modal('show');
+      });
     </script>
     <% } %>
+
+
       <div class="container">
         <form action="register_supplier" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important">
           <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 65%; margin-bottom: 3%;" required>
@@ -20,3 +24,25 @@
         </form>
       </div>
       <%- include('../partials/footer.ejs') %>
+
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <%= message %>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>

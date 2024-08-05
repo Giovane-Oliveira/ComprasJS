@@ -4,20 +4,11 @@ const Supplier = require('./Supplier');
 const adminAuth = require('../middlewares/adminAuth');
 
 
-
 router.get('/suppliers', adminAuth, async (req, res) => {
 
     const suppliers = await Supplier.findAll();
 
-    if (req.query.deleted) {
-        res.render('suppliers/index.ejs', { user: req.session.user, suppliers: suppliers, message: 'Fornecedor deletado com sucesso!' });
-    }else if(req.query.activated){
-        res.render('suppliers/index.ejs', { user: req.session.user, suppliers: suppliers, message: 'Fornecedor ativado com sucesso!' });
-    }else if(req.query.desactivated){
-        res.render('suppliers/index.ejs', { user: req.session.user, suppliers: suppliers, message: 'Fornecedor desativado com sucesso!' });
-    }
-
-    res.render('suppliers/index.ejs', { user: req.session.user, suppliers: suppliers, message: '' });
+    res.render('suppliers/index.ejs', { user: req.session.user, suppliers: suppliers});
 
 });
 
@@ -39,7 +30,7 @@ router.get('/activate_supplier/:id', adminAuth, (req, res) => {
             id: id
         }
     }).then(() => {
-        res.redirect('/suppliers?activated=true');
+        res.redirect('/suppliers');
     }).catch(err => {
         console.log(err);
     });
@@ -58,7 +49,7 @@ router.get('/desactivate_supplier/:id', adminAuth, (req, res) => {
             id: id
         }
     }).then(() => {
-        res.redirect('/suppliers?desactivated=true');
+        res.redirect('/suppliers');
     }).catch(err => {
         console.log(err);
     });
@@ -75,7 +66,7 @@ router.get('/delete_supplier/:id', adminAuth, (req, res) => {
             id: id
         }
     }).then(() => {
-        res.redirect('/suppliers?deleted=true');
+        res.redirect('/suppliers');
     }).catch(err => {
         console.log(err);
     });
@@ -90,12 +81,9 @@ router.post('/register_supplier', adminAuth, (req, res) => {
     Supplier.create({
         name: name,
         cnpj: cnpj
-    })
-        .then(() => {
-            res.render('suppliers/register.ejs', { user: req.session.user, message: 'Fornecedor cadastrado com sucesso!' });
-        })
-        .catch(err => {
+    }).catch(err => {
             console.log(err);
+            res.render('suppliers/register.ejs', { user: req.session.user, message: 'Erro ao cadastrar o fornecedor' });
             // Handle the error appropriately, e.g., display an error message to the user
         });
 

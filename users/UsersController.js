@@ -22,8 +22,8 @@ let transporter = nodemailer.createTransport({
         user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
         pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
     }
-  });
-  
+});
+
 
 router.get('/registration', (req, res) => {
 
@@ -31,11 +31,12 @@ router.get('/registration', (req, res) => {
 
 });
 
-router.get('/permission/:id', adminAuth, async (req, res) =>{
+router.get('/permission/:id', adminAuth, async (req, res) => {
 
     const id = req.params.id;
-    
-   const permissions = await Permissions.findOne({
+
+
+    const permissions = await Permissions.findOne({
         where: {
             id: id
         }
@@ -43,94 +44,85 @@ router.get('/permission/:id', adminAuth, async (req, res) =>{
         console.log(err);
     });
 
-   
 
-    if(req.query.activated){
 
-        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: 'Permissão ativada com sucesso!' });
+    res.render('users/permission.ejs', { user: req.session.user, permissions: permissions });
 
-    }else if(req.query.desactivated){
 
-        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: 'Permissão desativada com sucesso!' });
-    }else{
 
-        res.render('users/permission.ejs', { user: req.session.user, permissions: permissions, message: '' });
-    }
-
-    
 
 });
 
-router.get('/activate/permission/:name/:id', adminAuth,  (req, res) =>{
+router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
     const name = req.params.name;
 
-    if(name == 'user_registration'){
+    if (name == 'user_registration') {
 
         Permissions.update({
-            user_registration: 1 
-          }, {
-              where: {
-                  id: id
-              }
-          }).catch((err) => {
-              console.log(err);
-          });
-      
-    }else if(name == 'supplier_registration'){
+            user_registration: 1
+        }, {
+            where: {
+                id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'supplier_registration') {
 
         Permissions.update({
-            supplier_registration: 1 
-          }, {
-              where: {
-                  id: id
-              }
-          }).catch((err) => {
-              console.log(err);
-          });
+            supplier_registration: 1
+        }, {
+            where: {
+                id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
     }
-    
 
-    res.redirect('/permission/' + id + '?activated=true');
+
+    res.redirect('/permission/' + id);
 
 
 });
 
 
 
-router.get('/desactivate/permission/:name/:id', adminAuth,  (req, res) =>{
+router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
     const name = req.params.name;
 
 
-    if(name == 'user_registration'){
+    if (name == 'user_registration') {
 
         Permissions.update({
-            user_registration: 0 
-          }, {
-              where: {
-                  id: id
-              }
-          }).catch((err) => {
-              console.log(err);
-          });
-      
-    }else if(name == 'supplier_registration'){
+            user_registration: 0
+        }, {
+            where: {
+                id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'supplier_registration') {
 
         Permissions.update({
             supplier_registration: 0
-          }, {
-              where: {
-                  id: id
-              }
-          }).catch((err) => {
-              console.log(err);
-          });
+        }, {
+            where: {
+                id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
     }
-    
-    res.redirect('/permission/' + id + '?desactivated=true');
+
+    res.redirect('/permission/' + id);
 
 });
 
@@ -144,27 +136,13 @@ router.get('/users', adminAuth, async (req, res) => {
         console.log(err);
     });
 
-    if(req.query.activated){
-
-     res.render('users/index.ejs', { user: req.session.user, listusers: user, message: 'Usuário ativado com sucesso!'});
-
-
-    }else if(req.query.desactivated){
-    
-        res.render('users/index.ejs', { user: req.session.user, listusers: user, message: 'Usuário desativado com sucesso!'});
-
-    }
-
-    res.render('users/index.ejs', { user: req.session.user, listusers: user, message: ''});
+    res.render('users/index.ejs', { user: req.session.user, listusers: user });
 
 });
 
 router.get('/activate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
-
-    console.log("ID:" + id);
-
 
     User.update({
         active: 1
@@ -173,7 +151,7 @@ router.get('/activate_user/:id', adminAuth, (req, res) => {
             id: id
         }
     }).then(() => {
-        res.redirect('/users?activated=true');
+        res.redirect('/users');
     }).catch(err => {
         console.log(err);
     });
@@ -185,8 +163,6 @@ router.get('/desactivate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
 
-    console.log("ID:" + id);
-
     User.update({
         active: 0
     }, {
@@ -194,7 +170,7 @@ router.get('/desactivate_user/:id', adminAuth, (req, res) => {
             id: id
         }
     }).then(() => {
-        res.redirect('/users?desactivated=true');
+        res.redirect('/users');
     }).catch(err => {
         console.log(err);
     });
@@ -206,9 +182,7 @@ router.post("/authenticate", async (req, res) => {
 
     var email = req.body?.email;
     var password = req.body?.password;
-    console.log(email, password);
-
-
+  
     try {
 
         const user = await User.findOne({ where: { login: email } });
@@ -227,68 +201,47 @@ router.post("/authenticate", async (req, res) => {
         console.log(user, profile, employee, permissions, sector, unit);
 
 
-
-        if (profile == undefined) {
-
-            console.log("Profile undefined");
-
-        } else if (employee == undefined) {
-
-            console.log("Employee undefined");
-
-        } else if (permissions == undefined) {
-
-            console.log("Permissions undefined");
-
-        } else if (sector == undefined) {
-
-            console.log("Sector undefined");
-
-        } else if (unit == undefined) {
-
-            console.log("Unit undefined");
-
-        }
-
-
         if (user != undefined) {
             //Validar senha
             var correct = bcrypt.compareSync(password, user.password);
 
 
-            if(user.active == 1){
+            if (user.active == 1) {
 
-            if (correct) {
+                if (correct) {
 
-                req.session.user = {
+                    req.session.user = {
 
-                    user: user,
-                    profile: profile,
-                    employee: employee,
-                    permissions: permissions,
-                    sector: sector,
-                    unit: unit
+                        user: user,
+                        profile: profile,
+                        employee: employee,
+                        permissions: permissions,
+                        sector: sector,
+                        unit: unit
 
+                    }
+
+                    res.redirect("/dashboard");
+                    return;
+
+
+                } else {
+                    req.flash('error', 'Usuário ou senha incorretos!');
+                    res.redirect("/");
+                    return;
                 }
 
-                res.redirect("/dashboard");
-                return;
-
-
             } else {
-                res.redirect("/?login=true");
-                return;
-            }
 
-            }else{
-
-                res.redirect("/?login=true");
+                req.flash('error', 'Usuário ou senha incorretos!');
+                res.redirect("/");
                 return;
 
             }
 
         } else {
-            res.redirect("/?login=true");
+            req.flash('error', 'Usuário ou senha incorretos!');
+            res.redirect("/");
             return;
         }
 
@@ -296,7 +249,8 @@ router.post("/authenticate", async (req, res) => {
     } catch (err) {
 
         console.log(err);
-        res.redirect("/?login=true");
+        req.flash('error', 'Usuário ou senha incorretos!');
+        res.redirect("/");
         return;
     }
 
@@ -317,6 +271,9 @@ router.get('/registrations_token', adminAuth, (req, res) => {
 
 router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
+    var success = req.flash('success');
+    var message = (success == undefined || success.length == 0) ? '' : success;
+
     if (req.session.user.profile.description.includes('managers')) {
 
         const pending_payments = await Payment.findAll({
@@ -329,10 +286,13 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
+
         const pending_purchases = await Purchase.findAll({
-          
+
             where: {
                 employee_id: req.session.user.employee.id,
                 [Op.or]: [
@@ -342,23 +302,17 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
-
-        let message = '';
-
-        if(req.query.success){
-
-            message = 'Enviado com sucesso!';
-
-        }
 
         res.render("dashboard/pending.ejs", { user: req.session.user, payments: pending_payments, purchases: pending_purchases, message: message });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
-    req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+        req.session.user.profile.description.includes('directors') ||
+        req.session.user.profile.description.includes('ti') ||
+        req.session.user.profile.description.includes('purchases') ||
+        req.session.user.profile.description.includes('financial')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -369,6 +323,8 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         const pending_purchases = await Purchase.findAll({
@@ -380,6 +336,8 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         const pending = pending_payments.length + pending_purchases.length;
@@ -388,13 +346,19 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
             where: {
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved = reproved_payments.length + reproved_purchases.length;
 
@@ -403,25 +367,22 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
             where: {
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const aproved_payments = await Payment.findAll({
             where: {
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
-        let message = '';
-
-        if(req.query.success){
-
-            message = 'Enviado com sucesso!';
-
-        }
-    
-        res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: pending_payments, purchases: pending_purchases, message: message});
+        res.render("dashboard/pending.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: pending_payments, purchases: pending_purchases, message: message });
 
     } else {
         res.redirect("/");
@@ -440,38 +401,49 @@ router.get('/dashboard/reproved', adminAuth, async (req, res) => {
                 employee_id: req.session.user.employee.id,
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
                 employee_id: req.session.user.employee.id,
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         res.render("dashboard/reproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
-    req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+        req.session.user.profile.description.includes('directors') ||
+        req.session.user.profile.description.includes('ti') ||
+        req.session.user.profile.description.includes('purchases') ||
+        req.session.user.profile.description.includes('financial')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
 
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
-           
+
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
-        res.render("dashboard/reproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases});
+
+        res.render("dashboard/reproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
 
     } else {
         res.redirect("/");
@@ -489,38 +461,49 @@ router.get('/dashboard/aproved', adminAuth, async (req, res) => {
                 employee_id: req.session.user.employee.id,
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
                 employee_id: req.session.user.employee.id,
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         res.render("dashboard/aproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
-    req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+        req.session.user.profile.description.includes('directors') ||
+        req.session.user.profile.description.includes('ti') ||
+        req.session.user.profile.description.includes('purchases') ||
+        req.session.user.profile.description.includes('financial')) {
 
         const reproved_purchases = await Purchase.findAll({
             where: {
 
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
-           
+
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
-        res.render("dashboard/aproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases});
+        res.render("dashboard/aproved.ejs", { user: req.session.user, payments: reproved_payments, purchases: reproved_purchases });
 
     } else {
         res.redirect("/");
@@ -530,6 +513,9 @@ router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 });
 
 router.get('/dashboard', adminAuth, async (req, res) => {
+
+    var message = req.flash('error');
+    message = (message == undefined || message.length == 0) ? '' : message;
 
     if (req.session.user.profile.description.includes('managers')) {
 
@@ -543,10 +529,13 @@ router.get('/dashboard', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
+
         const pending_purchases = await Purchase.findAll({
-          
+
             where: {
                 employee_id: req.session.user.employee.id,
                 [Op.or]: [
@@ -556,44 +545,58 @@ router.get('/dashboard', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const pending = pending_payments.length + pending_purchases.length;
 
         const reproved_purchases = await Purchase.findAll({
-            
+
             where: {
                 status: "REPROVADO",
                 employee_id: req.session.user.employee.id
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
+
         const reproved_payments = await Payment.findAll({
-            
+
             where: {
                 status: "REPROVADO",
                 employee_id: req.session.user.employee.id
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved = reproved_payments.length + reproved_purchases.length;
 
 
         const aproved_purchases = await Purchase.findAll({
-          
+
             where: {
                 status: "APROVADO",
                 employee_id: req.session.user.employee.id
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         const aproved_payments = await Payment.findAll({
-            
+
             where: {
                 status: "APROVADO",
                 employee_id: req.session.user.employee.id
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
@@ -601,38 +604,33 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             order: [['id', 'DESC']],
             limit: 3,
             where: {
-            employee_id: req.session.user.employee.id,
-          
-          
+                employee_id: req.session.user.employee.id,
+
+
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const purchases = await Purchase.findAll({
             order: [['id', 'DESC']],
             limit: 3,
             where: {
-            employee_id: req.session.user.employee.id,
+                employee_id: req.session.user.employee.id,
             }
-            
+
+        }).catch((err) => {
+            console.log(err);
         });
-
-        let message = '';
-
-        if(req.query.error){
-
-            message = 'Solicitação reprovada com sucesso!';
-
-        }
-
-
 
         res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases, message });
 
     } else if (req.session.user.profile.description.includes('leaders') ||
-    req.session.user.profile.description.includes('directors') ||
-    req.session.user.profile.description.includes('ti') ||
-    req.session.user.profile.description.includes('purchases') ||
-    req.session.user.profile.description.includes('financial')) {
+        req.session.user.profile.description.includes('directors') ||
+        req.session.user.profile.description.includes('ti') ||
+        req.session.user.profile.description.includes('purchases') ||
+        req.session.user.profile.description.includes('financial')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -643,7 +641,10 @@ router.get('/dashboard', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const pending_purchases = await Purchase.findAll({
             where: {
@@ -654,10 +655,10 @@ router.get('/dashboard', adminAuth, async (req, res) => {
                     { status: "Pagamento em andamento" }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
-       // console.log("PENDENTES COMPRAS:" + pending_purchases.length);
-       // console.log("PENDENTES PAGAMENTOS:" + pending_payments.length);
 
         const pending = pending_payments.length + pending_purchases.length;
 
@@ -665,12 +666,17 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             where: {
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const reproved_payments = await Payment.findAll({
             where: {
                 status: "REPROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
 
         const reproved = reproved_payments.length + reproved_purchases.length;
@@ -679,39 +685,41 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             where: {
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const aproved_payments = await Payment.findAll({
             where: {
                 status: "APROVADO"
             }
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const aproved = aproved_payments.length + aproved_purchases.length;
 
         const payments = await Payment.findAll({
             order: [['id', 'DESC']],
             limit: 3
-        
-        
+
+
+        }).catch((err) => {
+            console.log(err);
         });
+
 
         const purchases = await Purchase.findAll({
             order: [['id', 'DESC']],
             limit: 3
-         
-            
+        }).catch((err) => {
+            console.log(err);
         });
 
-        let message = '';
 
-        if(req.query.error){
-
-            message = 'Solicitação reprovada com sucesso!';
-
-        }
-
-        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved,  payments: payments, purchases: purchases, message: message});
+        res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases, message: message });
 
     } else {
         res.redirect("/");
@@ -809,6 +817,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                         { ti: token }
                     ]
                 }
+            }).catch((err) => {
+                console.log(err);
             });
             break;
     }
@@ -840,6 +850,8 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                     { ti: token }
                 ]
             }
+        }).catch((err) => {
+            console.log(err);
         });
         res.render('registrationsToken/index.ejs', { message: "Erro ao enviar o email \n " + error, user: req.session.user });
     }
@@ -893,7 +905,8 @@ router.get('/registrations/:token', (req, res) => {
         if (tipo == undefined) {
 
             console.log(profile);
-            res.redirect('/?error=true');
+            req.flash('error', 'Link inválido!');
+            res.redirect('/');
 
         } else {
 
@@ -901,6 +914,8 @@ router.get('/registrations/:token', (req, res) => {
             res.render('registrations/index', { profile: profile, token: token });
 
         }
+    }).catch(err => {
+        console.log(err);
     });
 
 });
@@ -935,21 +950,26 @@ router.post('/recover/password', async (req, res) => {
                         managers: token
                     }
                 }).then(() => {
-                    res.redirect('/?recover=true');
+                    req.flash('success', 'Senha alterada com sucesso!');
+                    res.redirect('/');
                     return;
                 }).catch(() => {
-                    res.redirect('/?recover_error=true');
+                    req.flash('error', 'Erro ao alterar a senha!');
+                    res.redirect('/');
                     return;
                 });
 
             }).catch(() => {
-                res.redirect('/?error=true');
+                req.flash('error', 'Este email já está registrado ou link inválido!');
+                res.redirect('/');
                 return;
             });
         } else {
-            res.redirect('/?error=true');
+            req.flash('error', 'Este email já está registrado ou link inválido!');
             return;
         }
+    }).catch(err => {
+        console.log(err);
     });
 
 });
@@ -970,7 +990,8 @@ router.get('/recover/alter_password/:email/:token', async (req, res) => {
     }).then((Token) => {
 
         if (Token == undefined) {
-            res.redirect('/?error=true');
+            req.flash('error', 'Link inválido!');
+            res.redirect('/');
             return;
         } else {
             res.render('registrations/recover', { email: email, token: token });
@@ -978,7 +999,8 @@ router.get('/recover/alter_password/:email/:token', async (req, res) => {
         }
 
     }).catch(() => {
-        res.redirect('/?error=true');
+        req.flash('error', 'Link inválido!');
+        res.redirect('/');
         return;
     });
 
@@ -1016,17 +1038,22 @@ router.post('/recover/alter_password', async (req, res) => {
 
             try {
                 await transporter.sendMail(mailOptions);
-                res.redirect('/?sendmail=true');
+                req.flash('success', 'Email de recuperação de senha enviado!');
+                res.redirect('/');
                 return;
             } catch (error) {
-                res.redirect('/?error_send_mail=true');
+                req.flash('error', 'Erro ao enviar o email \n ' + error);
+                res.redirect('/');
                 return;
             }
 
         } else {
-            res.redirect('/?error_send_mail=true');
+            req.flash('error', 'Este email não está registrado!');
+            res.redirect('/');
             return;
         }
+    }).catch(err => {
+        console.log(err);
     });
 });
 
@@ -1151,8 +1178,6 @@ router.post('/registration/create', async (req, res) => {
             break;
     }
 
-    console.log(name, email, password, cpf, sector, cep, address, phone, city, description, status, profile);
-
     User.findOne({ where: { login: email } }).then(async user => {
 
         if (user == undefined) {
@@ -1163,7 +1188,10 @@ router.post('/registration/create', async (req, res) => {
                 // Create Sector
                 const newSector = await Sector.create({
                     description: sector
+                }).catch((err) => {
+                    console.log(err);
                 });
+
 
                 // Create Unit
                 const newUnit = await Unit.create({
@@ -1173,6 +1201,8 @@ router.post('/registration/create', async (req, res) => {
                     cep: cep,
                     phone: phone,
                     sector_id: newSector.id // Use the newly created sector's ID
+                }).catch((err) => {
+                    console.log(err);
                 });
 
                 // Create Employee
@@ -1182,11 +1212,15 @@ router.post('/registration/create', async (req, res) => {
                     email: email,
                     unit_id: newUnit.id, // Use the newly created unit's ID
                     sector_id: newSector.id
+                }).catch((err) => {
+                    console.log(err);
                 });
 
                 // Create Profile
                 const newProfile = await Profile.create({
                     description: profile
+                }).catch((err) => {
+                    console.log(err);
                 });
 
                 // Create User
@@ -1196,6 +1230,8 @@ router.post('/registration/create', async (req, res) => {
                     active: 1,
                     profile_id: newProfile.id, // Use the newly created profile's ID
                     employee_id: newEmployee.id // Use the newly created employee's ID
+                }).catch((err) => {
+                    console.log(err);
                 });
 
                 // Create Permissions
@@ -1214,7 +1250,11 @@ router.post('/registration/create', async (req, res) => {
                     employee_id: newEmployee.id,
                     profile_id: newProfile.id,
                     user_id: newUser.id // Use the newly created user's ID
+                }).catch((err) => {
+                    console.log(err);
                 });
+
+                // Create Token
 
 
                 Token.destroy({
@@ -1231,7 +1271,8 @@ router.post('/registration/create', async (req, res) => {
                 }
                 ).then(() => {
                     console.log('Tokens deleted successfully.');
-                    res.redirect('/?success=true');
+                    req.flash('success', 'Cadastro realizado com sucesso!');
+                    res.redirect('/');
                     return;
                 }).catch((err) => {
                     console.log(err);
@@ -1243,8 +1284,8 @@ router.post('/registration/create', async (req, res) => {
             }
 
         } else {
-
-            res.redirect('/?error=true');
+            req.flash('error', 'Este email já está registrado!');
+            res.redirect('/');
             return;
 
         }

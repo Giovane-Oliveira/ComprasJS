@@ -1,73 +1,120 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const session = require('express-session');
+const Redis = require('ioredis');
+const connectRedis = require('connect-redis');
 const app = express();
 const connection = require('./database/database');
+const cookieParser = require("cookie-parser");
+var flash = require("express-flash");
 
+// Controllers
 const paymentsController = require('./payments/PaymentsController');
 const purchasesController = require('./purchaseAndServices/PurchasesController');
 const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
-const session = require('express-session'); // Import express-session
-const notificationUser = require('./middlewares/notification');
 
+
+// Redis setup
+const redisClient = new Redis({
+    host: '127.0.0.1', // Or your Redis server's IP address
+    port: 6379 // Or the port Redis is running on
+  });
+const RedisStore = connectRedis(session);
+const sessionStore = new RedisStore({ client: redisClient });
+
+
+// View engine setup
 app.set('view engine', 'ejs');
 
-app.use(express.static('public'));
+app.use(cookieParser("jsaddsh"));
 
-// Sessions
-app.use(session({
-  secret: 'secret', //qualquer coisa além do secret
-  cookie: {
-      maxAge: 28800000 //ms   15min
-  },
-   resave: false,
-   saveUninitialized: true
+// Static files
+app.use(express.static('public', {
+    maxAge: '1d' // Cache static files for one day
 }));
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+// Middleware setup
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-// parse application/json
-app.use(bodyParser.json())
+app.use(session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'default_secret',
+    cookie: {
+        maxAge: 15 * 60 * 1000, // 15 minutes
+        httpOnly: true,
+        secure: false  //process.env.NODE_ENV === 'production'
+    },
+    resave: false,
+    saveUninitialized: true
+}));
 
-app.get('/', notificationUser, (req, res) => {
-    
+app.use(flash());
+
+// Routes
+app.get('/', (req, res) => {
+
+    var success = req.flash('success');
+    var error = req.flash('error');
+    var message = '';
+
+    success = (success == undefined || success.length == 0) ? '' : success;
+    error = (error == undefined || error.length == 0) ? '' : error;
+
+if(success != ''){
+
+    message = success;
+
+}else if(error != ''){
+
+    message = error;
+}
+
+    if(req.session.user != undefined){
+
+        res.redirect('/dashboard')
+
+    }else{
+        res.render('users/login.ejs', {message: message});
+    }
+   
 });
 
-connection
-    .authenticate()
-    .then(() => {
-        console.log('Connection has been established successfully.');
-    })
-    .catch(err => {
-        console.error('Unable to connect to the database:', err);
-    });
-
-
-//Controller
 app.use('/', usersController);
 app.use('/', suppliersController);
 app.use('/', paymentsController);
 app.use('/', purchasesController);
 
-// Model
-const Sector = require('./users/Sector');
-const Unit = require('./users/Unit');
-const Employee = require('./employees/Employee');
-const Profile = require('./users/Profile');
-const User = require('./users/User');
-const Permission = require('./users/Permission');
-const Supplier = require('./suppliers/Supplier');
-const Company = require('./companies/Company');
-const Payment = require('./payments/Payment');
-const Payment_Method = require('./payments/Payment_method');
-const Purchase = require('./purchaseAndServices/Purchase')
-const Item = require('./purchaseAndServices/Item');
-const Movement = require('./movements/Movement');
-const File = require('./users/File');
-const Token = require('./users/Token');
-const Payment_Condition = require('./payments/Payment_condition');
+// Database connection
+connection
+    .authenticate()
+    .then(() => console.log('Database connection established successfully.'))
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+        process.exit(1); // Exit process if database connection fails
+    });
 
-app.listen(3001, () => {
-    console.log('Server running on port 3001');
-});
+// Models
+const models = {
+    Sector: require('./users/Sector'),
+    Unit: require('./users/Unit'),
+    Employee: require('./employees/Employee'),
+    Profile: require('./users/Profile'),
+    User: require('./users/User'),
+    Permission: require('./users/Permission'),
+    Supplier: require('./suppliers/Supplier'),
+    Company: require('./companies/Company'),
+    Payment: require('./payments/Payment'),
+    Payment_Method: require('./payments/Payment_method'),
+    Purchase: require('./purchaseAndServices/Purchase'),
+    Item: require('./purchaseAndServices/Item'),
+    Movement: require('./movements/Movement'),
+    File: require('./users/File'),
+    Token: require('./users/Token'),
+    Payment_Condition: require('./payments/Payment_condition')
+};
+
+
+
+// Server setup
+app.listen(3001, () => console.log('Server running on port 3001'));

@@ -48,12 +48,12 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
   const id = req.body.payment_id;
   const files = req.files;
 
-  const payment = await Payment.findByPk(id);
-  const manager = await Employee.findByPk(payment.employee_id);
-  const leader = await Employee.findByPk(payment.leader_id);
-  const director = await Employee.findByPk(payment.director_id);
-  const purchase = await Employee.findByPk(payment.purchase_id);
-  const financial = await Employee.findByPk(req.session.user.employee.id);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
+  const director = await Employee.findByPk(payment.director_id).catch(err => console.log(err));
+  const purchase = await Employee.findByPk(payment.purchase_id).catch(err => console.log(err));
+  const financial = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
 
   // Update payment status
@@ -95,7 +95,7 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
     payment_id: payment.id,
     status: 'APROVADO'
 
-  });
+  }).catch(err => console.log(err));
 
 
 
@@ -172,8 +172,8 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
     console.error('No files were uploaded.');
   }
 
-
-  res.redirect('/dashboard/pending?success=true');
+  req.flash('success', 'Enviado com sucesso!')
+  res.redirect('/dashboard/pending');
 
 });
 
@@ -182,11 +182,11 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
 router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
-  const payment = await Payment.findByPk(id);
-  const manager = await Employee.findByPk(payment.employee_id);
-  const leader = await Employee.findByPk(payment.leader_id);
-  const director = await Employee.findByPk(payment.director_id);
-  const purchase = await Employee.findByPk(req.session.user.employee.id);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
+  const director = await Employee.findByPk(payment.director_id).catch(err => console.log(err));
+  const purchase = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
   // Update payment status
   Payment.update({
@@ -212,21 +212,21 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
     payment_id: payment.id,
     status: 'Pagamento em andamento',
 
-  });
+  }).catch(err => console.log(err));
   //movements
 
   const financial = await Profile.findAll({
     where: {
       description: 'financial'
     }
-  });
+  }).catch(err => console.log(err));
 
   const financialLoginsPromises = financial.map(async (finance) => {
     let user = await User.findOne({
       where: {
         profile_id: finance.id
       }
-    });
+    }).catch(err => console.log(err));
     return user.login; // Return the user's login
   });
 
@@ -272,8 +272,8 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
     }
   });
 
-
-  res.redirect('/dashboard/pending?success=true');
+  req.flash('success', 'Enviado com sucesso!')
+  res.redirect('/dashboard/pending');
 
 });
 
@@ -281,7 +281,8 @@ router.get('/payment/reprove/purchases/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
-  res.redirect(`/payments/${id}?modal=purchases`);
+  req.flash('modal', 'purchases');
+  res.redirect(`/payments/${id}`);
 
 });
 
@@ -293,16 +294,11 @@ router.post('/payment/reprove/purchases', adminAuth, async (req, res) => {
 
   console.log("Motivo:" + motivo);
 
-  const payment = await Payment.findByPk(id);
-
-  const manager = await Employee.findByPk(payment.employee_id);
-
-  const director = await Employee.findByPk(payment.director_id);
-
-  const leader = await Employee.findByPk(payment.leader_id);
-
-  const purchase = await Employee.findByPk(req.session.user.employee.id);
-
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const director = await Employee.findByPk(payment.director_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
+  const purchase = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
   //const financial = await Employee.findByPk(payment.financial_id);
 
   var emails = [];
@@ -312,10 +308,10 @@ if(leader == undefined){
   emails = [director.email, req.session.user.employee.email];
 
 }else{
+
   emails = [manager.email, director.email, leader.email, purchase.email];
 
 }
-
 
   //movement
   await Movement.create({
@@ -324,7 +320,8 @@ if(leader == undefined){
     payment_id: payment.id,
     status: 'REPROVADO'
 
-  });
+  }).catch(err => console.log(err));
+
   //movement
 
   Payment.update({
@@ -373,7 +370,8 @@ if(leader == undefined){
 
   });
 
-  res.redirect('/dashboard?error=true');
+  req.flash('error', 'Solicitação reprovada com sucesso!');
+  res.redirect('/dashboard');
 
 });
 
@@ -381,10 +379,10 @@ if(leader == undefined){
 router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
-  const payment = await Payment.findByPk(id);
-  const manager = await Employee.findByPk(payment.employee_id);
-  const leader = await Employee.findByPk(payment.leader_id);
-  const director = await Employee.findByPk(req.session.user.employee.id);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
+  const director = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
 
     // Update payment status
@@ -410,21 +408,21 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
     payment_id: payment.id,
     status: 'Em análise pelo compras',
 
-  });
+  }).catch(err => console.log(err));
   //movements
 
   const purchases = await Profile.findAll({
     where: {
       description: 'purchases'
     }
-  });
+  }).catch(err => console.log(err));
 
   const purchaseLoginsPromises = purchases.map(async (purchase) => {
     let user = await User.findOne({
       where: {
         profile_id: purchase.id
       }
-    });
+    }).catch(err => console.log(err));
     return user.login; // Return the user's login
   });
 
@@ -459,8 +457,8 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
   });
 
 
-
-  res.redirect('/dashboard/pending?success=true');
+  req.flash('success', 'Enviado com sucesso!')
+  res.redirect('/dashboard/pending');
 
   //Em análise pelo compras director_id
 
@@ -470,7 +468,8 @@ router.get('/payment/reprove/directors/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
-  res.redirect(`/payments/${id}?modal=directors`);
+  req.flash('modal', 'directors');
+  res.redirect(`/payments/${id}`);
 
 
 });
@@ -478,22 +477,13 @@ router.get('/payment/reprove/directors/:id', adminAuth, (req, res) => {
 router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   const id = req.body.id;
-
   const motivo = req.body.motivo;
 
-  console.log("Motivo:" + motivo);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const director = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
 
-  const payment = await Payment.findByPk(id);
-
-  const manager = await Employee.findByPk(payment.employee_id);
-
-  const director = await Employee.findByPk(req.session.user.employee.id);
-
-  const leader = await Employee.findByPk(payment.leader_id);
-
-  //const purchase = await Employee.findByPk(req.session.user.employee.id);
-
-  //const financial = await Employee.findByPk(payment.financial_id);
 
   var emails = [];
 
@@ -514,11 +504,10 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
     payment_id: payment.id,
     status: 'REPROVADO'
 
-  });
+  }).catch(err => console.log(err));
   //movement
 
   Payment.update({
-
     status: 'REPROVADO',
     director_id: req.session.user.employee.id
   }, {
@@ -562,7 +551,8 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   });
 
-  res.redirect('/dashboard?error=true');
+  req.flash('error', 'Solicitação reprovada com sucesso!');
+  res.redirect('/dashboard');
 
 });
 
@@ -571,9 +561,9 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
-  const payment = await Payment.findByPk(id);
-  const manager = await Employee.findByPk(payment.employee_id);
-  const leader = await Employee.findByPk(req.session.user.employee.id);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
   //movements
   await Movement.create({
@@ -582,7 +572,7 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
     payment_id: payment.id,
     status: 'Em análise pelo diretor'
 
-  });
+  }).catch(err => console.log(err));
   //movements
 
   // Fetch all directors asynchronously
@@ -598,7 +588,7 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
       where: {
         profile_id: director.id
       }
-    });
+    }).catch(err => console.log(err));
     return user.login; // Return the user's login
   });
 
@@ -649,7 +639,8 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
       console.error('Error updating payment:', error);
     });
 
-  res.redirect('/dashboard/pending?success=true');
+  req.flash('success', 'Enviado com sucesso!')
+  res.redirect('/dashboard/pending');
 });
 
 
@@ -657,7 +648,8 @@ router.get('/payment/reprove/leaders/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
 
-  res.redirect(`/payments/${id}?modal=leaders`);
+  req.flash('modal', 'leaders');
+  res.redirect(`/payments/${id}`);
 
 });
 
@@ -665,30 +657,11 @@ router.get('/payment/reprove/leaders/:id', adminAuth, (req, res) => {
 router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   const id = req.body.id;
-
   const motivo = req.body.motivo;
 
-  console.log("Motivo:" + motivo);
-
-  const payment = await Payment.findByPk(id);
-
-  const manager = await Employee.findByPk(payment.employee_id);
-
-  //const director = await Employee.findByPk(payment.director_id);
-
-  const leader = await Employee.findByPk(req.session.user.employee.id);
-
-  //const purchase = await Employee.findByPk(req.session.user.employee.id);
-
-  //const financial = await Employee.findByPk(payment.financial_id);
-
-  if (payment == undefined) {
-    console.log("Payment undefinied")
-  } else if (manager == undefined) {
-    console.log("Manager undefinied")
-  } else if (leader == undefined) {
-    console.log("Leader undefinied")
-  }
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
   //movement
   await Movement.create({
@@ -697,7 +670,7 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
     payment_id: payment.id,
     status: 'REPROVADO'
 
-  });
+  }).catch(err => console.log(err));
   //movement
 
   const emails = [manager.email, leader.email];
@@ -750,7 +723,8 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   });
 
-  res.redirect('/dashboard?error=true');
+  req.flash('error', 'Solicitação reprovada com sucesso!');
+  res.redirect('/dashboard');
 
 });
 
@@ -759,25 +733,28 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 router.get('/payments/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
-  const payment = await Payment.findByPk(id);
+  const payment = await Payment.findByPk(id).catch(err => console.log(err));
+  var modal = req.flash('modal');
+
+  modal = (modal == undefined || modal.length == 0) ? '' : modal;
 
 
   if (payment.leader_id != null) {
 
     console.log("leader_id: " + payment.leader_id);
-    leader_employee = await Employee.findByPk(payment.leader_id);
+    leader_employee = await Employee.findByPk(payment.leader_id).catch(err => console.log(err));
 
   }
 
   if (payment.director_id != null) {
 
-    director_employee = await Employee.findByPk(payment.director_id);
+    director_employee = await Employee.findByPk(payment.director_id).catch(err => console.log(err));
 
   }
 
   if (payment.purchase_id != null) {
 
-    purchase_employee = await Employee.findByPk(payment.purchase_id);
+    purchase_employee = await Employee.findByPk(payment.purchase_id).catch(err => console.log(err));
 
     console.log("purchase_employee: " + purchase_employee)
 
@@ -786,53 +763,36 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
 
   if (payment.financial_id != null) {
 
-    financial_employee = await Employee.findByPk(payment.financial_id);
+    financial_employee = await Employee.findByPk(payment.financial_id).catch(err => console.log(err));
 
   }
 
-  const employee = await Employee.findByPk(payment.employee_id);
-  const supplier = await Supplier.findByPk(payment.supplier_id);
-  const sector = await Sector.findByPk(employee.sector_id);
-  const unit = await Unit.findByPk(employee.unit_id);
-  const payment_method = await Payment_Method.findByPk(payment.id);
+  const employee = await Employee.findByPk(payment.employee_id).catch(err => console.log(err));
+  const supplier = await Supplier.findByPk(payment.supplier_id).catch(err => console.log(err));
+  const sector = await Sector.findByPk(employee.sector_id).catch(err => console.log(err));
+  const unit = await Unit.findByPk(employee.unit_id).catch(err => console.log(err));
+  const payment_method = await Payment_Method.findByPk(payment.id).catch(err => console.log(err));
   const payment_condition = await Payment_Condition.findOne({
     where: {
       payment_method_id: payment_method.id
     }
-  });
-  const company = await Company.findByPk(payment.company_id);
+  }).catch(err => console.log(err));
+  const company = await Company.findByPk(payment.company_id).catch(err => console.log(err));
 
 
   const files = await File.findAll({
     where: {
       payment_id: payment.id
     }
-  });
+  }).catch(err => console.log(err));
 
-  if (payment == undefined) {
-    console.log("Payment undefinied")
-  } else if (employee == undefined) {
-    console.log("Employee undefinied")
-  } else if (supplier == undefined) {
-    console.log("Supplier undefinied")
-  } else if (sector == undefined) {
-    console.log("Sector undefinied")
-  } else if (unit == undefined) {
-    console.log("Unit undefinied")
-  } else if (payment_method == undefined) {
-    console.log("Payment_method undefinied")
-  } else if (company == undefined) {
-    console.log("Company undefinied")
-  } else if (payment_condition == undefined) {
-    console.log("Payment_condition undefinied")
-  }
-
+  
 
     const movements = await Movement.findAll({
       where: {
         payment_id: payment.id
       }
-    });
+    }).catch(err => console.log(err));
 
     if (movements == undefined) {
       console.log("Movements undefinied")
@@ -847,7 +807,7 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
           where: {
             id: movement.employee_id
           }
-        });
+        }).catch(err => console.log(err));
         console.log('Gerente carregado!')
         return manager_employee; 
 
@@ -857,7 +817,7 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
           where: {
             id: movement.leader_id
           }
-        });
+        }).catch(err => console.log(err));
 
         console.log('Gestor carregado!');
         return leader_employee;
@@ -868,7 +828,7 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
           where: {
             id: movement.director_id
           }
-        });
+        }).catch(err => console.log(err));
 
         console.log('Diretor carregado!');
         return director_employee;
@@ -879,7 +839,8 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
           where: {
             id: movement.purchase_id
           }
-        });
+        }).catch(err => console.log(err));
+
         console.log('Compras carregado!');
         return purchase_employee;
 
@@ -889,7 +850,8 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
           where: {
             id: movement.financial_id
           }
-        });
+        }).catch(err => console.log(err));
+
         console.log('Financeiro carregado!');
         return financial_employee;
 
@@ -899,24 +861,10 @@ router.get('/payments/:id', adminAuth, async (req, res) => {
 
     const move_users = await Promise.all(movement_users);
    
-  if (req.query.modal == 'leaders') {
+   
+    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: modal });
 
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'leaders' });
-
-  } else if (req.query.modal == 'directors') {
-
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'directors' });
-
-  } else if (req.query.modal == 'purchases') {
-
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: 'purchases' });
-
-  } else  {
-
-    res.render('payments/show.ejs', { movements, move_users, payment_condition, user: req.session.user, payment: payment, employee: employee, supplier: supplier, sector: sector, unit: unit, payment_method: payment_method, company: company, files: files, modal: '' });
-
-  }
-
+  
 });
 
 
@@ -938,6 +886,9 @@ router.get('/payment/download/:arquivo', adminAuth, (req, res) => {
 
 router.get('/payments', adminAuth, (req, res) => {
 
+  var message = req.flash('success');
+  message = (message == undefined || message.length == 0) ? '' : message;
+
   Supplier.findAll({}).then(suppliers => {
 
     Company.findAll({
@@ -948,16 +899,7 @@ router.get('/payments', adminAuth, (req, res) => {
       }
     }).then(companies => {
 
-      if (req.query.success) {
-        let message = "Solicitação de pagamento gerada com sucesso!";
         res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: message });
-
-      } else {
-        res.render('payments/index.ejs', { user: req.session.user, suppliers: suppliers, companies: companies, message: '' });
-
-      }
-
-
 
     });
 
@@ -1067,7 +1009,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       employee_id: req.session.user.employee.id,
       payment_id: newPayment.id,
 
-    });
+    }).catch(err => console.log(err));
 
      // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -1100,7 +1042,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
     where: {
       description: 'leaders'
     }
-  });
+  }).catch(err => console.log(err));
 
   // Now you can use map on the directors array
   const leaderLoginsPromises = leaders.map(async (leader) => {
@@ -1196,7 +1138,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       payment_id: newPayment.id,
       status: 'Em análise pelo diretor',
 
-    });
+    }).catch(err => console.log(err));
 
      // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -1237,7 +1179,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       where: {
         profile_id: director.id
       }
-    });
+    }).catch(err => console.log(err));
     return user.login; // Return the user's login
   });
 
@@ -1326,7 +1268,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       payment_id: newPayment.id,
       status: 'Em análise pelo compras',
 
-    });
+    }).catch(err => console.log(err));
 
      // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -1359,7 +1301,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
     where: {
       description: 'purchases'
     }
-  });
+  }).catch(err => console.log(err));
 
   // Now you can use map on the directors array
   const purchaseLoginsPromises = purchase.map(async (compras) => {
@@ -1367,7 +1309,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
       where: {
         profile_id: compras.id
       }
-    });
+    }).catch(err => console.log(err));
     return user.login; // Return the user's login
   });
 
@@ -1405,7 +1347,8 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
   } 
 
-  res.redirect('/payments/?success=true');
+  req.flash('success', 'Solicitação de pagamento gerada com sucesso!')
+  res.redirect('/payments');
 
 });
 
