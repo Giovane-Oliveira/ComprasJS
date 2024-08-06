@@ -3,7 +3,7 @@ const router = express.Router()
 const Supplier = require('./Supplier');
 const adminAuth = require('../middlewares/adminAuth');
 
-
+//Busca os fornecedores e encaminha para página
 router.get('/suppliers', adminAuth, async (req, res) => {
 
     const suppliers = await Supplier.findAll();
@@ -18,7 +18,7 @@ router.get('/suppliers_register', adminAuth, async (req, res) => {
 
 });
 
-
+//Ativar fornecedor
 router.get('/activate_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -37,7 +37,7 @@ router.get('/activate_supplier/:id', adminAuth, (req, res) => {
 
 });
 
-
+//Desativar fornecedor
 router.get('/desactivate_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -56,7 +56,7 @@ router.get('/desactivate_supplier/:id', adminAuth, (req, res) => {
 
 });
 
-
+//Deletar Fornecedor
 router.get('/delete_supplier/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -71,9 +71,9 @@ router.get('/delete_supplier/:id', adminAuth, (req, res) => {
         console.log(err);
     });
 
+});
 
-})
-
+//Registrar Fornecedor
 router.post('/register_supplier', adminAuth, (req, res) => {
     const name = req.body.name;
     const cnpj = req.body.cnpj;

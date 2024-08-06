@@ -14,7 +14,7 @@ const nodemailer = require('nodemailer');
 const Profile = require('../users/Profile');
 const User = require('../users/User');
 const Movement = require('../movements/Movement');
-
+const pug = require('pug');
 
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -54,23 +54,18 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }); // Create the upload middleware
 
-
+//Encaminhar para a página de solicitações de compras
 router.get('/purchases', adminAuth, (req, res) => {
 
   var message = req.flash('success');
   message = (message.length == 0 || message == undefined) ? '' : message;
 
-
   res.render('purchaseAndServices/index.ejs', { user: req.session.user, message: message });
-
-
 
 });
 
-
-
+//Revisão do orçamento da solicitação do compras, somente por este perfil
 router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('files'), async (req, res) => {
-
 
   const files = req.files;
   var item = req.body.newitem1;
@@ -79,10 +74,10 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
   var count = 1;
   var total = 0.00;
 
-  const purchase = await Purchase.findByPk(req.body.purchase_id);
-  const manager = await Employee.findByPk(purchase.employee_id);
-  const leader = await Employee.findByPk(purchase.leader_id);
-  const purchases = await Employee.findByPk(req.session.user.employee.id);
+  const purchase = await Purchase.findByPk(req.body.purchase_id).catch(err => console.log(err));
+  const manager = await Employee.findByPk(purchase.employee_id).catch(err => console.log(err));
+  const leader = await Employee.findByPk(purchase.leader_id).catch(err => console.log(err));
+  const purchases = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
 
   while (item != undefined && value != undefined) {
 
@@ -100,16 +95,13 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
 
     total += parseFloat(valorF) * req.body['newamount' + count];
 
-
     count++;
     item = req.body['newitem' + count];
     value = req.body['newvalue' + count];
 
-
   }
 
   console.log("Total: " + total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-
 
   Purchase.update({
     total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
@@ -120,7 +112,6 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
       id: req.body.purchase_id
     }
   }).catch(err => console.log(err));
-
 
   item = req.body.newitem1;
   count = 1;
@@ -133,7 +124,6 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
       console.log(req.body['newitem' + count]);
       console.log(req.body['newdescription' + count]);
       console.log(req.body['newvalue' + count]);
-
 
       let valorF = req.body['newvalue' + count].replace('.', ' ').replace('R$', '');
       let arrValor = valorF.split(" ");
@@ -166,14 +156,10 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
 
     }
 
-
     count++;
     item = req.body['newitem' + count];
 
   }
-
-
-
 
   // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -220,7 +206,6 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
         console.error('Error deleting file:', error);
       });
 
-
       File.create({
         fileName: uniqueFileName,
         purchase_id: req.body.purchase_id
@@ -264,25 +249,22 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
   }).catch(err => console.log(err));
   //movements
 
-
   // Send emails to all recipients
   emails.forEach(async (email) => {
-
-    console.log("Email: " + email);
 
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${req.body.purchase_id}`;
-    let text = "Compras aceitou a solicitação de compras/serviços.\n"
-      + "\n\n Comprador(a): " + purchases.name +
-      "\n E-mail: " + purchases.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Compras aceitou a solicitação de compras/serviços.";
+    let mail_employee = "Comprador(a): " + purchases.name;
+    let mail_email =  "E-mail: " + purchases.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -298,11 +280,10 @@ router.post('/upload/purchases/revision_orcament', adminAuth, upload.array('file
 
 });
 
-
-
+//Encaminhamento para a tela de revisão da solicitação
 router.get('/revision_orcament/:id', adminAuth, async (req, res) => {
+  
   const id = req.params.id;
-
   var leader_employee = null;
   var director_employee = null;
   var financial_employee = null;
@@ -341,9 +322,10 @@ router.get('/revision_orcament/:id', adminAuth, async (req, res) => {
   const unit = await Unit.findByPk(employee.unit_id).catch(err => console.log(err));
 
   res.render('purchaseAndServices/revision_orcament.ejs', { leader_employee, director_employee, financial_employee, purchase_employee, purchase, employee, items: item, sector, unit, files, user: req.session.user, purchase_id: id });
+
 });
 
-
+//Aceite da solicitação de compras pelo financeiro
 router.post('/purchase/accept/financial', upload.array('files'), adminAuth, async (req, res) => {
 
   const id = req.body.purchase_id;
@@ -371,7 +353,6 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
   }).catch(error => {
     console.error('Error updating purchase:', error);
   });
-
 
   // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -406,7 +387,6 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
     console.error('No files were uploaded.');
   }
 
-
   var purchase = await Purchase.findByPk(id).catch(err => console.log(err));
   var manager = await Employee.findByPk(purchase.employee_id).catch(err => console.log(err));
   var leader = await Employee.findByPk(purchase.leader_id).catch(err => console.log(err));
@@ -421,29 +401,27 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
     emails = [director.email, financial.email];
 
   } else {
+
     emails = [manager.email, leader.email, director.email, purchases.email, financial.email];
 
   }
 
-
   // Send emails to all recipients
   emails.forEach(async (email) => {
-
-    console.log("Email: " + email);
 
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Finaceiro efetuou o pagamento.\n"
-      + "\n\n Colaborador(a): " + financial.name +
-      "\n E-mail: " + financial.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Financeiro efetuou o pagamento.";
+    let mail_employee = "Colaborador(a): " + financial.name;
+    let mail_email =  "E-mail: " + financial.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -460,8 +438,7 @@ router.post('/purchase/accept/financial', upload.array('files'), adminAuth, asyn
 
 });
 
-
-
+//Aceite do gestor
 router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
@@ -504,21 +481,22 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+ 
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Gestor aceitou a solicitação de compras.\n"
-      + "\n\n Gestor(a): " + leader.name +
-      "\n E-mail: " + leader.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Gestor aceitou a solicitação de compras.";
+    let mail_employee = "Gestor(a): " + leader.name;
+    let mail_email =  "E-mail: " + leader.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
-
+    
     try {
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully!');
@@ -548,7 +526,7 @@ router.get('/purchase/accept/leaders/:id', adminAuth, async (req, res) => {
 
 });
 
-
+//Encaminhamento para visualização após reprovação do Gestor
 router.get('/purchase/reprove/leaders/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
@@ -556,9 +534,9 @@ router.get('/purchase/reprove/leaders/:id', adminAuth, (req, res) => {
   req.flash('modal', 'leaders');
   res.redirect(`/purchases/${id}`);
 
-
 });
 
+//Reprovação da solicitação pelo Gestor
 router.post('/purchase/reprove/leaders', adminAuth, async (req, res) => {
 
   const id = req.body.id;
@@ -623,17 +601,16 @@ router.post('/purchase/reprove/leaders', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Gestor recusou a solicitação de compras/serviços.\n"
-      + "Motivo: " + motivo
-      + "\n\n Gestor(a): " + leader.name +
-      "\n E-mail: " + leader.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Gestor recusou a solicitação de compras/serviços.";
+    let mail_employee = "Gestor(a): " + leader.name;
+    let mail_email =  "E-mail: " + leader.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: "Motivo: " + motivo})
     };
 
     try {
@@ -652,7 +629,7 @@ router.post('/purchase/reprove/leaders', adminAuth, async (req, res) => {
 
 });
 
-
+//Aceite da solicitação pelo Diretor
 router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
 
   const id = req.params.id;
@@ -694,19 +671,20 @@ router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Diretor aceitou a solicitação de compras.\n"
-      + "\n\n Diretor(a): " + director.name +
-      "\n E-mail: " + director.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Diretor(a) aceitou a solicitação de compras/serviços.";
+    let mail_employee = "Diretor(a): " + director.name;
+    let mail_email =  "E-mail: " + director.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -738,7 +716,7 @@ router.get('/purchase/accept/directors/:id', adminAuth, async (req, res) => {
 
 });
 
-
+//Encaminhamento para visualização após reprovação do Diretor
 router.get('/purchase/reprove/directors/:id', adminAuth, (req, res) => {
 
   const id = req.params.id;
@@ -748,25 +726,18 @@ router.get('/purchase/reprove/directors/:id', adminAuth, (req, res) => {
 
 });
 
+//Reprovação do Diretor
 router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
 
   const id = req.body.id;
-
   const motivo = req.body.motivo;
-
   console.log("Motivo:" + motivo);
 
-
   const purchase = await Purchase.findByPk(id).catch(err => console.log(err));
-
   const manager = await Employee.findByPk(purchase.employee_id).catch(err => console.log(err));
-
   const director = await Employee.findByPk(req.session.user.employee.id).catch(err => console.log(err));
-
   const leader = await Employee.findByPk(purchase.leader_id).catch(err => console.log(err));
-
   const purchases = await Employee.findByPk(purchase.purchase_id).catch(err => console.log(err));
-
 
   //movement
   await Movement.create({
@@ -778,16 +749,13 @@ router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
   }).catch(err => console.log(err));
   //movement
 
-
   var emails = [];
 
   if (manager.email == leader.email) {
     emails = [leader.email, director.email, purchases.email];
   } else {
-
     emails = [leader.email, director.email, purchases.email];
   }
-
 
   Purchase.update({
     status: 'REPROVADO',
@@ -806,22 +774,19 @@ router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
 
   emails.forEach(async (email) => {
 
-    console.log("Email: " + email);
-
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Diretor recusou a solicitação de compras/serviços.\n"
-      + "Motivo: " + motivo
-      + "\n\n Diretor(a): " + director.name +
-      "\n E-mail: " + director.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Diretor(a) recusou a solicitação de compras/serviços.";
+    let mail_employee = "Diretor(a): " + director.name;
+    let mail_email =  "E-mail: " + director.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: "Motivo: " + motivo})
     };
 
     try {
@@ -840,11 +805,7 @@ router.post('/purchase/reprove/directors', adminAuth, async (req, res) => {
 
 });
 
-
-
-
-
-
+//Download dos arquivos da solicitação
 router.get('/purchase/download/:arquivo', adminAuth, (req, res) => {
   // Obter o nome do arquivo
   const fileName = req.params.arquivo;
@@ -861,7 +822,24 @@ router.get('/purchase/download/:arquivo', adminAuth, (req, res) => {
   res.sendFile(fileName, { root: 'uploads' });
 });
 
+//Assinatura email
+router.get('/file/download/assinatura', (req, res) => {
+  // Obter o nome do arquivo
+  const fileName = 'logo.png';
+  const filePath = `public/images/${fileName}`;
 
+  // Verificar se o arquivo existe
+  if (!fs.existsSync(filePath)) {
+    res.status(404).send('Arquivo não encontrado!');
+    return;
+  }
+
+  // Enviar o arquivo como download
+  res.header('Content-Disposition', `inline; filename="${fileName}"`);
+  res.sendFile(fileName, { root: 'public/images' });
+});
+
+//Exibir solicitações de compras e serviços
 router.get('/purchases/:id', adminAuth, async (req, res) => {
   const id = req.params.id;
   var leader_employee = null;
@@ -910,7 +888,6 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
   if (movements == undefined) {
     console.log("Movements undefinied")
-
   }
 
   const movement_users = movements.map(async (movement) => {
@@ -981,9 +958,7 @@ router.get('/purchases/:id', adminAuth, async (req, res) => {
 
 });
 
-
-
-
+//Gerar um nova solicitação de compras e serviços
 router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, res) => {
 
   const justification = req.body.justification;
@@ -1007,17 +982,14 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
   console.log("Total: " + total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
-
   if (req.session.user.profile.description == 'managers' || req.session.user.profile.description == 'ti'
     || req.session.user.profile.description == 'financial' || req.session.user.profile.description == 'purchases') {
-
 
     newPurchase = await Purchase.create({
       justification: justification,
       total: total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
       employee_id: req.session.user.employee.id
     }).catch(err => console.log(err));
-
 
     //movements
     await Movement.create({
@@ -1029,7 +1001,6 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
     }).catch(err => console.log(err));
     //movements
 
-
     item = req.body.item1;
     count = 1;
 
@@ -1040,8 +1011,6 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
       console.log(req.body['description' + count]);
       console.log(req.body['value' + count]);
       console.log(req.body['city' + count]);
-
-
 
       Item.create({
         amount: req.body['amount' + count],
@@ -1110,19 +1079,21 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
     // Send emails to all recipients
     emails.forEach(async (email) => {
+  
       let from = "nao-responda@provida.med.br";
       let to = email;
       let subject = `Solicitação #${newPurchase.id}`;
-      let text = "Nova solicitação de compras/serviços gerada.\n"
-        + "\n\n Gerente: " + req.session.user.employee.name +
-        "\n E-mail: " + req.session.user.employee.email +
-        "\n\n Acesse: http://52.156.72.125:3001";
-
+      let text = "Nova solicitação de compras/serviços gerada.";
+      let mail_employee = "Gerente: " + req.session.user.employee.name;
+      let mail_email =  "E-mail: " + req.session.user.employee.email;
+      let mail_justification = "Justificativa: " + justification;
+      let link = "http://52.156.72.125:3001";
+  
       let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+          from,
+          to,
+          subject,
+          html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: mail_justification})
       };
 
       try {
@@ -1178,7 +1149,6 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
       }
 
       valorF = valorF.replace(',', '.');
-
 
       Item.create({
         amount: req.body['amount' + count],
@@ -1247,19 +1217,21 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
     // Send emails to all recipients
     emails.forEach(async (email) => {
+  
       let from = "nao-responda@provida.med.br";
       let to = email;
       let subject = `Solicitação #${newPurchase.id}`;
-      let text = "Nova solicitação de compras/serviços gerada.\n"
-        + "\n\n Gestor: " + req.session.user.employee.name +
-        "\n E-mail: " + req.session.user.employee.email +
-        "\n\n Acesse: http://52.156.72.125:3001";
-
+      let text = "Nova solicitação de compras/serviços gerada.";
+      let mail_employee = "Gestor(a): " + req.session.user.employee.name;
+      let mail_email =  "E-mail: " + req.session.user.employee.email;
+      let mail_justification = "Justificativa: " + justification;
+      let link = "http://52.156.72.125:3001";
+  
       let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+          from,
+          to,
+          subject,
+          html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: mail_justification})
       };
 
       try {
@@ -1313,7 +1285,6 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
       }
 
       valorF = valorF.replace(',', '.');
-
 
       Item.create({
         amount: req.body['amount' + count],
@@ -1382,19 +1353,21 @@ router.post('/upload/purchases', upload.array('files'), adminAuth, async (req, r
 
     // Send emails to all recipients
     emails.forEach(async (email) => {
+
       let from = "nao-responda@provida.med.br";
       let to = email;
       let subject = `Solicitação #${newPurchase.id}`;
-      let text = "Nova solicitação de compras/serviços gerada.\n"
-        + "\n\n Diretor: " + req.session.user.employee.name +
-        "\n E-mail: " + req.session.user.employee.email +
-        "\n\n Acesse: http://52.156.72.125:3001";
-
+      let text = "Nova solicitação de compras/serviços gerada.";
+      let mail_employee = "Diretor(a): " + req.session.user.employee.name;
+      let mail_email =  "E-mail: " + req.session.user.employee.email;
+      let mail_justification = "Justificativa: " + justification;
+      let link = "http://52.156.72.125:3001";
+  
       let mailOptions = {
-        from,
-        to,
-        subject,
-        text
+          from,
+          to,
+          subject,
+          html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: mail_justification})
       };
 
       try {

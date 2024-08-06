@@ -18,7 +18,7 @@ const User = require('../users/User');
 const adminAuth = require('../middlewares/adminAuth');
 const Payment_Condition = require('../payments/Payment_condition')
 const Movement = require('../movements/Movement');
-
+const pug = require('pug');
 
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -102,21 +102,19 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    console.log("Email: " + email);
-
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Finaceiro efetuou o pagamento.\n"
-      + "\n\n Colaborador(a): " + financial.name +
-      "\n E-mail: " + financial.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Financeiro efetuou o pagamento.";
+    let mail_employee = "Colaborador(a): " + financial.name;
+    let mail_email =  "E-mail: " + financial.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -247,21 +245,19 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    console.log("Email: " + email);
-
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Compras aceitou a solicitação de pagamento.\n"
-      + "\n\n Comprador(a): " + purchase.name +
-      "\n E-mail: " + purchase.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Compras aceitou a solicitação de pagamento.";
+    let mail_employee = "Comprador(a): " + purchase.name;
+    let mail_email =  "E-mail: " + purchase.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -345,17 +341,16 @@ if(leader == undefined){
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Setor de compras recusou a solicitação de pagamento.\n"
-      + "Motivo: " + motivo
-      + "\n\n Comprador(a): " + purchase.name +
-      "\n E-mail: " + purchase.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Setor de compras recusou a solicitação de pagamento.";
+    let mail_employee = "Comprador(a): " + purchase.name;
+    let mail_email =  "E-mail: " + purchase.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: "Motivo: " + motivo})
     };
 
     try {
@@ -433,19 +428,20 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Diretor aceitou a solicitação de pagamento.\n"
-      + "\n\n Diretor(a): " + director.name +
-      "\n E-mail: " + director.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Diretor(a) aceitou a solicitação de pagamento.";
+    let mail_employee = "Diretor(a): " + director.name;
+    let mail_email =  "E-mail: " + director.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -455,7 +451,6 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
       console.log("Erro ao enviar o email: " + error);
     }
   });
-
 
   req.flash('success', 'Enviado com sucesso!')
   res.redirect('/dashboard/pending');
@@ -527,17 +522,16 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Diretor recusou a solicitação de pagamento.\n"
-      + "Motivo: " + motivo
-      + "\n\n Diretor(a): " + director.name +
-      "\n E-mail: " + director.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Diretor(a) recusou a solicitação de pagamento.";
+    let mail_employee = "Diretor(a): " + director.name;
+    let mail_email =  "E-mail: " + director.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: "Motivo: " + motivo})
     };
 
     try {
@@ -600,19 +594,20 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Gestor aceitou a solicitação de pagamento.\n"
-      + "\n\n Diretor(a): " + leader.name +
-      "\n E-mail: " + leader.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Gestor(a) aceitou a solicitação de pagamento.";
+    let mail_employee = "Gestor(a): " + leader.name;
+    let mail_email =  "E-mail: " + leader.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -694,22 +689,19 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   emails.forEach(async (email) => {
 
-    console.log("Email: " + email);
-
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${id}`;
-    let text = "Gestor recusou a solicitação de pagamento.\n"
-      + "Motivo: " + motivo
-      + "\n\n Diretor(a): " + leader.name +
-      "\n E-mail: " + leader.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Gestor(a) recusou a solicitação de pagamento.";
+    let mail_employee = "Gestor(a): " + leader.name;
+    let mail_email =  "E-mail: " + leader.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link, justification: "Motivo: " + motivo})
     };
 
     try {
@@ -956,7 +948,6 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   if (req.session.user.profile.description == 'managers' ||
     req.session.user.profile.description == 'purchases' ||
     req.session.user.profile.description == 'financial' ||
-    req.session.user.profile.description == 'directors' ||
     req.session.user.profile.description == 'ti'
 
   ) {
@@ -1062,20 +1053,22 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+ 
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
-    let text = "Nova solicitação de pagamento gerada.\n"
-      + "\n\n Gerente: " + req.session.user.employee.name +
-      "\n E-mail: " + req.session.user.employee.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Nova solicitação de pagamento gerada.";
+    let mail_employee = "Gerente: " + req.session.user.employee.name;
+    let mail_email =  "E-mail: " + req.session.user.employee.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
+    
 
     try {
       await transporter.sendMail(mailOptions);
@@ -1191,19 +1184,20 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
-    let text = "Nova solicitação de pagamento gerada.\n"
-      + "\n\n Gestor(a): " + req.session.user.employee.name +
-      "\n E-mail: " + req.session.user.employee.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Nova solicitação de pagamento gerada.";
+    let mail_employee = "Gestor(a): " + req.session.user.employee.name;
+    let mail_email =  "E-mail: " + req.session.user.employee.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {
@@ -1321,19 +1315,20 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
 
   // Send emails to all recipients
   emails.forEach(async (email) => {
+
     let from = "nao-responda@provida.med.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
-    let text = "Nova solicitação de pagamento gerada.\n"
-      + "\n\n Diretor(a): " + req.session.user.employee.name +
-      "\n E-mail: " + req.session.user.employee.email +
-      "\n\n Acesse: http://52.156.72.125:3001";
+    let text = "Nova solicitação de pagamento gerada.";
+    let mail_employee = "Diretor(a): " + req.session.user.employee.name;
+    let mail_email =  "E-mail: " + req.session.user.employee.email; 
+    let link = "http://52.156.72.125:3001";
 
     let mailOptions = {
-      from,
-      to,
-      subject,
-      text
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', {text: text, employee: mail_employee, email: mail_email, link: link})
     };
 
     try {

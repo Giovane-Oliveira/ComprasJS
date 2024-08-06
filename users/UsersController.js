@@ -12,7 +12,8 @@ const { Op, where } = require('sequelize');
 const adminAuth = require('../middlewares/adminAuth');
 const nodemailer = require('nodemailer');
 const Payment = require('../payments/Payment');
-const Purchase = require('../purchaseAndServices/Purchase')
+const Purchase = require('../purchaseAndServices/Purchase');
+const pug = require('pug');
 
 let transporter = nodemailer.createTransport({
     host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
@@ -24,17 +25,17 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-
+//Encaminhamento para a página de registros
 router.get('/registration', (req, res) => {
 
     res.render('registrations/index.ejs');
 
 });
 
+//Encaminhamento para a página de permissões com as mesmas coletadas do banco de dados
 router.get('/permission/:id', adminAuth, async (req, res) => {
 
     const id = req.params.id;
-
 
     const permissions = await Permissions.findOne({
         where: {
@@ -44,15 +45,11 @@ router.get('/permission/:id', adminAuth, async (req, res) => {
         console.log(err);
     });
 
-
-
     res.render('users/permission.ejs', { user: req.session.user, permissions: permissions });
-
-
-
 
 });
 
+//ativar permissões do usuário
 router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -83,14 +80,12 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         });
     }
 
-
     res.redirect('/permission/' + id);
-
 
 });
 
 
-
+//desativar permissões
 router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -127,9 +122,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 });
 
 
-
-
-
+//listar usuários
 router.get('/users', adminAuth, async (req, res) => {
 
     const user = await User.findAll().catch(err => {
@@ -140,6 +133,7 @@ router.get('/users', adminAuth, async (req, res) => {
 
 });
 
+//ativar usuário
 router.get('/activate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -158,7 +152,7 @@ router.get('/activate_user/:id', adminAuth, (req, res) => {
 
 });
 
-
+//desativar usuário
 router.get('/desactivate_user/:id', adminAuth, (req, res) => {
 
     const id = req.params.id;
@@ -177,34 +171,33 @@ router.get('/desactivate_user/:id', adminAuth, (req, res) => {
 
 });
 
-
+//auntenticar usuário
 router.post("/authenticate", async (req, res) => {
 
     var email = req.body?.email;
     var password = req.body?.password;
-  
+
     try {
 
-        const user = await User.findOne({ where: { login: email } });
+        const user = await User.findOne({ where: { login: email } }).catch(err => console.log(err));
 
-        const profile = await Profile.findOne({ where: { id: user.profile_id } });
+        const profile = await Profile.findOne({ where: { id: user.profile_id } }).catch(err => console.log(err));
 
-        const employee = await Employee.findOne({ where: { id: user.employee_id } });
+        const employee = await Employee.findOne({ where: { id: user.employee_id } }).catch(err => console.log(err));
 
-        const permissions = await Permissions.findOne({ where: { user_id: user.id } });
+        const permissions = await Permissions.findOne({ where: { user_id: user.id } }).catch(err => console.log(err));
 
-        const sector = await Sector.findOne({ where: { id: employee.sector_id } });
+        const sector = await Sector.findOne({ where: { id: employee.sector_id } }).catch(err => console.log(err));
 
-        const unit = await Unit.findOne({ where: { sector_id: employee.sector_id } });
+        const unit = await Unit.findOne({ where: { sector_id: employee.sector_id } }).catch(err => console.log(err));;
 
 
         console.log(user, profile, employee, permissions, sector, unit);
 
 
         if (user != undefined) {
-            //Validar senha
-            var correct = bcrypt.compareSync(password, user.password);
 
+            var correct = bcrypt.compareSync(password, user.password);
 
             if (user.active == 1) {
 
@@ -262,13 +255,14 @@ router.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-
+//redirecionar para a página de gerar token
 router.get('/registrations_token', adminAuth, (req, res) => {
 
     res.render('registrationsToken/index.ejs', { message: '', user: req.session.user });
 
 });
 
+//redirecionar para a página de solicitações pendentes com as mesmas correspondentes
 router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
     var success = req.flash('success');
@@ -391,7 +385,7 @@ router.get('/dashboard/pending', adminAuth, async (req, res) => {
 
 });
 
-
+//Solicitações reprovadas
 router.get('/dashboard/reproved', adminAuth, async (req, res) => {
 
     if (req.session.user.profile.description.includes('managers')) {
@@ -452,6 +446,7 @@ router.get('/dashboard/reproved', adminAuth, async (req, res) => {
 
 });
 
+// Solicitações aprovadas
 router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 
     if (req.session.user.profile.description.includes('managers')) {
@@ -512,6 +507,7 @@ router.get('/dashboard/aproved', adminAuth, async (req, res) => {
 
 });
 
+//Encaminhamento para o dashboard
 router.get('/dashboard', adminAuth, async (req, res) => {
 
     var message = req.flash('error');
@@ -573,9 +569,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const reproved = reproved_payments.length + reproved_purchases.length;
-
 
         const aproved_purchases = await Purchase.findAll({
 
@@ -597,7 +591,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const aproved = aproved_payments.length + aproved_purchases.length;
 
         const payments = await Payment.findAll({
@@ -605,13 +598,10 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             limit: 3,
             where: {
                 employee_id: req.session.user.employee.id,
-
-
             }
         }).catch((err) => {
             console.log(err);
         });
-
 
         const purchases = await Purchase.findAll({
             order: [['id', 'DESC']],
@@ -645,7 +635,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const pending_purchases = await Purchase.findAll({
             where: {
                 [Op.or]: [
@@ -659,7 +648,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const pending = pending_payments.length + pending_purchases.length;
 
         const reproved_purchases = await Purchase.findAll({
@@ -669,7 +657,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-
 
         const reproved_payments = await Payment.findAll({
             where: {
@@ -689,7 +676,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const aproved_payments = await Payment.findAll({
             where: {
                 status: "APROVADO"
@@ -698,18 +684,14 @@ router.get('/dashboard', adminAuth, async (req, res) => {
             console.log(err);
         });
 
-
         const aproved = aproved_payments.length + aproved_purchases.length;
 
         const payments = await Payment.findAll({
             order: [['id', 'DESC']],
             limit: 3
-
-
         }).catch((err) => {
             console.log(err);
         });
-
 
         const purchases = await Purchase.findAll({
             order: [['id', 'DESC']],
@@ -717,7 +699,6 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-
 
         res.render("dashboard/index.ejs", { user: req.session.user, pending: pending, reproved: reproved, aproved: aproved, payments: payments, purchases: purchases, message: message });
 
@@ -728,6 +709,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
 });
 
+//gerar token
 function generateToken(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let token = '';
@@ -737,6 +719,7 @@ function generateToken(length) {
     return token;
 }
 
+//gerar token e encaminhar e-mail para o usuário solicitante
 router.post('/generate_token', adminAuth, async (req, res) => {
     const tokenLength = req.body.length || 5; // Get length from query parameter
     const token = generateToken(tokenLength);
@@ -826,13 +809,14 @@ router.post('/generate_token', adminAuth, async (req, res) => {
     let from = "nao-responda@provida.med.br";
     let to = req.body.email;
     let subject = "Cadastro";
-    let text = "Complete seu cadastro: \n" + "http://52.156.72.125:3001/registrations/" + token + "\n";
+    let text = "Clique no botão para completar seu cadastro:";
+    let link = "http://52.156.72.125:3001/registrations/" + token + "\n";
 
     let mailOptions = {
         from,
         to,
         subject,
-        text
+        html: pug.renderFile('views/pugs/register_user.pug', {text: text, link: link})
     };
 
     try {
@@ -857,8 +841,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
     }
 });
 
-
-
+//verifica token e libera acesso para a página de cadastro
 router.get('/registrations/:token', (req, res) => {
 
     const token = req.params.token;
@@ -920,12 +903,14 @@ router.get('/registrations/:token', (req, res) => {
 
 });
 
+//Encaminha para a página de recuperação de senha
 router.get('/recover/sendmail', async (req, res) => {
 
     res.render('registrations/sendmail');
 
 });
 
+//Altera a senha, excluí o token e encaminha para a tela de login
 router.post('/recover/password', async (req, res) => {
 
     var email = req.body?.email;
@@ -974,9 +959,7 @@ router.post('/recover/password', async (req, res) => {
 
 });
 
-
-
-
+//Verifica o token e encaminha para a página de alterar a senha
 router.get('/recover/alter_password/:email/:token', async (req, res) => {
 
     const token = req.params.token;
@@ -1003,11 +986,11 @@ router.get('/recover/alter_password/:email/:token', async (req, res) => {
         res.redirect('/');
         return;
     });
-
-
 });
 
 
+
+//Gerar token para alterar a senha e encaminhar por e-mail
 router.post('/recover/alter_password', async (req, res) => {
     var email = req.body?.email;
     const token = generateToken(5);
@@ -1015,7 +998,6 @@ router.post('/recover/alter_password', async (req, res) => {
     User.findOne({ where: { login: req.body.email } }).then(async user => {
 
         if (user != undefined) {
-
             Token.create({
                 managers: token,
                 leaders: "",
@@ -1027,13 +1009,14 @@ router.post('/recover/alter_password', async (req, res) => {
             let from = "nao-responda@provida.med.br";
             let to = email;
             let subject = "Recuperação da Conta";
-            let text = "Altere sua senha: \n" + "http://52.156.72.125:3001/recover/alter_password/" + email + "/" + token + "\n";
-
+            let text = "Clique no botão abaixo para alterar sua senha:";
+            let link = "http://52.156.72.125:3001/recover/alter_password/" + email + "/" + token;
+   
             let mailOptions = {
                 from,
                 to,
                 subject,
-                text
+                html: pug.renderFile('views/pugs/recover_password.pug', {text: text, link: link})
             };
 
             try {
@@ -1057,6 +1040,7 @@ router.post('/recover/alter_password', async (req, res) => {
     });
 });
 
+//Criar cadastro do usuário e redirecionar para a tela de login
 router.post('/registration/create', async (req, res) => {
 
     const name = req.body?.name;
@@ -1072,7 +1056,6 @@ router.post('/registration/create', async (req, res) => {
     const status = 1;
     const profile = req.body?.profile;
     const token = req.body?.token;
-
 
     var open_request; // abrir requisição
     var attach_nf; // anexar nota fiscal
@@ -1121,7 +1104,7 @@ router.post('/registration/create', async (req, res) => {
             financial_authorization = 0; // autorização financeira
             validation = 0; // validação
             closure = 1; // encerramento
-            user_registration = 1; // cadastro de usuário
+            user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'directors': //diretores
@@ -1192,7 +1175,6 @@ router.post('/registration/create', async (req, res) => {
                     console.log(err);
                 });
 
-
                 // Create Unit
                 const newUnit = await Unit.create({
                     description: description,
@@ -1255,8 +1237,6 @@ router.post('/registration/create', async (req, res) => {
                 });
 
                 // Create Token
-
-
                 Token.destroy({
                     where: {
                         [Op.or]: [
@@ -1280,7 +1260,6 @@ router.post('/registration/create', async (req, res) => {
 
             } catch (error) {
                 console.error('Error creating user:', error);
-
             }
 
         } else {
@@ -1293,6 +1272,5 @@ router.post('/registration/create', async (req, res) => {
         console.log(err);
     });
 });
-
 
 module.exports = router;

@@ -107,6 +107,7 @@
       </div>
 
       <script>
+
         $(document).ready(function () {
           $('#calcular').click(function (e) {
             e.preventDefault(); // Prevent default form submission
@@ -124,7 +125,7 @@
             }
 
             // Update the "novovalortotal" label
-            $('#novovalortotal').text('R$ ' + newTotal.toFixed(2).replace('.', ',')); // Format the total with currency symbol and commas
+            $('#novovalortotal').text(newTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })); // Format the total with currency symbol and commas
           });
         });
       </script>
