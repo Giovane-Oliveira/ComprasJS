@@ -20,7 +20,7 @@ const Status = {
 const Payment = connection.define('Payment', {
 
   description: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull: true
   },
   value: {
