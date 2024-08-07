@@ -14,14 +14,14 @@ const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
 
 // Redis setup
-/*
+
 const redisClient = new Redis({
     host: '127.0.0.1', // Or your Redis server's IP address
     port: 6379 // Or the port Redis is running on
   });
 const RedisStore = connectRedis(session);
 const sessionStore = new RedisStore({ client: redisClient });
-*/
+
 // View engine setup
 app.set('view engine', 'ejs');
 
@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(session({
-   // store: sessionStore,
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || 'default_secret',
     cookie: {
         maxAge: 15 * 60 * 1000, // 15 minutes
