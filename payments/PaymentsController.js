@@ -948,7 +948,11 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   if (req.session.user.profile.description == 'managers' ||
     req.session.user.profile.description == 'purchases' ||
     req.session.user.profile.description == 'financial' ||
-    req.session.user.profile.description == 'ti'
+    req.session.user.profile.description == 'ti' ||
+    req.session.user.profile.description == 'marketing' ||
+    req.session.user.profile.description == 'rh' ||
+    req.session.user.profile.description == 'sac' ||
+    req.session.user.profile.description == 'sau' 
 
   ) {
 

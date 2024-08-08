@@ -513,7 +513,11 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     var message = req.flash('error');
     message = (message == undefined || message.length == 0) ? '' : message;
 
-    if (req.session.user.profile.description.includes('managers')) {
+    if (req.session.user.profile.description.includes('managers') ||
+    req.session.user.profile.description.includes('marketing') ||
+    req.session.user.profile.description.includes('rh') ||
+    req.session.user.profile.description.includes('sac') ||
+    req.session.user.profile.description.includes('sau')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -734,7 +738,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: "",
-                ti: ""
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //gerente
             break;
         case 6:
@@ -744,7 +752,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: "",
-                ti: ""
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //gestores
             break;
         case 7:
@@ -754,7 +766,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: token,
                 purchases: "",
                 financial: "",
-                ti: ""
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //diretores 
             break;
         case 8:
@@ -764,7 +780,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: token,
                 financial: "",
-                ti: ""
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //compras
             break;
         case 9:
@@ -774,7 +794,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: token,
-                ti: ""
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //financeiro
             break;
         case 10:
@@ -784,8 +808,68 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                 directors: "",
                 purchases: "",
                 financial: "",
-                ti: token
+                ti: token,
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: ""
             }); //tecnologia da informação
+            break;
+        case 11:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+                ti: "",
+                marketing: token,
+                sau: "",
+                sac: "",
+                rh: ""
+            });
+            break;
+        case 12:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+                ti: "",
+                marketing: "",
+                sau: token,
+                sac: "",
+                rh: ""
+            });
+            break;
+        case 13:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: token,
+                rh: ""
+            });
+            break;
+        case 14:
+            Token.create({
+                managers: "",
+                leaders: "",
+                directors: "",
+                purchases: "",
+                financial: "",
+                ti: "",
+                marketing: "",
+                sau: "",
+                sac: "",
+                rh: token
+            });
             break;
         default:
             res.render('registrationsToken/index.ejs', { message: 'Erro ao gerar o token', user: req.session.user });
@@ -797,7 +881,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                         { directors: token },
                         { purchases: token },
                         { financial: token },
-                        { ti: token }
+                        { ti: token },
+                        { marketing: token },
+                        { sau: token },
+                        { sac: token },
+                        { rh: token }
                     ]
                 }
             }).catch((err) => {
@@ -816,7 +904,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
         from,
         to,
         subject,
-        html: pug.renderFile('views/pugs/register_user.pug', {text: text, link: link})
+        html: pug.renderFile('views/pugs/register_user.pug', { text: text, link: link })
     };
 
     try {
@@ -831,7 +919,11 @@ router.post('/generate_token', adminAuth, async (req, res) => {
                     { directors: token },
                     { purchases: token },
                     { financial: token },
-                    { ti: token }
+                    { ti: token },
+                    { marketing: token },
+                    { sau: token },
+                    { sac: token },
+                    { rh: token }
                 ]
             }
         }).catch((err) => {
@@ -868,6 +960,18 @@ router.get('/registrations/:token', (req, res) => {
         case 10:
             profile = 'ti'; //T.I
             break;
+        case 11:
+            profile = 'marketing';
+            break;
+        case 12:
+            profile = 'sau';
+            break;
+        case 13:
+            profile = 'sac';
+            break;
+        case 14:
+            profile = 'rh';
+            break;
         default:
             profile = 'managers';
             break;
@@ -881,7 +985,11 @@ router.get('/registrations/:token', (req, res) => {
                 { directors: token },
                 { purchases: token },
                 { financial: token },
-                { ti: token }
+                { ti: token },
+                { marketing: token },
+                { sau: token },
+                { sac: token },
+                { rh: token }
             ]
         }
     }).then(tipo => {
@@ -1011,12 +1119,12 @@ router.post('/recover/alter_password', async (req, res) => {
             let subject = "Recuperação da Conta";
             let text = "Clique no botão abaixo para alterar sua senha:";
             let link = "http://52.156.72.125:3001/recover/alter_password/" + email + "/" + token;
-   
+
             let mailOptions = {
                 from,
                 to,
                 subject,
-                html: pug.renderFile('views/pugs/recover_password.pug', {text: text, link: link})
+                html: pug.renderFile('views/pugs/recover_password.pug', { text: text, link: link })
             };
 
             try {
@@ -1159,6 +1267,58 @@ router.post('/registration/create', async (req, res) => {
             user_registration = 1; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
             break;
+        case 'marketing': //gerentes
+            open_request = 1; // abrir requisição
+            attach_nf = 0; // anexar nota fiscal
+            attach_doc = 1; // anexar documento
+            attach_charge = 1; // anexar cobrança
+            receipt_attachment = 0; // anexar comprovante
+            commercial_authorization = 0; // autorização comercial
+            financial_authorization = 0; // autorização financeira
+            validation = 0; // validação
+            closure = 0; // encerramento
+            user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
+            break;
+        case 'sau': //gerentes
+            open_request = 1; // abrir requisição
+            attach_nf = 0; // anexar nota fiscal
+            attach_doc = 1; // anexar documento
+            attach_charge = 1; // anexar cobrança
+            receipt_attachment = 0; // anexar comprovante
+            commercial_authorization = 0; // autorização comercial
+            financial_authorization = 0; // autorização financeira
+            validation = 0; // validação
+            closure = 0; // encerramento
+            user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
+            break;
+        case 'sac': //gerentes
+            open_request = 1; // abrir requisição
+            attach_nf = 0; // anexar nota fiscal
+            attach_doc = 1; // anexar documento
+            attach_charge = 1; // anexar cobrança
+            receipt_attachment = 0; // anexar comprovante
+            commercial_authorization = 0; // autorização comercial
+            financial_authorization = 0; // autorização financeira
+            validation = 0; // validação
+            closure = 0; // encerramento
+            user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
+            break;
+        case 'rh': //gerentes
+            open_request = 1; // abrir requisição
+            attach_nf = 0; // anexar nota fiscal
+            attach_doc = 1; // anexar documento
+            attach_charge = 1; // anexar cobrança
+            receipt_attachment = 0; // anexar comprovante
+            commercial_authorization = 0; // autorização comercial
+            financial_authorization = 0; // autorização financeira
+            validation = 0; // validação
+            closure = 0; // encerramento
+            user_registration = 0; // cadastro de usuário
+            supplier_registration = 0; // cadastro de fornecedor
+            break;
     }
 
     User.findOne({ where: { login: email } }).then(async user => {
@@ -1245,7 +1405,11 @@ router.post('/registration/create', async (req, res) => {
                             { directors: token },
                             { purchases: token },
                             { financial: token },
-                            { ti: token }
+                            { ti: token },
+                            { marketing: token },
+                            { sau: token },
+                            { sac: token },
+                            { rh: token }
                         ]
                     }
                 }

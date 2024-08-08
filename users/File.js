@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const connection = require('../database/database')
 const Purchase = require('../purchaseAndServices/Purchase')
 const Payment = require('../payments/Payment')
-
+const Call = require('../calls/Call')
 
 const File = connection.define('File', {
    fileName: {
@@ -24,6 +24,11 @@ File.belongsTo(Payment, { foreignKey: 'payment_id', as: 'payment' });
 //1-N
 Payment.hasMany(File, { foreignKey: 'payment_id', as: 'file' });
 
+//1-1 user_id
+File.belongsTo(Call, { foreignKey: 'call_id', as: 'call' });
+
+//1-N
+Call.hasMany(File, { foreignKey: 'call_id', as: 'file' });
 
 //File.sync({ force: false });
 /*
@@ -34,7 +39,7 @@ Payment.hasMany(File, { foreignKey: 'payment_id', as: 'file' });
   } catch (error) {
     console.error('Unable to create table files:', error);
   }
-})();*/
-
+})();
+*/
 
 module.exports = File

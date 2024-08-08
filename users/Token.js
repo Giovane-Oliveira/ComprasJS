@@ -24,15 +24,30 @@ const Token = connection.define('Token', {
         type: Sequelize.STRING(9),
         allowNull: true
     },
-    ti: { // T.I
+    ti: { 
         type: Sequelize.STRING(10),
+        allowNull: true
+    },
+    marketing: { 
+        type: Sequelize.STRING(11),
+        allowNull: true
+    },
+    sau: { 
+        type: Sequelize.STRING(12),
+        allowNull: true
+    },
+    sac: { 
+        type: Sequelize.STRING(13),
+        allowNull: true
+    },
+    rh: { 
+        type: Sequelize.STRING(14),
         allowNull: true
     }
     
 });
 
 //Token.sync({force : false})
-
 /*
 (async () => {
     try {
@@ -41,6 +56,6 @@ const Token = connection.define('Token', {
     } catch (error) {
       console.error('Unable to create table tokens:', error);
     }
-  })();*/
-
+  })();
+*/
 module.exports = Token

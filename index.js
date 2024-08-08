@@ -12,16 +12,17 @@ const paymentsController = require('./payments/PaymentsController');
 const purchasesController = require('./purchaseAndServices/PurchasesController');
 const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
+const callController = require('./calls/CallController');
 
 // Redis setup
-
+/*
 const redisClient = new Redis({
     host: '127.0.0.1', // Or your Redis server's IP address
     port: 6379 // Or the port Redis is running on
   });
 const RedisStore = connectRedis(session);
 const sessionStore = new RedisStore({ client: redisClient });
-
+*/
 // View engine setup
 app.set('view engine', 'ejs');
 
@@ -37,7 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(session({
-    store: sessionStore,
+    //store: sessionStore,
     secret: process.env.SESSION_SECRET || 'default_secret',
     cookie: {
         maxAge: 15 * 60 * 1000, // 15 minutes
@@ -83,6 +84,9 @@ app.use('/', usersController);
 app.use('/', suppliersController);
 app.use('/', paymentsController);
 app.use('/', purchasesController);
+app.use('/', callController);
+
+
 
 // Database connection
 connection
@@ -110,7 +114,10 @@ const models = {
     Movement: require('./movements/Movement'),
     File: require('./users/File'),
     Token: require('./users/Token'),
-    Payment_Condition: require('./payments/Payment_condition')
+    Payment_Condition: require('./payments/Payment_condition'),
+    Call: require('./calls/Call'),
+    Category: require('./category/Category')
+
 };
 
 
