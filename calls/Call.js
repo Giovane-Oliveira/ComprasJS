@@ -20,6 +20,14 @@ const Call = connection.define('Call', {
     attendant: { 
         type: Sequelize.STRING,
         allowNull: false     
+    },
+    message: { 
+        type: Sequelize.TEXT,
+        allowNull: false     
+    },
+    status: { 
+        type: Sequelize.ENUM('PENDENTE', 'EM ATENDIMENTO', 'FINALIZADO'),
+        allowNull: false     
     }
 });
 
