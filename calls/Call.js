@@ -3,6 +3,12 @@ const connection = require('../database/database')
 const User = require('../users/User')
 
 const Call = connection.define('Call', {
+
+    active_mail: { 
+        type: Sequelize.INTEGER,
+        allowNull: false
+      
+    },
     category: { 
         type: Sequelize.STRING,
         allowNull: false
