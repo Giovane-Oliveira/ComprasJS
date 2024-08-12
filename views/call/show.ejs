@@ -1,23 +1,132 @@
 <%- include('../partials/header.ejs') %>
 
+  <div class="space">
+    <div class=" cabecalho">
+      <a href="/dashboard"><img src="../../images/fav-icon2-150x150.png" alt=""></a>
+      <h1>Detalhes do chamado</h1>
+      <h6>Nome: <label name="nome">
+          <%= employee.name %>
+        </label></h6>
+      <p>Data: <label name="data">
+          <%= formattedDate %>
+          <% if(unit.description=='Sede Ramiro' ){%>
+        </label> | <label name="setor">Setor: <%= sector.description %> | Cidade: Cachoeira do Sul</label>
+        <% } else if(unit.description=='Medicina do Trabalho' ){%>
+        | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+        <% } else if(unit.description=='Clínica' ){%>
+        | <label name="setor">Unidade: <%= unit.description %> | Cidade: Cachoeira do Sul</label>
+        <% }else{%>
+        | <label name="setor">Unidade: <%= unit.description %> </label>
+        <% } %>
+      </p>
+    </div>
+    <hr>
+    <br>
+    <div class="conteudo">
+      <table id="tabelaPagamento">
+        <tbody>
 
+          <tr>
+            <td class="destaque"><strong>Assunto:</strong></span></td>
+            <td colspan="3"><span name="assunto">Manutenção preventiva de impressoras</span></td>
+          </tr>
+          <tr>
+            <td class="destaque"><strong>Mensagem:</strong></span></td>
+            <td colspan="3"><span name="mensagem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris quis magna convallis, fermentum leo ac, molestie erat. Pellentesque non massa finibus, venenatis nisi et, dignissim orci. Curabitur viverra et erat in porttitor. Donec justo nisl, commodo sit amet diam sed, fermentum luctus est. Nam a luctus sem, non hendrerit arcu. Morbi rhoncus lorem eu venenatis pharetra. Sed efficitur vehicula enim. Quisque ornare porttitor ipsum, ac sagittis erat mattis sed. Vivamus sit amet massa malesuada ligula dignissim consequat. Donec aliquet lectus eget ligula ornare, nec venenatis diam cursus. Maecenas a metus eget odio semper gravida quis eleifend mi. Phasellus nisi turpis, viverra vel porta non, convallis quis neque. Morbi laoreet lacus quis eros suscipit pharetra. Praesent dapibus lobortis orci vitae ultrices. Nulla tempus ex nec lacus posuere fringilla.
 
+                Fusce magna leo, rhoncus non felis ornare, rhoncus vestibulum justo. Nunc semper metus tellus, eu auctor nibh pretium tincidunt. Suspendisse scelerisque mauris vitae elementum semper. Mauris sed neque porttitor leo euismod ornare. Etiam eleifend orci velit, sit amet pellentesque eros interdum a. Phasellus molestie vehicula molestie. Integer eu metus a nulla placerat tristique sed at urna. Donec pulvinar dictum risus vitae ultrices. Integer pellentesque lectus metus, et accumsan est vulputate ac. Etiam in justo non dui condimentum convallis vel quis nisl. Phasellus mattis bibendum accumsan. Aliquam mollis velit ut vestibulum sollicitudin.
 
+                Proin a rhoncus lectus. Aenean commodo faucibus pretium. Quisque pellentesque eu neque a sagittis. Donec vitae mauris sed dolor tincidunt porttitor eu vel risus. Nullam nibh mauris, tincidunt quis consequat id, tincidunt ac mauris. Vestibulum ac ullamcorper purus, quis vestibulum orci. In eget egestas orci. Nulla volutpat neque quis sapien ornare, facilisis eleifend lectus cursus. Etiam odio eros, gravida et felis ultrices, auctor consequat massa. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
 
+                Vivamus vitae urna vehicula, congue mi a, interdum arcu. Nulla non vulputate nisl. Curabitur rhoncus ante vel ex malesuada vestibulum. Fusce hendrerit at erat at varius. Mauris sit amet ante sed mauris porttitor sodales. Etiam at rhoncus massa. Nulla facilisi. Nunc lacinia ullamcorper nisi ut porttitor. Mauris pellentesque nisl fringilla nunc sodales pretium. Aliquam nibh quam, bibendum non semper sit amet, lobortis vel nunc. Quisque eget congue tortor. Suspendisse quis placerat diam, molestie molestie dui. Fusce sed lectus faucibus, luctus massa sit amet, commodo leo. Nulla facilisi. Sed id pellentesque neque. Aliquam in suscipit enim.
 
+                Cras vel justo vitae lorem tincidunt egestas. Proin ullamcorper quis nulla id malesuada. Vestibulum imperdiet erat vel nisl aliquet, congue volutpat metus lobortis. Curabitur dictum quis nunc a congue. Aenean aliquam blandit tortor in consequat. Ut facilisis pharetra nibh non vulputate. Proin purus justo, consequat sed enim a, finibus lobortis orci. Suspendisse aliquam tellus at nunc placerat, nec blandit nulla ullamcorper. Phasellus consequat posuere ipsum, et egestas quam porta ac. Quisque vulputate odio nisl, ut lobortis odio efficitur nec. Nullam feugiat mi nec dolor ultricies interdum. Curabitur tincidunt ex in elit tincidunt imperdiet. In et dolor orci. In aliquet sapien sit amet eros rhoncus placerat. Suspendisse rutrum pretium libero, consequat congue lorem consectetur id. Morbi nec diam et erat varius blandit</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="tabelaCompras">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Anexo</th>
+            <th>Data</th>
+            <th>Abrir</th>
+          </tr>
+        </thead>
+        <tbody>
 
-<h1>Show Call</h1>
+          <tr>
+            <td>
 
+            </td>
+            <td>
 
+            </td>
 
+            <td>
+            </td>
+            <td><a href="/payment/download/" target="_blank" class="btn btn-success">Abrir</a></td>
+          </tr>
 
+        </tbody>
 
+      </table>
 
+      <hr style="width: 95%;">
 
+      <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
 
+      <div class="chat-message rp1">
+        <div class="jumbotron" style="width: 80%; margin-left: auto; margin-right: auto; margin-top: 1%; padding: 2%;">
+          <h3>Resposta #1</h3>
+          <p class="lead" style="font-weight: 400;">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+          <hr class="my-4">
+          <p>Solicitante:</p>
+          <p>Data:</p>
+        </div>
+      </div>
+      <div class="chat-message rp2">
+        <div class="jumbotron" style="width: 80%; margin-left: auto; margin-right: auto; margin-top: 1%; padding: 2%;">
+          <h3>Resposta #2</h3>
+          <p class="lead" style="font-weight: 400;">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+          <hr class="my-4">
+          <p>Atendente:</p>
+          <p>Data:</p>
+        </div>
+      </div>
 
+      <!--modal -->
+      <div class="modal fade" id="answercall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Responder Chamado</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
+                <textarea class="form-control" name="message" required style="min-height:110px !important" placeholder="Digite sua resposta"></textarea>
+                <hr style="width: 90%;">
+                <label for="files" style="margin-top: 1%; display: block; font-weight: bold;">Anexo:</label>
+                <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
+                <hr style="width: 90%;">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+              <button type="submit" class="btn accept">Enviar</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
+      <script>
+        function answercall() {
+          $('#answercall').modal('show');
+        };
+      </script>
 
-
-
-<%- include('../partials/footer.ejs') %>
+      <%- include('../partials/footer.ejs') %>

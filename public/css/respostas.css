@@ -1,0 +1,24 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  /* Stack messages vertically */
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  /* Add spacing between messages */
+}
+
+.rp1 {
+  text-align: left;
+  /* Align left */
+  margin-left: 10px;
+  /* Add left margin */
+}
+
+.rp2 {
+  text-align: right;
+  /* Align right */
+  margin-right: 10px;
+  /* Add right margin */
+}

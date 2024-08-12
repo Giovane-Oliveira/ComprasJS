@@ -13,6 +13,9 @@ const purchasesController = require('./purchaseAndServices/PurchasesController')
 const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
 const callController = require('./calls/CallController');
+const categoryController = require('./category/CategoryController');
+
+
 
 // Redis setup
 /*
@@ -85,8 +88,7 @@ app.use('/', suppliersController);
 app.use('/', paymentsController);
 app.use('/', purchasesController);
 app.use('/', callController);
-
-
+app.use('/', categoryController);
 
 // Database connection
 connection

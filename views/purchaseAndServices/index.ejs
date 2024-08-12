@@ -1,277 +1,277 @@
 <%- include('../partials/header.ejs') %>
 
 
-<% if(message) { %>
-<script>
-  $(document).ready(function() {
-    $('#message').modal('show');
-  });
+  <% if(message) { %>
+    <script>
+      $(document).ready(function () {
+        $('#message').modal('show');
+      });
 
 
-  /*
-    <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
-  */
-</script>
-<% } %>
+      /*
+        <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #000; padding: 40px 15px 10px 20px;">
+      */
+    </script>
+    <% } %>
 
-<a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top: -102px;margin-left: -25px;"></a>
-<div class="sobreposicaoFormC">
-  <h2>Solicitação de Compras e Serviços</h2>
-</div>
+      <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top: -102px;margin-left: -25px;"></a>
+      <div class="sobreposicaoFormC">
+        <h2>Solicitação de Compras e Serviços</h2>
+      </div>
 
-<style>
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th,
-  td {
-    border: 1px solid #ccc;
-    padding: 8px;
-  }
-
-  #novoItem {
-    margin-top: 20px;
-  }
-
-  #novoItem label {
-    display: block;
-    margin-bottom: 5px;
-  }
-
-  #novoItem input,
-  #novoItem button {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-  }
-</style>
-
-
-<br>
-<br>
-<form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
-  <table id="itens" class="table table-bordered" border="0px" width="100%">
-    <thead>
-      <tr>
-        <td>Quantidade</td>
-        <td>Item</td>
-        <td>Especificação</td>
-        <td>Unidade</td>
-        <td>Preço</td>
-        <td>Total</td>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-
-    <tfoot>
-      <tr>
-        <td colspan="3">Total</td>
-        <td id="totalGeral">R$ 0,00</td>
-      </tr>
-    </tfoot>
-  </table>
-  <hr style="width: 90%;">
-  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
-  <hr style="width: 90%;">
-  <label for="exampleFormControlTextarea1">Justificativa</label> <br>
-  <textarea name="justification" required placeholder="Informe a justificativa" rows="5" cols="50"></textarea>
-  <br>
-  <hr style="width: 90%;">
-  <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
-</form>
-<br>
-
-
-<h2 class="sobreposicaoFormA">Adicionar Novo Item</h2>
-<div id="novoItem" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px;">
-  <label for="produto">Item:</label>
-  <input type="text" id="produto" class="form-control" placeholder="Nome do Item">
-  <label for="especificacao">Especificação:</label>
-  <input type="text" id="especificacao" class="form-control" placeholder="Especificação">
-  <label for="unidade">Unidade:</label>
-  <select id="unidade" name="cidade" class="form-control" required>
-    <option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>
-    <option value="Cachoeira do Sul">Cachoeira do Sul</option>
-    <option value="Vera Cruz">Vera Cruz</option>
-    <option value="Arroio do Tigre">Arroio do Tigre</option>
-    <option value="Candelaria">Candelaria</option>
-    <option value="Canguçu">Canguçu</option>
-    <option value="Caçapava do Sul">Caçapava do Sul</option>
-    <option value="Agudo">Agudo</option>
-    <option value="Salto Jacuí">Salto Jacuí</option>
-    <option value="Pantano Grande">Pantano Grande</option>
-    <option value="Faxinal do Soturno">Faxinal do Saturno</option>
-    <option value="Paraiso do Sul">Paraiso do Sul</option>
-    <option value="Nova Palma">Nova palma</option>
-    <option value="Restinga Seca">Restinga Seca</option>
-    <option value="Encruzilhada do Sul">Encruzilhada do Sul</option>
-    <option value="Espumoso">Espumoso</option>
-    <option value="Sobradinho">Sobradinho</option>
-    <option value="Pelotas">Pelotas</option>
-    <option value="Pelotas">Rio Pardo</option>
-  </select>
-  <label for="quantidade">Quantidade:</label>
-  <input type="number" min="1" id="quantidade" class="form-control" placeholder="1">
-  <label for="preco">Preço:</label>
-  <input type="text" id="preco" class="form-control" placeholder="R$ 0,00">
-  <button id="adicionar" class="btn accept" style="width:5%">Adicionar</button>
-</div>
-
-
-<script type="text/javascript">
-  $('#preco').maskMoney({
-    prefix: 'R$ ',
-    allowNegative: true,
-    thousands: '.',
-    decimal: ',',
-    affixesStay: true
-  });
-
-  $(document).ready(function() {
-    var totalGeral = 0;
-    var count = 1;
-
-    $("#adicionar").click(function() {
-      var produto = $("#produto").val();
-      var especificacao = $("#especificacao").val();
-      var unidade = $("#unidade").val();
-      var quantidade = parseFloat($("#quantidade").val());
-      var preco = $("#preco").val().replace("R$ ", "").replace(".", " ");
-      var arrValor = preco.split(" ");
-
-      if (arrValor.length == 3) {
-        preco = arrValor[0] + arrValor[1] + arrValor[2];
-      } else if (arrValor.length == 2) {
-
-        preco = arrValor[0] + arrValor[1];
-
-      }
-
-      preco = preco.replace(',', '.');
-      preco = parseFloat(preco);
-
-      if (produto && especificacao && unidade && quantidade > 0 && preco > 0) {
-
-        var totalItem = quantidade * preco;
-        var linha = "<tr><td>" + "<input type='number' name='amount" + count + "' value='" + quantidade + "'hidden/>" + quantidade + "</td><td>" +
-          "<input type='text' name='item" + count + "' value='" + produto + "'hidden/>" + produto + "</td><td>" +
-          "<input type='text' name='description" + count + "' value='" + especificacao + "'hidden/>" + especificacao + "</td><td>" +
-          "<input type='text' name='city" + count + "' value='" + unidade + "'hidden/>" + unidade + "</td><td>" +
-          "<input type='text' name='value" + count + "' value='" + preco.toFixed(2) + "'hidden/>" + preco.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-          }) + "</td><td>" +
-          "<input type='text' name='totalItem" + count + "' value='" + totalItem.toFixed(2) + "'hidden/>" + totalItem.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-          }) + "</td></tr>";
-
-
-        count++;
-
-        $("#itens tbody").append(linha);
-        totalGeral += totalItem;
-        $("#totalGeral").text(totalGeral.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        }));
-        $("#produto").val("");
-        $("#especificacao").val("");
-        $("#unidade").val("");
-        $("#quantidade").val(1);
-        $("#preco").val("");
-
-        // Habilita o botão de envio se houver pelo menos um item na tabela
-        if ($("#itens tbody tr").length > 0) {
-          $("#submit-button").prop("disabled", false);
+      <style>
+        table {
+          width: 100%;
+          border-collapse: collapse;
         }
-      } else {
-        alert("Preencha todos os campos com valores válidos!");
-      }
-    });
 
-    $("#itens tbody").on("click", "tr", function() {
-  $(this).remove();
-  count--;
+        th,
+        td {
+          border: 1px solid #ccc;
+          padding: 8px;
+        }
 
-  // Recalculate the total by iterating through all remaining items
-  totalGeral = 0;
-  $("#itens tbody tr").each(function() {
-    // Get the hidden input field containing the actual total value
-    var totalItem = parseFloat($(this).find("input[name^='totalItem']").val());
-    totalGeral += totalItem;
-  });
+        #novoItem {
+          margin-top: 20px;
+        }
 
-  // Update the total display
-  $("#totalGeral").text(totalGeral.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }));
+        #novoItem label {
+          display: block;
+          margin-bottom: 5px;
+        }
 
-  // Disable the submit button if the table is empty
-  if ($("#itens tbody tr").length === 0) {
-    $("#submit-button").prop("disabled", true);
-  }
-});
-
-  });
-
-  $("#purchase").submit(function() {
-
-    $(document).ready(function() {
-      $('#loadingModal').modal('show');
-    })
-  });
-</script>
+        #novoItem input,
+        #novoItem button {
+          width: 100%;
+          padding: 8px;
+          margin-bottom: 10px;
+        }
+      </style>
 
 
-<!-- Modal -->
-<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <br>
+      <br>
+      <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
+        <table id="itens" class="table table-bordered" border="0px" width="100%">
+          <thead>
+            <tr>
+              <td>Quantidade</td>
+              <td>Item</td>
+              <td>Especificação</td>
+              <td>Unidade</td>
+              <td>Preço</td>
+              <td>Total</td>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td colspan="3">Total</td>
+              <td id="totalGeral">R$ 0,00</td>
+            </tr>
+          </tfoot>
+        </table>
+        <hr style="width: 90%;">
+        <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
+        <hr style="width: 90%;">
+        <label for="exampleFormControlTextarea1">Justificativa</label> <br>
+        <textarea class="form-control" name="justification" required placeholder="Informe a justificativa" style="min-height:150px !important"></textarea>
+        <br>
+        <hr style="width: 90%;">
+        <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
+      </form>
+      <br>
+
+
+      <h2 class="sobreposicaoFormA">Adicionar Novo Item</h2>
+      <div id="novoItem" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px;">
+        <label for="produto">Item:</label>
+        <input type="text" id="produto" class="form-control" placeholder="Nome do Item">
+        <label for="especificacao">Especificação:</label>
+        <input type="text" id="especificacao" class="form-control" placeholder="Especificação">
+        <label for="unidade">Unidade:</label>
+        <select id="unidade" name="cidade" class="form-control" required>
+          <option value="" disabled="disabled" selected="selected" required>Selecione a Cidade</option>
+          <option value="Cachoeira do Sul">Cachoeira do Sul</option>
+          <option value="Vera Cruz">Vera Cruz</option>
+          <option value="Arroio do Tigre">Arroio do Tigre</option>
+          <option value="Candelaria">Candelaria</option>
+          <option value="Canguçu">Canguçu</option>
+          <option value="Caçapava do Sul">Caçapava do Sul</option>
+          <option value="Agudo">Agudo</option>
+          <option value="Salto Jacuí">Salto Jacuí</option>
+          <option value="Pantano Grande">Pantano Grande</option>
+          <option value="Faxinal do Soturno">Faxinal do Saturno</option>
+          <option value="Paraiso do Sul">Paraiso do Sul</option>
+          <option value="Nova Palma">Nova palma</option>
+          <option value="Restinga Seca">Restinga Seca</option>
+          <option value="Encruzilhada do Sul">Encruzilhada do Sul</option>
+          <option value="Espumoso">Espumoso</option>
+          <option value="Sobradinho">Sobradinho</option>
+          <option value="Pelotas">Pelotas</option>
+          <option value="Pelotas">Rio Pardo</option>
+        </select>
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" min="1" id="quantidade" class="form-control" placeholder="1">
+        <label for="preco">Preço:</label>
+        <input type="text" id="preco" class="form-control" placeholder="R$ 0,00">
+        <button id="adicionar" class="btn accept" style="width:5%">Adicionar</button>
       </div>
-      <div class="modal-body">
-        Aguarde...
+
+
+      <script type="text/javascript">
+        $('#preco').maskMoney({
+          prefix: 'R$ ',
+          allowNegative: true,
+          thousands: '.',
+          decimal: ',',
+          affixesStay: true
+        });
+
+        $(document).ready(function () {
+          var totalGeral = 0;
+          var count = 1;
+
+          $("#adicionar").click(function () {
+            var produto = $("#produto").val();
+            var especificacao = $("#especificacao").val();
+            var unidade = $("#unidade").val();
+            var quantidade = parseFloat($("#quantidade").val());
+            var preco = $("#preco").val().replace("R$ ", "").replace(".", " ");
+            var arrValor = preco.split(" ");
+
+            if (arrValor.length == 3) {
+              preco = arrValor[0] + arrValor[1] + arrValor[2];
+            } else if (arrValor.length == 2) {
+
+              preco = arrValor[0] + arrValor[1];
+
+            }
+
+            preco = preco.replace(',', '.');
+            preco = parseFloat(preco);
+
+            if (produto && especificacao && unidade && quantidade > 0 && preco > 0) {
+
+              var totalItem = quantidade * preco;
+              var linha = "<tr><td>" + "<input type='number' name='amount" + count + "' value='" + quantidade + "'hidden/>" + quantidade + "</td><td>" +
+                "<input type='text' name='item" + count + "' value='" + produto + "'hidden/>" + produto + "</td><td>" +
+                "<input type='text' name='description" + count + "' value='" + especificacao + "'hidden/>" + especificacao + "</td><td>" +
+                "<input type='text' name='city" + count + "' value='" + unidade + "'hidden/>" + unidade + "</td><td>" +
+                "<input type='text' name='value" + count + "' value='" + preco.toFixed(2) + "'hidden/>" + preco.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }) + "</td><td>" +
+                "<input type='text' name='totalItem" + count + "' value='" + totalItem.toFixed(2) + "'hidden/>" + totalItem.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                }) + "</td></tr>";
+
+
+              count++;
+
+              $("#itens tbody").append(linha);
+              totalGeral += totalItem;
+              $("#totalGeral").text(totalGeral.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              }));
+              $("#produto").val("");
+              $("#especificacao").val("");
+              $("#unidade").val("");
+              $("#quantidade").val(1);
+              $("#preco").val("");
+
+              // Habilita o botão de envio se houver pelo menos um item na tabela
+              if ($("#itens tbody tr").length > 0) {
+                $("#submit-button").prop("disabled", false);
+              }
+            } else {
+              alert("Preencha todos os campos com valores válidos!");
+            }
+          });
+
+          $("#itens tbody").on("click", "tr", function () {
+            $(this).remove();
+            count--;
+
+            // Recalculate the total by iterating through all remaining items
+            totalGeral = 0;
+            $("#itens tbody tr").each(function () {
+              // Get the hidden input field containing the actual total value
+              var totalItem = parseFloat($(this).find("input[name^='totalItem']").val());
+              totalGeral += totalItem;
+            });
+
+            // Update the total display
+            $("#totalGeral").text(totalGeral.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            }));
+
+            // Disable the submit button if the table is empty
+            if ($("#itens tbody tr").length === 0) {
+              $("#submit-button").prop("disabled", true);
+            }
+          });
+
+        });
+
+        $("#purchase").submit(function () {
+
+          $(document).ready(function () {
+            $('#loadingModal').modal('show');
+          })
+        });
+      </script>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Aguarde...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <%= message %>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%= message %>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 
 
 
-<%- include('../partials/footer.ejs') %>
+      <%- include('../partials/footer.ejs') %>

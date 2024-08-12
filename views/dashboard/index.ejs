@@ -51,7 +51,7 @@
 
       <hr width="75%">
       <h3 class="display-4" style="text-align: center; margin-top: 20px;">Últimas Solicitações</h3>
-      <table id="myTable" class="table table-responsive-sm justify-content-center">
+      <table id="myTable" class="table table-responsive-sm justify-content-center" style="margin-left: auto !important; margin-right: auto !important;">
         <thead>
           <tr style="background-color: #9e9e9e">
             <th scope="col">#</th>
@@ -73,9 +73,9 @@
             }); %>
 
             <tr style="background-color: #dcdcdc26">
-              <th scope="row">
+              <td scope="row">
                 <%= payment.id %>
-              </th>
+              </td>
               <td>Pagamento</td>
               <td>
                 <%= payment.description.substring(0, 30) %>
@@ -100,9 +100,9 @@
                 }); %>
 
                 <tr style="background-color: #dcdcdc81">
-                  <th scope="row">
+                  <td scope="row">
                     <%= purchase.id %>
-                  </th>
+                  </td>
                   <td>Compra</td>
                   <td>
                     <%= purchase.justification.substring(0, 30) %>
@@ -126,15 +126,15 @@
       </div>
 
       <script>
-    var table = new DataTable('#myTable', {
-        language: {
-          url: '//cdn.datatables.net/plug-ins/2.0.3/i18n/pt-BR.json',
-        },
-      
-        order: [[0, 'desc']] // Sort the first column (index 0) in descending order
-      });
+        var table = new DataTable('#myTable', {
+          language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.3/i18n/pt-BR.json',
+          },
 
-  </script>
+          order: [[0, 'desc']] // Sort the first column (index 0) in descending order
+        });
+
+      </script>
 
       <!-- Modal -->
       <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

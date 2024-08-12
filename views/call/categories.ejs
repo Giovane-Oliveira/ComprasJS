@@ -1,0 +1,38 @@
+<%- include('../partials/header.ejs') %>
+
+
+<form action="/create/category" method="post">
+    <label for="departament">Departamento</label>
+    <select class="form-control" name="departament">
+     <% departaments.forEach(departament => { %>
+          <option value="<%= departament.profile %>"><%= departament.name %></option>
+     <% }); %>
+    
+     <input type="text" name="describe"> 
+
+     <button class="btn accept" type="submit">Enviar</button>
+
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Excluir</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% categories.forEach(category => { %>
+
+                    <td><%= category.id %></td>
+                    <td><%= category.description %></td>
+                    <td> <a href="/delete/category/<%= category.id %>" class="btn btn-primary">Excluir</a></td>
+
+            <% }); %>
+        </tbody>
+    </table>
+
+
+
+<%- include('../partials/footer.ejs') %>

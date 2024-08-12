@@ -31,6 +31,8 @@
   <link rel="stylesheet" href="../../css/estiloPagamentos.css">
   <link rel="stylesheet" href="../../css/estiloCompras.css">
   <link rel="stylesheet" href="../../css/sidebar.css">
+  <link rel="stylesheet" href="../../css/respostas.css">
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 
@@ -60,7 +62,7 @@
           </li>
         </div>
         <li>
-          <div class="dashimg"> <a href="/dashboard"><img src="../images/icondash.png">Dashboard</a></div>
+          <div class="dashimg"><a href="/dashboard" style="text-align: center;">Compras e Pagamentos</a></div>
         </li>
         <li>
           <div class="dashimg"><a href="/purchases"><img src="../images/carrinho.png"> Compras/Serviços</a></div>
@@ -69,36 +71,34 @@
           <div class="dashimg"><a href="/payments"><img src="../images/dolar.png">Pagamentos</a></div>
         </li>
         <% if(user.permissions.user_registration==1){ %>
-        <li>
-          <div class="dashimg"><a href="/registrations_token"><img src="../images/useradd.png">Cadastro</a></div>
-        </li>
-        <li>
-          <div class="dashimg"><a href="/users"><img src="../images/users.png">Usuários</a></div>
-        </li>
-        <% } %>
+          <li>
+            <div class="dashimg"><a href="/registrations_token"><img src="../images/useradd.png">Cadastro</a></div>
+          </li>
+          <li>
+            <div class="dashimg"><a href="/users"><img src="../images/users.png">Usuários</a></div>
+          </li>
+          <% } %>
 
-        <% if(user.permissions.supplier_registration==1){ %>
-        <li>
-          <div class="dashimg"><a href=" /suppliers"><img src="../images/pacote.png">Fornecedores</a></div>
-        </li>
-        <li>
-          <div class="dashimg"><a href=" /suppliers_register"><img src="../images/addforn.png">Cadastrar Fornecedor</a></div>
-        </li>
-        <% } %>
-        <!--
+            <% if(user.permissions.supplier_registration==1){ %>
+              <li>
+                <div class="dashimg"><a href=" /suppliers"><img src="../images/pacote.png">Fornecedores</a></div>
+              </li>
+              <li>
+                <div class="dashimg"><a href=" /suppliers_register"><img src="../images/addforn.png">Cadastrar Fornecedor</a></div>
+              </li>
+              <% } %>
                 <li>
-                  <div class="dashimg"><a href=" /call/dashboard"><img src="../images/logout.png">Dashboard Call</a></div>
-                </li>
-               <li>
-                  <div class="dashimg"><a href=" /call/create"><img src="../images/logout.png">Create Call</a></div>
+                  <div class="dashimg"><a href="/call/dashboard" style="text-align: center;">Chamados</a></div>
                 </li>
                 <li>
-                  <div class="dashimg"><a href=" /call/show"><img src="../images/logout.png">Show Call</a></div>
+                  <div class="dashimg"><a href=" /call/create"><img src="../images/logout.png">Criar Chamado</a></div>
                 </li>
-                -->
-        <li>
-          <div class="dashimg"><a href=" /logout"><img src="../images/logout.png">Logout</a></div>
-        </li>
+                <li>
+                  <div class="dashimg"><a href="/category"><img src="../images/logout.png">Criar Categoria</a></div>
+                </li>
+                <li>
+                  <div class="dashimg"><a href=" /logout"><img src="../images/logout.png">Sair</a></div>
+                </li>
 
       </ul>
     </nav>

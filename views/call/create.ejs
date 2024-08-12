@@ -1,22 +1,44 @@
 <%- include('../partials/header.ejs') %>
 
+  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top: -102px;margin-left: -25px;"></a>
+  <div class="sobreposicaoFormC" style="width:30%">
+    <h2>Abertura de Chamados</h2>
+  </div>
 
+  <br>
+  <br>
+  <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
+    <label for="departament">Departamento</label>
+    <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
+     <% departaments.forEach(departament => { %>
+          <option value="<%= departament.profile %>"><%= departament.name %></option>
+   <%  }); %>
+    </select>
+    <label for="category">Categoria</label>
+    <select class="form-control" id="category" name="category" style="width:30%; margin-bottom:1%">
+      <option>teste1</option>
+      <option>teste2</option>
+      <option>teste3</option>
+      <option>teste4</option>
+    </select>
+    <label for="category" style="margin-top: 1%">Prioridade</label>
+    <select class="form-control" id="priority" name="priority" style="width:8%">
+      <option value="high">Alta</option>
+      <option value="medium">Média</option>
+      <option value="low">Baixa</option>
+    </select>
+    <label for="subject" style="margin-top: 1%">Assunto</label>
+    <textarea class="form-control" name="subject" required style="min-height:40px !important;width:40% !important"></textarea>
+    <label for="message" style="margin-top: 1%">Mensagem</label>
+    <textarea class="form-control" name="message" required style="min-height:150px !important"></textarea>
+    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required style="margin-top: 1.5%;" />
+    <hr style="width: 90%;">
+    <div style="display: block;">
+      <input type="checkbox" id="subscribe" style="margin-top: 1%;" checked>
+      <label for="subscribe">Deseja receber notificações por e-mail?</label>
+    </div>
+    <hr style="width: 90%;">
+    <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
+  </form>
 
-
-
-<h1>Create Call</h1>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<%- include('../partials/footer.ejs') %>
+  <%- include('../partials/footer.ejs') %>

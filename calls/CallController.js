@@ -22,16 +22,17 @@ const pug = require('pug');
 
 router.get('/call/dashboard',adminAuth, async (req, res) => {
 
-
 res.render('call/dashboard', { user: req.session.user });
-
 
 });
 
 router.get('/call/create',adminAuth, async (req, res) => {
 
+    const departaments = [{name:'SAC', profile:'sac'}, {name:'T.I', profile:'ti'}, {name:'RH', profile:'rh'},
+        {name:'FINANCEIRO', profile:'financial'}, {name:'MARKETING', profile:'marketing'}, {name:'COMPRAS', profile:'purchases'}    
+     ]
 
-    res.render('call/create', { user: req.session.user });
+    res.render('call/create', { user: req.session.user, departaments: departaments });
 
 });
 

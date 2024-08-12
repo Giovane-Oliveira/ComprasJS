@@ -514,10 +514,10 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     message = (message == undefined || message.length == 0) ? '' : message;
 
     if (req.session.user.profile.description.includes('managers') ||
-    req.session.user.profile.description.includes('marketing') ||
-    req.session.user.profile.description.includes('rh') ||
-    req.session.user.profile.description.includes('sac') ||
-    req.session.user.profile.description.includes('sau')) {
+        req.session.user.profile.description.includes('marketing') ||
+        req.session.user.profile.description.includes('rh') ||
+        req.session.user.profile.description.includes('sac') ||
+        req.session.user.profile.description.includes('sau')) {
 
         const pending_payments = await Payment.findAll({
             where: {
@@ -1358,12 +1358,24 @@ router.post('/registration/create', async (req, res) => {
                     console.log(err);
                 });
 
-                // Create Profile
-                const newProfile = await Profile.create({
-                    description: profile
+                var newProfile = await Profile.findOne({
+                    where: {
+                        description: profile
+                    }
                 }).catch((err) => {
                     console.log(err);
                 });
+
+                if (newProfile == undefined) {
+
+                    // Create Profile
+                    newProfile = await Profile.create({
+                        description: profile
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+
+                }
 
                 // Create User
                 const newUser = await User.create({
