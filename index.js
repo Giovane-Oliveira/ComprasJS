@@ -118,7 +118,8 @@ const models = {
     Token: require('./users/Token'),
     Payment_Condition: require('./payments/Payment_condition'),
     Call: require('./calls/Call'),
-    Category: require('./category/Category')
+    Category: require('./category/Category'),
+    Message: require('./calls/Message')
 
 };
 

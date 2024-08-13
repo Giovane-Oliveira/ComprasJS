@@ -1,44 +1,197 @@
 <%- include('../partials/header.ejs') %>
 
-  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top: -102px;margin-left: -25px;"></a>
-  <div class="sobreposicaoFormC" style="width:30%">
-    <h2>Abertura de Chamados</h2>
+<a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top: -102px;margin-left: -25px;"></a>
+<div class="sobreposicaoFormC" style="width:30%">
+  <h2>Abertura de Chamados</h2>
+</div>
+
+<br>
+<br>
+<form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
+  <label for="departament">Departamento</label>
+  <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
+    <option value="" disabled="disabled" selected="selected" required>Selecione o departamento</option>
+    <% departaments.forEach(departament => { %>
+    <option value="<%= departament.profile %>"><%= departament.name %></option>
+    <%  }); %>
+  </select>
+  <div id="selectProfile">
+
   </div>
 
-  <br>
-  <br>
-  <form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
-    <label for="departament">Departamento</label>
-    <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
-     <% departaments.forEach(departament => { %>
-          <option value="<%= departament.profile %>"><%= departament.name %></option>
-   <%  }); %>
-    </select>
-    <label for="category">Categoria</label>
-    <select class="form-control" id="category" name="category" style="width:30%; margin-bottom:1%">
-      <option>teste1</option>
-      <option>teste2</option>
-      <option>teste3</option>
-      <option>teste4</option>
-    </select>
-    <label for="category" style="margin-top: 1%">Prioridade</label>
-    <select class="form-control" id="priority" name="priority" style="width:8%">
-      <option value="high">Alta</option>
-      <option value="medium">Média</option>
-      <option value="low">Baixa</option>
-    </select>
-    <label for="subject" style="margin-top: 1%">Assunto</label>
-    <textarea class="form-control" name="subject" required style="min-height:40px !important;width:40% !important"></textarea>
-    <label for="message" style="margin-top: 1%">Mensagem</label>
-    <textarea class="form-control" name="message" required style="min-height:150px !important"></textarea>
-    <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required style="margin-top: 1.5%;" />
-    <hr style="width: 90%;">
-    <div style="display: block;">
-      <input type="checkbox" id="subscribe" style="margin-top: 1%;" checked>
-      <label for="subscribe">Deseja receber notificações por e-mail?</label>
-    </div>
-    <hr style="width: 90%;">
-    <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
-  </form>
 
-  <%- include('../partials/footer.ejs') %>
+  <div id="ti_categories" hidden>
+    <%= JSON.stringify(ti_categories) %>
+  </div>
+
+  <div id="financial_categories" hidden>
+    <%= JSON.stringify(financial_categories) %>
+  </div>
+
+  <div id="marketing_categories" hidden>
+    <%= JSON.stringify(marketing_categories) %>
+  </div>
+
+  <div id="purchases_categories" hidden>
+    <%= JSON.stringify(purchases_categories) %>
+  </div>
+
+  <div id="rh_categories" hidden>
+    <%= JSON.stringify(rh_categories) %>
+  </div>
+
+  <div id="sac_categories" hidden>
+    <%= JSON.stringify(sac_categories) %>
+  </div>
+
+  <label for="category" style="margin-top: 1%">Prioridade</label>
+  <select class="form-control" id="priority" name="priority" style="width:8%">
+    <option value="high">Alta</option>
+    <option value="medium">Média</option>
+    <option value="low">Baixa</option>
+  </select>
+  <label for="subject" style="margin-top: 1%">Assunto</label>
+  <textarea class="form-control" name="subject" required style="min-height:40px !important;width:40% !important"></textarea>
+  <label for="message" style="margin-top: 1%">Mensagem</label>
+  <textarea class="form-control" name="message" required style="min-height:150px !important"></textarea>
+  <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required style="margin-top: 1.5%;" />
+  <hr style="width: 90%;">
+  <div style="display: block;">
+    <input type="checkbox" id="subscribe" style="margin-top: 1%;" checked>
+    <label for="subscribe">Deseja receber notificações por e-mail?</label>
+  </div>
+  <hr style="width: 90%;">
+  <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
+</form>
+
+
+<script>
+  $("#departament").on("change", function() {
+    var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+    if (valor == "ti") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const tiCategoriesData = JSON.parse(document.getElementById("ti_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      tiCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else if (valor == "financial") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const financialCategoriesData = JSON.parse(document.getElementById("financial_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      financialCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else if (valor == "purchases") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const purchasesCategoriesData = JSON.parse(document.getElementById("purchases_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      purchasesCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else if (valor == "marketing") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const marketingCategoriesData = JSON.parse(document.getElementById("marketing_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      marketingCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else if (valor == "rh") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const rhCategoriesData = JSON.parse(document.getElementById("rh_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      rhCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else if (valor == "sac") {
+
+      document.getElementById("selectProfile").innerHTML = "";
+      document.getElementById("selectProfile").innerHTML = "" +
+        "<label for='category'>Categoria</label>" +
+        "<select class='form-control' id='category' name='category' style='width:30%; margin-bottom:1%'>";
+
+      // Get the ti_categories data
+      const sacCategoriesData = JSON.parse(document.getElementById("sac_categories").innerHTML);
+
+      // Iterate through ti_categories and create options
+      sacCategoriesData.forEach(category => {
+        // Append the option to the select element
+        document.getElementById("category").innerHTML +=
+          `<option value="${category.description}">${category.description}</option>`;
+      });
+
+      document.getElementById("selectProfile").innerHTML += "</select>";
+
+    } else {
+
+      document.getElementById("selectProfile").innerHTML = "";
+
+    }
+
+  });
+</script>
+
+
+
+
+<%- include('../partials/footer.ejs') %>

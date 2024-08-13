@@ -18,6 +18,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Departamento</th>
                 <th>Descrição</th>
                 <th>Excluir</th>
             </tr>
@@ -26,6 +27,7 @@
             <% categories.forEach(category => { %>
 
                     <td><%= category.id %></td>
+                    <td><%= category.departament %></td>
                     <td><%= category.description %></td>
                     <td> <a href="/delete/category/<%= category.id %>" class="btn btn-primary">Excluir</a></td>
 

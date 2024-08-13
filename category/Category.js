@@ -3,11 +3,16 @@ const connection = require('../database/database')
 const Profile = require('../users/Profile')
 
 const Category = connection.define('Category', {
-    description: { 
-        type: Sequelize.STRING,
-        allowNull: false
-      
-    }
+  departament: {
+    type: Sequelize.STRING,
+    allowNull: false
+
+  },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false
+
+  }
 
 });
 
@@ -29,4 +34,4 @@ Profile.hasMany(Category, { foreignKey: 'profile_id', as: 'category' });
   })();
   */
 
-  module.exports = Category
+module.exports = Category

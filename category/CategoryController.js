@@ -53,6 +53,7 @@ router.post('/create/category', adminAuth, async (req, res) => {
     console.log("Profile ID" + findProfile.id);
 
     Category.create({
+      departament: departament,
       description: description,
       profile_id: findProfile.id
     }).catch(err => console.log(err));

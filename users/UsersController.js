@@ -1329,12 +1329,22 @@ router.post('/registration/create', async (req, res) => {
 
             try {
                 // Create Sector
-                const newSector = await Sector.create({
-                    description: sector
+                var newSector = await Sector.findOne({
+                    where: {
+                        description: sector
+                    }
                 }).catch((err) => {
                     console.log(err);
                 });
 
+                if (newSector == undefined) {
+
+                    newSector = await Sector.create({
+                        description: sector
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
                 // Create Unit
                 const newUnit = await Unit.create({
                     description: description,

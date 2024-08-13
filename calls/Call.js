@@ -11,7 +11,7 @@ const Call = connection.define('Call', {
     },
     category: { 
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       
     },
     subject: { 
@@ -23,13 +23,9 @@ const Call = connection.define('Call', {
         type: Sequelize.STRING,
         allowNull: false     
     },
-    attendant: { 
-        type: Sequelize.STRING,
-        allowNull: false     
-    },
-    message: { 
-        type: Sequelize.TEXT,
-        allowNull: false     
+    attendant_id: { 
+        type: Sequelize.INTEGER,
+        allowNull: true     
     },
     status: { 
         type: Sequelize.ENUM('PENDENTE', 'EM ATENDIMENTO', 'FINALIZADO'),
