@@ -20,57 +20,149 @@ const Payment_Condition = require('../payments/Payment_condition')
 const Movement = require('../movements/Movement');
 const pug = require('pug');
 const Category = require('../category/Category');
+const Call = require('../calls/Call');
+
+
+router.get('/call/dashboard', adminAuth, async (req, res) => {
+  var lastCalls, lastCallsManager, departament;
+
+  const pending = await Call.findAll({
+    where: {
+      status: 'PENDENTE'
+    }
+  });
+
+  const inservice = await Call.findAll({
+    where: {
+      status: 'EM ATENDIMENTO'
+    }
+  });
+
+  const finished = await Call.findAll({
+    where: {
+      status: 'FINALIZADO'
+    }
+  });
 
 
 
-router.get('/call/dashboard',adminAuth, async (req, res) => {
+  if(req.session.user.profile.description.includes('leaders') ||
+  req.session.user.profile.description.includes('directors') ||
+  req.session.user.profile.description.includes('managers')){
 
-res.render('call/dashboard', { user: req.session.user });
+    lastCallsManager = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        limit: 3,
+        where: {
+          employee_id: req.session.user.employee.id,
+        }
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+
+  }else{
+
+    departament = (req.session.user.profile.description == 'ti') ? 'ti' : 
+    (req.session.user.profile.description == 'rh') ? 'rh' : 
+    (req.session.user.profile.description == 'sac') ? 'sac' :
+    (req.session.user.profile.description == 'financial') ? 'financial' : 
+    (req.session.user.profile.description == 'marketing') ? 'marketing' : 
+    (req.session.user.profile.description == 'purchases') ? 'purchases' : 
+    (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+
+    console.log('Departamento: ' + departament);
+
+
+    lastCalls = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        limit: 3,
+        where: {
+          departament: departament
+        }
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+
+  }
+
+  if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('managers')) {
+
+    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCallsManager });
+
+  } else {
+
+    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCalls });
+
+  }
 
 });
 
-router.get('/call/create',adminAuth, async (req, res) => {
+router.get('/call/pending', adminAuth, async (req, res) => {
 
-    const departaments = [{name:'SAC', profile:'sac'}, {name:'T.I', profile:'ti'}, {name:'RH', profile:'rh'},
-        {name:'FINANCEIRO', profile:'financial'}, {name:'MARKETING', profile:'marketing'}, {name:'COMPRAS', profile:'purchases'}    
-     ]
-//ti
-     const profile_ti = await Profile.findOne({
-        where: {
-          description: 'ti'
-        }
-      });
+  res.render('call/pending', { user: req.session.user });
 
-      const ti_categories = await Category.findAll({
-        where: {
-          profile_id: profile_ti.id
-        }
-      });
+});
 
-      ti_categories.forEach(element => {
-        
-        console.log("Categoria " + element.description);
-      });
-//financial
-      const profile_financial = await Profile.findOne({
-        where: {
-          description: 'financial'
-        }
-      });
+router.get('/call/inservice', adminAuth, async (req, res) => {
 
-      const financial_categories = await Category.findAll({
-        where: {
-          profile_id: profile_financial.id
-        }
-      });
+  res.render('call/inservice', { user: req.session.user });
 
-      financial_categories.forEach(element => {
-        
-        console.log("Categoria " + element.description);
-      });
+});
 
-//marketing
-const profile_marketing = await Profile.findOne({
+router.get('/call/finished', adminAuth, async (req, res) => {
+
+  res.render('call/finished', { user: req.session.user });
+
+});
+
+router.get('/call/create', adminAuth, async (req, res) => {
+
+  const departaments = [{ name: 'SAC', profile: 'sac' }, { name: 'T.I', profile: 'ti' }, { name: 'RH', profile: 'rh' },
+  { name: 'FINANCEIRO', profile: 'financial' }, { name: 'MARKETING', profile: 'marketing' }, { name: 'COMPRAS', profile: 'purchases' }
+  ]
+  //ti
+  const profile_ti = await Profile.findOne({
+    where: {
+      description: 'ti'
+    }
+  });
+
+  const ti_categories = await Category.findAll({
+    where: {
+      profile_id: profile_ti.id
+    }
+  });
+
+  ti_categories.forEach(element => {
+
+    console.log("Categoria " + element.description);
+  });
+  //financial
+  const profile_financial = await Profile.findOne({
+    where: {
+      description: 'financial'
+    }
+  });
+
+  const financial_categories = await Category.findAll({
+    where: {
+      profile_id: profile_financial.id
+    }
+  });
+
+  financial_categories.forEach(element => {
+
+    console.log("Categoria " + element.description);
+  });
+
+  //marketing
+  const profile_marketing = await Profile.findOne({
     where: {
       description: 'marketing'
     }
@@ -83,7 +175,7 @@ const profile_marketing = await Profile.findOne({
   });
 
   marketing_categories.forEach(element => {
-    
+
     console.log("Categoria " + element.description);
   });
 
@@ -101,7 +193,7 @@ const profile_marketing = await Profile.findOne({
   });
 
   purchases_categories.forEach(element => {
-    
+
     console.log("Categoria " + element.description);
   });
 
@@ -119,7 +211,7 @@ const profile_marketing = await Profile.findOne({
   });
 
   rh_categories.forEach(element => {
-    
+
     console.log("Categoria " + element.description);
   });
 
@@ -137,20 +229,22 @@ const profile_marketing = await Profile.findOne({
   });
 
   sac_categories.forEach(element => {
-    
+
     console.log("Categoria " + element.description);
   });
 
-    res.render('call/create', { user: req.session.user, departaments: departaments, ti_categories: ti_categories, 
-        financial_categories: financial_categories, marketing_categories: marketing_categories,
-    purchases_categories: purchases_categories, rh_categories: rh_categories, sac_categories: sac_categories});
+  res.render('call/create', {
+    user: req.session.user, departaments: departaments, ti_categories: ti_categories,
+    financial_categories: financial_categories, marketing_categories: marketing_categories,
+    purchases_categories: purchases_categories, rh_categories: rh_categories, sac_categories: sac_categories
+  });
 
 });
 
-router.get('/call/show',adminAuth, async (req, res) => {
+router.get('/call/show', adminAuth, async (req, res) => {
 
 
-    res.render('call/show', { user: req.session.user });
+  res.render('call/show', { user: req.session.user });
 
 });
 

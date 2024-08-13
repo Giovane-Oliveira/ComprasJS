@@ -9,6 +9,11 @@ const Call = connection.define('Call', {
         allowNull: false
       
     },
+    departament: { 
+        type: Sequelize.STRING,
+        allowNull: true
+      
+    },
     category: { 
         type: Sequelize.STRING,
         allowNull: true

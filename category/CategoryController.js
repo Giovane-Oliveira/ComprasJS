@@ -22,20 +22,21 @@ const pug = require('pug');
 const Category = require('../category/Category');
 
 
-router.get('/category',adminAuth, async (req, res) => {
+router.get('/category',adminAuth, (req, res) => {
 
     const departaments = [{name:'SAC', profile:'sac'}, {name:'T.I', profile:'ti'}, {name:'RH', profile:'rh'},
         {name:'FINANCEIRO', profile:'financial'}, {name:'MARKETING', profile:'marketing'}, {name:'COMPRAS', profile:'purchases'}    
      ];
 
-     const categories = await Category.findAll();
+     Category.findAll().then(categories => {
 
+      res.render('call/categories', { user: req.session.user, departaments: departaments, categories: categories });
 
-    res.render('call/categories', { user: req.session.user, departaments: departaments, categories: categories });
+     }).catch(err => console.log(err));    
 
 });
 
-router.post('/create/category', adminAuth, async (req, res) => {
+router.post('/create/category', adminAuth, (req, res) => {
   const departament = req.body.departament;
   const description = req.body.describe;
 
@@ -43,26 +44,29 @@ router.post('/create/category', adminAuth, async (req, res) => {
   console.log("Descrição" + description);
 
   // Use await to wait for the promise to resolve
-  const findProfile = await Profile.findOne({
+ Profile.findOne({
     where: {
       description: departament
     }
-  });
+  }).then(findProfile => {
 
-  if (findProfile) { // Check if a profile was found
-    console.log("Profile ID" + findProfile.id);
+    if (findProfile) { // Check if a profile was found
+      console.log("Profile ID" + findProfile.id);
+  
+      Category.create({
+        departament: departament,
+        description: description,
+        profile_id: findProfile.id
+      }).catch(err => console.log(err));
+    } else {
+      console.error("Profile not found for department:", departament);
+      // Handle the case where the profile is not found (e.g., redirect with an error message)
+    }
 
-    Category.create({
-      departament: departament,
-      description: description,
-      profile_id: findProfile.id
-    }).catch(err => console.log(err));
-  } else {
-    console.error("Profile not found for department:", departament);
-    // Handle the case where the profile is not found (e.g., redirect with an error message)
-  }
+  }).catch(err => console.log(err));
 
   res.redirect('/category');
+  
 });
 
 
