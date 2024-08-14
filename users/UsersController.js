@@ -1346,17 +1346,32 @@ router.post('/registration/create', async (req, res) => {
                     });
                 }
                 // Create Unit
-                const newUnit = await Unit.create({
-                    description: description,
-                    address: address,
-                    city: city,
-                    cep: cep,
-                    phone: phone,
-                    sector_id: newSector.id // Use the newly created sector's ID
+                var newUnit = await Unit.findOne({
+                    where: {
+                        description: description,
+                        address: address,
+                        city: city,
+                        cep: cep,
+                        phone: phone
+                    }
                 }).catch((err) => {
                     console.log(err);
                 });
 
+
+                if (newUnit == undefined) {
+
+                    newUnit = await Unit.create({
+                        description: description,
+                        address: address,
+                        city: city,
+                        cep: cep,
+                        phone: phone,
+                        sector_id: newSector.id // Use the newly created sector's ID
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
                 // Create Employee
                 const newEmployee = await Employee.create({
                     name: name,

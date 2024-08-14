@@ -61,14 +61,13 @@
             year: 'numeric'
             }); 
           %>
-          <tr style="background-color: #dcdcdc26">
-            <th scope="row">
+          <tr>
           <td><%= call.id  %></td>
           <td><%= call.category.substring(0, 30) %></td>
           <td><%= call.subject.substring(0, 30) %></td>
           <td><%= call.priority %></td>
           <td><%= formattedDate %></td>
-          <td><a href="#" class="btn btn-success">Detalhes"></a></td>
+          <td><a href="/call/show/<%= call.id %>" class="btn btn-success">Detalhes</a></td>
         </tr>
      <%  }); } %>   
     </tbody>

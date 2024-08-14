@@ -21,58 +21,117 @@ const Movement = require('../movements/Movement');
 const pug = require('pug');
 const Category = require('../category/Category');
 const Call = require('../calls/Call');
+const Message = require('../calls/Message');
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Specify the directory to save files
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname); // Use the original filename
+  }
+});
+const upload = multer({ storage: storage }); // Create the upload middleware
+
+let transporter = nodemailer.createTransport({
+  host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  auth: {
+    user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+    pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+  }
+});
 
 router.get('/call/dashboard', adminAuth, async (req, res) => {
   var lastCalls, lastCallsManager, departament;
+  var pending, inservice, finished;
 
-  const pending = await Call.findAll({
-    where: {
-      status: 'PENDENTE'
-    }
-  });
+  if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('managers')) {
 
-  const inservice = await Call.findAll({
-    where: {
-      status: 'EM ATENDIMENTO'
-    }
-  });
+    pending = await Call.findAll({
+      where: {
+        status: 'PENDENTE',
+        user_id: req.session.user.user.id
+      }
+    });
 
-  const finished = await Call.findAll({
-    where: {
-      status: 'FINALIZADO'
-    }
-  });
+    inservice = await Call.findAll({
+      where: {
+        status: 'EM ATENDIMENTO',
+        user_id: req.session.user.user.id
+      }
+    });
 
+    finished = await Call.findAll({
+      where: {
+        status: 'FINALIZADO',
+        user_id: req.session.user.user.id
+      }
+    });
 
-
-  if(req.session.user.profile.description.includes('leaders') ||
-  req.session.user.profile.description.includes('directors') ||
-  req.session.user.profile.description.includes('managers')){
+    console.log("Pending: " + pending.length)
 
     lastCallsManager = await Call.findAll(
       {
         order: [['id', 'DESC']],
         limit: 3,
         where: {
-          employee_id: req.session.user.employee.id,
+          user_id: req.session.user.user.id,
         }
       }
     ).catch((err) => {
       console.log(err);
     });
 
-  }else{
+  } else {
 
-    departament = (req.session.user.profile.description == 'ti') ? 'ti' : 
-    (req.session.user.profile.description == 'rh') ? 'rh' : 
-    (req.session.user.profile.description == 'sac') ? 'sac' :
-    (req.session.user.profile.description == 'financial') ? 'financial' : 
-    (req.session.user.profile.description == 'marketing') ? 'marketing' : 
-    (req.session.user.profile.description == 'purchases') ? 'purchases' : 
-    (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+    departament = (req.session.user.profile.description == 'ti') ? 'ti' :
+      (req.session.user.profile.description == 'rh') ? 'rh' :
+        (req.session.user.profile.description == 'sac') ? 'sac' :
+          (req.session.user.profile.description == 'financial') ? 'financial' :
+            (req.session.user.profile.description == 'marketing') ? 'marketing' :
+              (req.session.user.profile.description == 'purchases') ? 'purchases' :
+                (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
 
     console.log('Departamento: ' + departament);
+
+    pending = await Call.findAll({
+      where: {
+        [Op.or]: [
+          { departament: departament },
+          { user_id: req.session.user.user.id },
+
+        ],
+        status: 'PENDENTE'
+      }
+    });
+
+    inservice = await Call.findAll({
+      where: {
+        [Op.or]: [
+          { departament: departament },
+          { user_id: req.session.user.user.id },
+
+        ],
+        status: 'EM ATENDIMENTO'
+      }
+
+    });
+
+    finished = await Call.findAll({
+      where: {
+        [Op.or]: [
+          { departament: departament },
+          { user_id: req.session.user.user.id },
+
+        ],
+        status: 'FINALIZADO'
+      }
+    });
 
 
     lastCalls = await Call.findAll(
@@ -80,7 +139,11 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
         order: [['id', 'DESC']],
         limit: 3,
         where: {
-          departament: departament
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id },
+  
+          ]
         }
       }
     ).catch((err) => {
@@ -103,23 +166,363 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
 });
 
+router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) => {
+
+  const message = req.body.message;
+  const call_id = req.body.id;
+  const files = req.files;
+
+  const findCall = await Call.findOne({
+    where: {
+      id: call_id
+    }
+  }).catch(error => console.log('Error finding call:', error));
+
+  //Verifica se é o atendente
+  if (req.session.user.user.id != findCall.user_id) {
+
+    await Message.create({
+      attendant_id: req.session.user.user.id,
+      message: message,
+      call_id: call_id
+    }).catch(error => console.log('Error creating message:', error));
+
+    await Call.update(
+      {
+        attendant_id: req.session.user.user.id,
+        status: 'EM ATENDIMENTO'
+      }, {
+      where: {
+        id: call_id
+      }
+    }).catch(error => console.log('Error updating call:', error));
+
+  } else if (req.session.user.user.id == findCall.user_id) {
+
+    await Message.create({
+      sender_id: req.session.user.user.id,
+      message: message,
+      call_id: call_id
+    }).catch(error => console.log('Error creating message:', error));
+
+    
+
+  }
+
+
+  // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      File.create({
+        fileName: uniqueFileName,
+        call_id: call_id,
+        user_id: req.session.user.user.id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+  res.redirect('/call/dashboard');
+
+});
+
+
 router.get('/call/pending', adminAuth, async (req, res) => {
 
-  res.render('call/pending', { user: req.session.user });
+  var callPending, departament;
+
+
+  if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('managers')) {
+
+    callPending = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        where: {
+          status: 'PENDENTE',
+          employee_id: req.session.user.user.id,
+        }
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+
+  } else {
+
+    departament = (req.session.user.profile.description == 'ti') ? 'ti' :
+      (req.session.user.profile.description == 'rh') ? 'rh' :
+        (req.session.user.profile.description == 'sac') ? 'sac' :
+          (req.session.user.profile.description == 'financial') ? 'financial' :
+            (req.session.user.profile.description == 'marketing') ? 'marketing' :
+              (req.session.user.profile.description == 'purchases') ? 'purchases' :
+                (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+
+    console.log('Departamento: ' + departament);
+
+    //chamados PENDENTES
+    callPending = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        
+        where: {
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id },
+  
+          ],
+          status: 'PENDENTE'
+        }
+         
+        
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  res.render('call/status', { user: req.session.user, calls: callPending, tipo: 'Pendentes' });
 
 });
 
 router.get('/call/inservice', adminAuth, async (req, res) => {
+  var callInService, departament;
 
-  res.render('call/inservice', { user: req.session.user });
+
+  if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('managers')) {
+
+    callInService = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        where: {
+          status: 'EM ATENDIMENTO',
+          employee_id: req.session.user.user.id,
+        }
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+
+  } else {
+
+    departament = (req.session.user.profile.description == 'ti') ? 'ti' :
+      (req.session.user.profile.description == 'rh') ? 'rh' :
+        (req.session.user.profile.description == 'sac') ? 'sac' :
+          (req.session.user.profile.description == 'financial') ? 'financial' :
+            (req.session.user.profile.description == 'marketing') ? 'marketing' :
+              (req.session.user.profile.description == 'purchases') ? 'purchases' :
+                (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+
+    console.log('Departamento: ' + departament);
+
+    //chamados EM ATENDIMENTO
+    callInService = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        where: {
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id },
+          ],
+          status: 'EM ATENDIMENTO'
+        }   
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  res.render('call/status', { user: req.session.user, calls: callInService, tipo: 'em Atendimento' });
 
 });
 
 router.get('/call/finished', adminAuth, async (req, res) => {
 
-  res.render('call/finished', { user: req.session.user });
+  var callFinished, departament;
+
+
+  if (req.session.user.profile.description.includes('leaders') ||
+    req.session.user.profile.description.includes('directors') ||
+    req.session.user.profile.description.includes('managers')) {
+
+    callFinished = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+        where: {
+          status: 'FINALIZADO',
+          employee_id: req.session.user.user.id,
+        }
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+
+  } else {
+
+    departament = (req.session.user.profile.description == 'ti') ? 'ti' :
+      (req.session.user.profile.description == 'rh') ? 'rh' :
+        (req.session.user.profile.description == 'sac') ? 'sac' :
+          (req.session.user.profile.description == 'financial') ? 'financial' :
+            (req.session.user.profile.description == 'marketing') ? 'marketing' :
+              (req.session.user.profile.description == 'purchases') ? 'purchases' :
+                (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+
+    console.log('Departamento: ' + departament);
+
+    //chamados FINALIZADOS
+    callFinished = await Call.findAll(
+      {
+        order: [['id', 'DESC']],
+          where: {
+            [Op.or]: [
+              { departament: departament },
+              { user_id: req.session.user.user.id }
+            ],
+            status: 'FINALIZADO'
+          }    
+      }
+    ).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  res.render('call/status', { user: req.session.user, calls: callFinished, tipo: 'Finalizados' });
 
 });
+
+
+router.post('/call/create/call', upload.array('files'), adminAuth, async (req, res) => {
+
+  const departament = req.body.departament;
+  const priority = req.body.priority;
+  const category = req.body.category;
+  const subject = req.body.subject;
+  const message = req.body.message;
+  const user_id = req.session.user.user.id;
+  const files = req.files;
+  const mail = (req.body.subscribe == 'on') ? 1 : 0;
+
+  console.log("Departament: " + departament);
+  console.log("Priority: " + priority);
+  console.log("Category: " + category);
+  console.log("Subject: " + subject);
+  console.log("Message: " + message);
+  console.log("Checkbox " + mail);
+
+  const newCall = await Call.create({
+    active_mail: mail,
+    departament: departament,
+    category: category,
+    subject: subject,
+    priority: priority,
+    user_id: user_id,
+    status: 'PENDENTE'
+  })
+    .catch(error => {
+      console.error('Error creating call:', error);
+    });
+
+  await Message.create({
+    sender_id: user_id,
+    message: message,
+    call_id: newCall.id
+  }).catch(error => {
+    console.error('Error creating message:', error);
+  });
+
+
+  // Check if any files were uploaded
+  if (files && files.length > 0) {
+    // Processar os dados e o arquivo aqui
+    //console.log(`Nome: ${nome}`);
+    // Processar arquivos
+    for (const file of files) {
+      // Salvar o arquivo
+      const fileName = file.originalname;
+      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+      fs.moveSync(file.path, filePath);
+      console.log(`Arquivo recebido: ${file.originalname}`);
+      // Salvar arquivo no diretório de destino 
+
+      File.create({
+        fileName: uniqueFileName,
+        call_id: newCall.id,
+        user_id: req.session.user.user.id
+      }).catch(error => {
+        console.error('Error creating file:', error);
+      });
+
+    }
+  } else {
+    console.error('No files were uploaded.');
+  }
+
+
+  const newProfile = await Profile.findOne({
+    where: {
+      description: departament
+    }
+  });
+
+  const emails = await User.findAll({
+    where: {
+      profile_id: newProfile.id
+    }
+  });
+
+  emails.forEach(email => {
+
+    console.log("Login: " + email.login);
+  });
+
+  // Send emails to all recipients
+  emails.forEach(async (email) => {
+
+    let from = "nao-responda@provida.med.br";
+    let to = email.login;
+    let subject = `Chamado #${newCall.id}`;
+    let text = "Novo chamado gerado.";
+    let mail_employee = "Solicitante: " + req.session.user.employee.name;
+    let mail_email = "E-mail: " + req.session.user.employee.email;
+    let link = "http://52.156.72.125:3001";
+
+    let mailOptions = {
+      from,
+      to,
+      subject,
+      html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
+    } catch (error) {
+      console.log("Erro ao enviar o email: " + error);
+    }
+  });
+
+  res.redirect('/call/dashboard');
+
+});
+
 
 router.get('/call/create', adminAuth, async (req, res) => {
 
@@ -241,13 +644,99 @@ router.get('/call/create', adminAuth, async (req, res) => {
 
 });
 
-router.get('/call/show', adminAuth, async (req, res) => {
+router.get('/call/show/:id', adminAuth, async (req, res) => {
+  var attendant;
+  var sender;
+
+  const call = await Call.findOne({
+    where: {
+      id: req.params.id
+    }
+  });
+
+  if (call.attendant_id != 0) {
+
+    let usuario = await User.findOne({
+      where: {
+        id: call.attendant_id
+      }
+    });
+
+    let funcionario = await Employee.findOne({
+      where: {
+        id: usuario.employee_id
+      }
+    });
+    attendant = { user: usuario, employee: funcionario };
+
+  }
+
+  const user = await User.findOne({
+    where: {
+      id: call.user_id
+    }
+  }).catch((err) => {
+    console.log("Error User " + err);
+  });
+
+  const employee = await Employee.findOne({
+    where: {
+      id: user.employee_id
+    }
+  }).catch((err) => {
+    console.log("Error Employee " + err);
+  });
 
 
-  res.render('call/show', { user: req.session.user });
+  const sector = await Sector.findOne({
+    where: {
+      id: employee.sector_id
+    }
+  }).catch((err) => {
+    console.log("Error Sector " + err);
+  });
+
+  const unit = await Unit.findOne({
+    where: {
+      id: employee.unit_id
+    }
+  }).catch((err) => {
+    console.log("Error Unit " + err);
+  });
+
+  const files = await File.findAll({
+    where: {
+      call_id: req.params.id
+    }
+  }).catch((err) => {
+    console.log("Error File " + err);
+  });
+
+  //console.log("Files Total: " + files.length);
+
+  const messageFirst = await Message.findOne({
+    where: {
+      call_id: req.params.id
+    }
+  });
+
+  const messageAll = await Message.findAll({
+    where: {
+      call_id: req.params.id
+    }
+  }).catch(err => console.log("Message All Err " + err));
+
+  sender = { user: user, employee: employee };
+
+
+  res.render('call/show', {
+    user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
+    messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
+    sender: sender
+  });
+
 
 });
-
 
 
 module.exports = router;

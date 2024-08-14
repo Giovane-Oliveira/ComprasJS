@@ -35,4 +35,4 @@ Call.hasMany(Message, { foreignKey: "call_id", as: "message" });
   })();
   */
 
-module.exports = Call;
+module.exports = Message;

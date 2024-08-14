@@ -7,7 +7,7 @@
 
 <br>
 <br>
-<form id="purchase" action="/upload/purchases" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
+<form id="call-form" action="/call/create/call" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
   <label for="departament">Departamento</label>
   <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
     <option value="" disabled="disabled" selected="selected" required>Selecione o departamento</option>
@@ -18,7 +18,6 @@
   <div id="selectProfile">
 
   </div>
-
 
   <div id="ti_categories" hidden>
     <%= JSON.stringify(ti_categories) %>
@@ -46,9 +45,9 @@
 
   <label for="category" style="margin-top: 1%">Prioridade</label>
   <select class="form-control" id="priority" name="priority" style="width:8%">
-    <option value="high">Alta</option>
-    <option value="medium">Média</option>
-    <option value="low">Baixa</option>
+    <option value="Alta">Alta</option>
+    <option value="Média">Média</option>
+    <option value="Baixa">Baixa</option>
   </select>
   <label for="subject" style="margin-top: 1%">Assunto</label>
   <textarea class="form-control" name="subject" required style="min-height:40px !important;width:40% !important"></textarea>
@@ -57,11 +56,11 @@
   <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple required style="margin-top: 1.5%;" />
   <hr style="width: 90%;">
   <div style="display: block;">
-    <input type="checkbox" id="subscribe" style="margin-top: 1%;" checked>
+    <input type="checkbox" id="subscribe" name="subscribe" style="margin-top: 1%;" checked>
     <label for="subscribe">Deseja receber notificações por e-mail?</label>
   </div>
   <hr style="width: 90%;">
-  <button type="submit" class="btn accept" id="submit-button" style="width:5%" disabled>Enviar</button>
+  <button type="submit" class="btn accept" id="submit-button">Enviar</button>
 </form>
 
 
