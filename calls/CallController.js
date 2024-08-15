@@ -77,6 +77,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     lastCallsManager = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         limit: 3,
         where: {
@@ -133,9 +134,9 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
       }
     });
 
-
     lastCalls = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         limit: 3,
         where: {
@@ -171,6 +172,14 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
   const message = req.body.message;
   const call_id = req.body.id;
   const files = req.files;
+  const finishcall = req.body.finishcall;
+  var status = 'EM ATENDIMENTO';
+
+  if(finishcall == 'on'){
+
+    status = 'FINALIZADO';
+    
+  }
 
   const findCall = await Call.findOne({
     where: {
@@ -190,7 +199,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
     await Call.update(
       {
         attendant_id: req.session.user.user.id,
-        status: 'EM ATENDIMENTO'
+        status: status
       }, {
       where: {
         id: call_id
@@ -205,10 +214,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
       call_id: call_id
     }).catch(error => console.log('Error creating message:', error));
 
-    
-
   }
-
 
   // Check if any files were uploaded
   if (files && files.length > 0) {
@@ -253,6 +259,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
 
     callPending = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         where: {
           status: 'PENDENTE',
@@ -278,8 +285,8 @@ router.get('/call/pending', adminAuth, async (req, res) => {
     //chamados PENDENTES
     callPending = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
-        
         where: {
           [Op.or]: [
             { departament: departament },
@@ -310,6 +317,7 @@ router.get('/call/inservice', adminAuth, async (req, res) => {
 
     callInService = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         where: {
           status: 'EM ATENDIMENTO',
@@ -335,6 +343,7 @@ router.get('/call/inservice', adminAuth, async (req, res) => {
     //chamados EM ATENDIMENTO
     callInService = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         where: {
           [Op.or]: [
@@ -364,6 +373,7 @@ router.get('/call/finished', adminAuth, async (req, res) => {
 
     callFinished = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
         where: {
           status: 'FINALIZADO',
@@ -389,6 +399,7 @@ router.get('/call/finished', adminAuth, async (req, res) => {
     //chamados FINALIZADOS
     callFinished = await Call.findAll(
       {
+        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
         order: [['id', 'DESC']],
           where: {
             [Op.or]: [
@@ -416,6 +427,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   const subject = req.body.subject;
   const message = req.body.message;
   const user_id = req.session.user.user.id;
+  const employee_id = req.session.user.employee.id;
   const files = req.files;
   const mail = (req.body.subscribe == 'on') ? 1 : 0;
 
@@ -424,7 +436,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   console.log("Category: " + category);
   console.log("Subject: " + subject);
   console.log("Message: " + message);
-  console.log("Checkbox " + mail);
+  console.log("Checkbox: " + mail);
 
   const newCall = await Call.create({
     active_mail: mail,
@@ -432,8 +444,10 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
     category: category,
     subject: subject,
     priority: priority,
+    attendant_id: 0,
+    status: 'PENDENTE',
     user_id: user_id,
-    status: 'PENDENTE'
+    employee_id: employee_id
   })
     .catch(error => {
       console.error('Error creating call:', error);

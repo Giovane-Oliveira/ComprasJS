@@ -9,8 +9,9 @@
   <thead>
     <tr style="background-color: #9e9e9e">
       <th scope="col">#</th>
+      <th scope="col">Departamento</th>
       <th scope="col">Categoria</th>
-      <th scope="col">Assunto</th>
+      <th scope="col">Solicitante</th>
       <th scope="col">Prioridade</th>
       <th scope="col">Data de Criação</th>
       <th scope="col">Detalhes</th>
@@ -26,8 +27,9 @@
             });  %>
           <tr>
           <td><%= call.id  %></td>
-          <td><%= call.category.substring(0, 30) %></td>
-          <td><%= call.subject.substring(0, 30) %></td>
+          <td><%= call.departament.toUpperCase() %></td>
+          <td><%= call.category %></td>
+          <td><%= call.employee.name %></td>
           <td><%= call.priority %></td>
           <td><%= formattedDate %></td>
           <td><a href="/call/show/<%= call.id %>" class="btn btn-success">Detalhes</a></td>

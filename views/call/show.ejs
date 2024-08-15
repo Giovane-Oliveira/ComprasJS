@@ -1,4 +1,4 @@
-<%- include('../partials/header.ejs') %>
+<%- include('../partials/header_show_call.ejs') %>
 <% let formattedDate=new Date(call.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
 <div class="space">
   <div class=" cabecalho">
@@ -7,7 +7,11 @@
     <h6>Solicitante: <label name="nome">
         <%= employee.name %>
       </label></h6>
-    <h6>Id do chamado: <label name="nome">#<%= call.id %>
+    <h6>Id do chamado: <label>#<%= call.id %>
+      </label></h6>
+      <h6>Status: <label><%= call.status %>
+      </label></h6>
+      <h6>Assunto: <label><%= call.subject %>
       </label></h6>
     <p>Data: <label name="data">
         <%= formattedDate %>
@@ -22,9 +26,9 @@
       <% } %>
     </p>
     <% if(attendant != undefined) {%>
-      <p>Atendente: <label name="atendente">
-          <%= attendant.employee.name %>
-        </label></p>
+    <p>Atendente: <label name="atendente">
+        <%= attendant.employee.name %>
+      </label></p>
     <% } %>
   </div>
   <hr>
@@ -32,7 +36,6 @@
   <div class="conteudo">
     <table id="tabelaPagamento">
       <tbody>
-
         <tr>
           <td class="destaque"><strong>Assunto:</strong></span></td>
           <td colspan="3"><span name="assunto"><%= call.subject %></span></td>
@@ -55,17 +58,17 @@
       <tbody>
         <% files.forEach(file=> { %>
         <tr>
-        
-            <% if(file.user_id == sender.user.id){%>
-                <td>
-                  <%= sender.employee.name %>
-                </td>
-              <% }else{%>
-                <td>
-                  <%= attendant.employee.name %>
-                </td>
-              <% } %>
-          
+
+          <% if(file.user_id == sender.user.id){%>
+          <td>
+            <%= sender.employee.name %>
+          </td>
+          <% }else{%>
+          <td>
+            <%= attendant.employee.name %>
+          </td>
+          <% } %>
+
           <td>
             <%= file.fileName %>
           </td>
@@ -81,10 +84,11 @@
     </table>
 
     <% if((call.user_id == user.user.id) || (call.attendant_id == 0 && call.user_id != user.user.id)
-  || (call.attendant_id != 0 && call.attendant_id == user.user.id)){%>
+  || (call.attendant_id != 0 && call.attendant_id == user.user.id)){
+    if(call.status != 'FINALIZADO'){%>
     <hr style="width: 95%;">
     <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
-    <% } %>
+    <% }} %>
     <% if(messageAll.length > 1){%>
 
     <% 
@@ -93,7 +97,7 @@
     <%if(count > 0){%>
 
     <%if(message.sender_id != null){%>
-      <% let formattedDate = new Date(message.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+    <% let formattedDate = new Date(message.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
     <div class="chat-message rp1">
       <div class="jumbotron" style="width: 80%; margin-left: auto; margin-right: auto; margin-top: 1%; padding: 2%;">
         <h3>Resposta ID #<%=message.id%></h3>
@@ -105,7 +109,7 @@
     </div>
 
     <%} if(message.attendant_id != null){%>
-      <% let formattedDate = new Date(message.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+    <% let formattedDate = new Date(message.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
     <div class="chat-message rp2">
       <div class="jumbotron" style="width: 80%; margin-left: auto; margin-right: auto; margin-top: 1%; padding: 2%;">
         <h3>Resposta ID #<%=message.id%></h3>
@@ -132,8 +136,10 @@
           </div>
           <div class="modal-body">
             <form action="/call/reply" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+              <%if(call.attendant_id == user.user.id){%>
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
+              <%}%>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
               <textarea class="form-control" name="message" required style="min-height:110px !important" placeholder="Digite sua resposta"></textarea>
               <hr style="width: 90%;">
