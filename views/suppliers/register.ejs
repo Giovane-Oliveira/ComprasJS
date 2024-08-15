@@ -13,20 +13,51 @@
     <% } %>
 
 
-      <div class="container">
-        <form action="register_supplier" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important">
-          <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 65%; margin-bottom: 3%;" required>
-          <script>
-            $.jMaskGlobals.watchDataMask = true;
-          </script>
-          <input type="text" name="cnpj" data-mask='00.000.000/0000-00' class="form-control"" placeholder=" CNPJ:" style="width: 40%; margin-bottom: 3%;" required>
-          <button type="submit" class="btn accept"> Cadastrar </button>
-        </form>
-      </div>
-      <%- include('../partials/footer.ejs') %>
+
+
+  <div class="container">
+    <form action="register_supplier" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important">
+      <input type="text" name="name" class="form-control" placeholder="Nome:" style="width: 65%; margin-bottom: 3%;" required>
+      <script>
+        $.jMaskGlobals.watchDataMask = true;
+      </script>
+        <select id="pessoa" name="tipopessoa" class="form-control" required>
+          <option value="" disabled="disabled" selected="selected" required>Selecione o tipo</option>
+          <option value="cpf">Pessoa Física</option>
+          <option value="cnpj">Pessoa Jurídica</option>
+        </select> <br>
+        <div id="selestab">
+        </div>
+      <button type="submit" class="btn accept"> Cadastrar </button>
+    </form>
+  </div>
 
 
 
+
+  <script>
+
+$("#pessoa").on("change", function () {
+            var valor = $(this).val(); // aqui vc pega cada valor selecionado com o this
+            if(valor == "cpf") {
+
+              document.getElementById("selestab").innerHTML = "";
+              document.getElementById("selestab").innerHTML = "" +
+                "<input type='text' name='cpf' data-mask='000.000.000-00' class='form-control' placeholder='CPF:'' style='width: 40%; margin-bottom: 3%;' required>";
+            }else if(valor == "cnpj") {
+              document.getElementById("selestab").innerHTML = "";
+              document.getElementById("selestab").innerHTML = "" +
+                "<input type='text' name='cnpj' data-mask='00.000.000/0000-00' class='form-control' placeholder='CNPJ:'' style='width: 40%; margin-bottom: 3%;' required>";
+            
+            }
+
+              });
+
+       
+  </script>
+
+ 
+    
         <!-- Modal -->
         <div class="modal fade" id="message" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
@@ -46,3 +77,6 @@
             </div>
           </div>
         </div>
+
+
+        <%- include('../partials/footer.ejs') %>

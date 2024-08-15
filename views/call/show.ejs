@@ -132,6 +132,8 @@
           </div>
           <div class="modal-body">
             <form action="/call/reply" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+              <label for="checkbox">Finalizar chamado</label>
+              <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
               <textarea class="form-control" name="message" required style="min-height:110px !important" placeholder="Digite sua resposta"></textarea>
               <hr style="width: 90%;">

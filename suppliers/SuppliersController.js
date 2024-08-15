@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Supplier = require('./Supplier');
 const adminAuth = require('../middlewares/adminAuth');
+const { where } = require('sequelize');
 
 //Busca os fornecedores e encaminha para página
 router.get('/suppliers', adminAuth, async (req, res) => {
@@ -77,17 +78,49 @@ router.get('/delete_supplier/:id', adminAuth, (req, res) => {
 router.post('/register_supplier', adminAuth, (req, res) => {
     const name = req.body.name;
     const cnpj = req.body.cnpj;
+    const cpf = req.body.cpf;
+    var pessoa = "";
+    console.log("CPF: " + cpf);
+    console.log("CNPJ: " + cnpj);
 
-    Supplier.create({
-        name: name,
-        cnpj: cnpj
-    }).catch(err => {
-            console.log(err);
-            res.render('suppliers/register.ejs', { user: req.session.user, message: 'Erro ao cadastrar o fornecedor' });
-            // Handle the error appropriately, e.g., display an error message to the user
-        });
+if(cnpj != undefined){
 
-    res.render('suppliers/register.ejs', { user: req.session.user, message: 'Fornecedor cadastrado com sucesso!' });
+    pessoa = cnpj
+    
+}else{
+
+    pessoa = cpf
+
+}
+
+    Supplier.findOne({
+        where:{
+            cnpj: pessoa
+        }
+    }).then(resultado =>{
+
+        if(resultado == undefined){
+
+            Supplier.create({
+                name: name,
+                cnpj: pessoa
+            }).catch(err => {
+                    console.log(err);
+                    res.render('suppliers/register.ejs', { user: req.session.user, message: 'Erro ao cadastrar o fornecedor' });
+                    // Handle the error appropriately, e.g., display an error message to the user
+                });
+        
+            res.render('suppliers/register.ejs', { user: req.session.user, message: 'Fornecedor cadastrado com sucesso!' });
+
+        }else{
+
+            res.render('suppliers/register.ejs', { user: req.session.user, message: 'Fornecedor já cadastrado!' });
+
+        }
+
+    });
+
+    
 
 });
 
