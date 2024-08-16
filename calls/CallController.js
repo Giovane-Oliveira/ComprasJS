@@ -77,7 +77,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     lastCallsManager = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         limit: 3,
         where: {
@@ -136,14 +136,14 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     lastCalls = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         limit: 3,
         where: {
           [Op.or]: [
             { departament: departament },
             { user_id: req.session.user.user.id },
-  
+
           ]
         }
       }
@@ -169,78 +169,105 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
 router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) => {
 
-  const message = req.body.message;
+  const message = (req.body.message) ? req.body.message : undefined;
   const call_id = req.body.id;
   const files = req.files;
   const finishcall = req.body.finishcall;
   var status = 'EM ATENDIMENTO';
+  var newAttendant = req.body.newAttendant;
 
-  if(finishcall == 'on'){
+  if(message == undefined){
 
-    status = 'FINALIZADO';
+    console.log("Alterando o atendente")
     
-  }
-
-  const findCall = await Call.findOne({
-    where: {
-      id: call_id
-    }
-  }).catch(error => console.log('Error finding call:', error));
-
-  //Verifica se é o atendente
-  if (req.session.user.user.id != findCall.user_id) {
-
-    await Message.create({
-      attendant_id: req.session.user.user.id,
-      message: message,
-      call_id: call_id
-    }).catch(error => console.log('Error creating message:', error));
-
-    await Call.update(
-      {
-        attendant_id: req.session.user.user.id,
-        status: status
-      }, {
-      where: {
+    await Call.update({
+      attendant_id: newAttendant
+    }, {
+      where:{
         id: call_id
       }
     }).catch(error => console.log('Error updating call:', error));
 
-  } else if (req.session.user.user.id == findCall.user_id) {
 
-    await Message.create({
-      sender_id: req.session.user.user.id,
-      message: message,
-      call_id: call_id
-    }).catch(error => console.log('Error creating message:', error));
+    await Message.update({
+      attendant_id: newAttendant
+    }, {
+      where:{
+        call_id: call_id
+      }
+    }).catch(error => console.log('Error updating message:', error));
 
-  }
 
-  // Check if any files were uploaded
-  if (files && files.length > 0) {
-    // Processar os dados e o arquivo aqui
-    //console.log(`Nome: ${nome}`);
-    // Processar arquivos
-    for (const file of files) {
-      // Salvar o arquivo
-      const fileName = file.originalname;
-      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-      fs.moveSync(file.path, filePath);
-      console.log(`Arquivo recebido: ${file.originalname}`);
-      // Salvar arquivo no diretório de destino 
+  }else{
 
-      File.create({
-        fileName: uniqueFileName,
-        call_id: call_id,
-        user_id: req.session.user.user.id
-      }).catch(error => {
-        console.error('Error creating file:', error);
-      });
+    if(finishcall == 'on'){
 
+      status = 'FINALIZADO';
+      
     }
-  } else {
-    console.error('No files were uploaded.');
+  
+    const findCall = await Call.findOne({
+      where: {
+        id: call_id
+      }
+    }).catch(error => console.log('Error finding call:', error));
+  
+    //Verifica se é o atendente
+    if (req.session.user.user.id != findCall.user_id) {
+  
+      await Message.create({
+        attendant_id: req.session.user.user.id,
+        message: message,
+        call_id: call_id
+      }).catch(error => console.log('Error creating message:', error));
+  
+      await Call.update(
+        {
+          attendant_id: req.session.user.user.id,
+          status: status
+        }, {
+        where: {
+          id: call_id
+        }
+      }).catch(error => console.log('Error updating call:', error));
+  
+    } else if (req.session.user.user.id == findCall.user_id) {
+  
+      await Message.create({
+        sender_id: req.session.user.user.id,
+        message: message,
+        call_id: call_id
+      }).catch(error => console.log('Error creating message:', error));
+  
+    }
+  
+    // Check if any files were uploaded
+    if (files && files.length > 0) {
+      // Processar os dados e o arquivo aqui
+      //console.log(`Nome: ${nome}`);
+      // Processar arquivos
+      for (const file of files) {
+        // Salvar o arquivo
+        const fileName = file.originalname;
+        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+        fs.moveSync(file.path, filePath);
+        console.log(`Arquivo recebido: ${file.originalname}`);
+        // Salvar arquivo no diretório de destino 
+  
+        File.create({
+          fileName: uniqueFileName,
+          call_id: call_id,
+          user_id: req.session.user.user.id
+        }).catch(error => {
+          console.error('Error creating file:', error);
+        });
+  
+      }
+    } else {
+      console.error('No files were uploaded.');
+    }
+
   }
 
   res.redirect('/call/dashboard');
@@ -259,7 +286,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
 
     callPending = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
           status: 'PENDENTE',
@@ -285,18 +312,18 @@ router.get('/call/pending', adminAuth, async (req, res) => {
     //chamados PENDENTES
     callPending = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
           [Op.or]: [
             { departament: departament },
             { user_id: req.session.user.user.id },
-  
+
           ],
           status: 'PENDENTE'
         }
-         
-        
+
+
       }
     ).catch((err) => {
       console.log(err);
@@ -317,7 +344,7 @@ router.get('/call/inservice', adminAuth, async (req, res) => {
 
     callInService = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
           status: 'EM ATENDIMENTO',
@@ -343,7 +370,7 @@ router.get('/call/inservice', adminAuth, async (req, res) => {
     //chamados EM ATENDIMENTO
     callInService = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
           [Op.or]: [
@@ -351,7 +378,7 @@ router.get('/call/inservice', adminAuth, async (req, res) => {
             { user_id: req.session.user.user.id },
           ],
           status: 'EM ATENDIMENTO'
-        }   
+        }
       }
     ).catch((err) => {
       console.log(err);
@@ -373,7 +400,7 @@ router.get('/call/finished', adminAuth, async (req, res) => {
 
     callFinished = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
           status: 'FINALIZADO',
@@ -399,15 +426,15 @@ router.get('/call/finished', adminAuth, async (req, res) => {
     //chamados FINALIZADOS
     callFinished = await Call.findAll(
       {
-        include: [{model: User, as: 'user'}, {model: Employee, as: 'employee'}],
+        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
-          where: {
-            [Op.or]: [
-              { departament: departament },
-              { user_id: req.session.user.user.id }
-            ],
-            status: 'FINALIZADO'
-          }    
+        where: {
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id }
+          ],
+          status: 'FINALIZADO'
+        }
       }
     ).catch((err) => {
       console.log(err);
@@ -661,6 +688,7 @@ router.get('/call/create', adminAuth, async (req, res) => {
 router.get('/call/show/:id', adminAuth, async (req, res) => {
   var attendant;
   var sender;
+  var employeeNames;
 
   const call = await Call.findOne({
     where: {
@@ -681,7 +709,30 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
         id: usuario.employee_id
       }
     });
+
     attendant = { user: usuario, employee: funcionario };
+
+    // Find all users with the same profile as the attendant
+    const usersWithSameProfile = await User.findAll({
+      where: {
+        profile_id: attendant.user.profile_id
+      }
+    });
+
+    // Get the names of the employees associated with those users
+    employeeNames = await Promise.all(
+      usersWithSameProfile.map(async user => {
+        const employee = await Employee.findOne({
+          where: {
+            id: user.employee_id
+          }
+        });
+        return employee ? { name: employee.name, id: employee.id } : null; // Return null if no employee found
+      })
+    );
+
+    // Now you have an array of employee names in `employeeNames`
+    console.log("Employees with the same profile as the attendant:", employeeNames);
 
   }
 
@@ -700,7 +751,6 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
   }).catch((err) => {
     console.log("Error Employee " + err);
   });
-
 
   const sector = await Sector.findOne({
     where: {
@@ -743,11 +793,22 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
   sender = { user: user, employee: employee };
 
 
-  res.render('call/show', {
-    user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
-    messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-    sender: sender
-  });
+  if (employeeNames.length > 0) {
+    res.render('call/show', {
+      user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
+      messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
+      sender: sender, employeeNames
+    });
+  } else {
+
+    res.render('call/show', {
+      user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
+      messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
+      sender: sender
+    });
+
+  }
+
 
 
 });

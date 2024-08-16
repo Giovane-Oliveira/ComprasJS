@@ -38,7 +38,7 @@ File.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 //1-N
 User.hasMany(File, { foreignKey: 'user_id', as: 'file' });
 
-File.sync({ force: false });
+//File.sync({ force: false });
 /*
 (async () => {
   try {

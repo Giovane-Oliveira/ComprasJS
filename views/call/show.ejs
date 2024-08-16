@@ -58,7 +58,6 @@
       <tbody>
         <% files.forEach(file=> { %>
         <tr>
-
           <% if(file.user_id == sender.user.id){%>
           <td>
             <%= sender.employee.name %>
@@ -68,11 +67,10 @@
             <%= attendant.employee.name %>
           </td>
           <% } %>
-
           <td>
             <%= file.fileName %>
           </td>
-          <% let formattedDate=new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
+          <% let formattedDate = new Date(file.createdAt).toLocaleDateString('pt-BR', { day: '2-digit' , month: '2-digit' , year: 'numeric' }); %>
           <td>
             <%= formattedDate %>
           </td>
@@ -80,11 +78,10 @@
         </tr>
         <% }); %>
       </tbody>
-
     </table>
 
     <% if((call.user_id == user.user.id) || (call.attendant_id == 0 && call.user_id != user.user.id)
-  || (call.attendant_id != 0 && call.attendant_id == user.user.id)){
+  || (call.attendant_id != 0 && call.attendant_id == user.user.id) || (call.attendant_id != user.user.id && call.user_id != user.user.id)){
     if(call.status != 'FINALIZADO'){%>
     <hr style="width: 95%;">
     <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
@@ -136,17 +133,26 @@
           </div>
           <div class="modal-body">
             <form action="/call/reply" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-              <%if(call.attendant_id == user.user.id){%>
+              <%if(call.attendant_id != 0 && call.attendant_id != user.user.id && call.user_id != user.user.id){ %>
+                <select name="newAttendant" class="form-control">
+                  <option value="" disabled="disabled" selected="selected">Alterar o atendente</option>
+                <% employeeNames.forEach(employeeName => {%>
+                <option value="<%= employeeName.id %>"><%= employeeName.name %></option>
+              <% });} %>  
+            </select>
+            <%if(call.attendant_id == user.user.id){%>
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
               <%}%>
+              <%if(call.attendant_id == user.user.id || call.user_id == user.user.id){%>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
-              <textarea class="form-control" name="message" required style="min-height:110px !important" placeholder="Digite sua resposta"></textarea>
+              <textarea class="form-control" name="message"  style="min-height:110px !important" required placeholder="Digite sua resposta"></textarea>
               <hr style="width: 90%;">
-              <input type="text" name="id" value="<%= call.id %>" hidden>
               <label for="files" style="margin-top: 1%; display: block; font-weight: bold;">Anexo:</label>
               <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
               <hr style="width: 90%;">
+              <%}%>
+              <input type="text" name="id" value="<%= call.id %>" hidden>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
