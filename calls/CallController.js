@@ -176,14 +176,14 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
   var status = 'EM ATENDIMENTO';
   var newAttendant = req.body.newAttendant;
 
-  if(message == undefined){
+  if (message == undefined) {
 
     console.log("Alterando o atendente")
-    
+
     await Call.update({
       attendant_id: newAttendant
     }, {
-      where:{
+      where: {
         id: call_id
       }
     }).catch(error => console.log('Error updating call:', error));
@@ -192,35 +192,35 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
     await Message.update({
       attendant_id: newAttendant
     }, {
-      where:{
+      where: {
         call_id: call_id
       }
     }).catch(error => console.log('Error updating message:', error));
 
 
-  }else{
+  } else {
 
-    if(finishcall == 'on'){
+    if (finishcall == 'on') {
 
       status = 'FINALIZADO';
-      
+
     }
-  
+
     const findCall = await Call.findOne({
       where: {
         id: call_id
       }
     }).catch(error => console.log('Error finding call:', error));
-  
+
     //Verifica se é o atendente
     if (req.session.user.user.id != findCall.user_id) {
-  
+
       await Message.create({
         attendant_id: req.session.user.user.id,
         message: message,
         call_id: call_id
       }).catch(error => console.log('Error creating message:', error));
-  
+
       await Call.update(
         {
           attendant_id: req.session.user.user.id,
@@ -230,17 +230,107 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
           id: call_id
         }
       }).catch(error => console.log('Error updating call:', error));
-  
+
+      const newCall = await Call.findOne({
+        where: {
+          id: call_id
+        }
+      }).catch(error => console.log('Error updating call:', error));
+
+      const newPersonRequest = await Employee.findOne({
+        where: {
+          id: newCall.employee_id
+        }
+      })
+
+
+      if (newCall.active_mail == 1) {
+
+        let situation = 'Respondido';
+
+        if (status == 'FINALIZADO') {
+
+          situation = 'Finalizado';
+
+        }
+
+        let from = "nao-responda@provida.med.br";
+        let to = newPersonRequest.email;
+        let subject = `Chamado ${situation} #${call_id}`;
+        let text = "Resposta: " + message;
+        let mail_employee = "Atendente: " + req.session.user.employee.name;
+        let mail_email = "E-mail: " + req.session.user.employee.email;
+        let link = "http://52.156.72.125:3001";
+
+        let mailOptions = {
+          from,
+          to,
+          subject,
+          html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+        };
+
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully!');
+        } catch (error) {
+          console.log("Erro ao enviar o email: " + error);
+        }
+
+      }
+
+
     } else if (req.session.user.user.id == findCall.user_id) {
-  
+
       await Message.create({
         sender_id: req.session.user.user.id,
         message: message,
         call_id: call_id
       }).catch(error => console.log('Error creating message:', error));
-  
+
+      let situation = 'Respondido';
+
+      if (status == 'FINALIZADO') {
+
+        situation = 'Finalizado';
+
+      }
+
+      const newCall = await Call.findOne({
+        where: {
+          id: call_id
+        }
+      }).catch(error => console.log('Error updating call:', error));
+
+      const newPersonRequest = await Employee.findOne({
+        where: {
+          id: newCall.attendant_id
+        }
+      });
+
+      let from = "nao-responda@provida.med.br";
+      let to = newPersonRequest.email;
+      let subject = `Chamado ${situation} #${call_id}`;
+      let text = "Resposta: " + message;
+      let mail_employee = "Solicitante: " + req.session.user.employee.name;
+      let mail_email = "E-mail: " + req.session.user.employee.email;
+      let link = "http://52.156.72.125:3001";
+
+      let mailOptions = {
+        from,
+        to,
+        subject,
+        html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+      };
+
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+      } catch (error) {
+        console.log("Erro ao enviar o email: " + error);
+      }
+
     }
-  
+
     // Check if any files were uploaded
     if (files && files.length > 0) {
       // Processar os dados e o arquivo aqui
@@ -254,7 +344,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         fs.moveSync(file.path, filePath);
         console.log(`Arquivo recebido: ${file.originalname}`);
         // Salvar arquivo no diretório de destino 
-  
+
         File.create({
           fileName: uniqueFileName,
           call_id: call_id,
@@ -262,7 +352,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         }).catch(error => {
           console.error('Error creating file:', error);
         });
-  
+
       }
     } else {
       console.error('No files were uploaded.');
