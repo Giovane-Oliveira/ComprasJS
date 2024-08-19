@@ -66,7 +66,6 @@ router.post('/create/category', adminAuth, (req, res) => {
   }).catch(err => console.log(err));
 
   
-  
  // After creating the category, wait for 2 seconds before redirecting
  setTimeout(() => {
   res.redirect('/category');
