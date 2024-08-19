@@ -53,6 +53,7 @@
       <tr style="background-color: #9e9e9e">
         <th scope="col">#</th>
         <th scope="col">Departamento</th>
+        <th scope="col">Status</th>
         <th scope="col">Categoria</th>
         <th scope="col">Solicitante</th>
         <th scope="col">Prioridade</th>
@@ -73,6 +74,7 @@
           <tr>
           <td><%= call.id  %></td>
           <td><%= call.departament.toUpperCase() %></td>
+          <td><%= call.status %></td>
           <td><%= call.category %></td>
           <td><%= call.employee.name %></td>
           <td><%= call.priority %></td>
