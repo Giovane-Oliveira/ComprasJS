@@ -81,7 +81,8 @@
     </table>
 
     <% if((call.user_id == user.user.id) || (call.attendant_id == 0 && call.user_id != user.user.id)
-  || (call.attendant_id != 0 && call.attendant_id == user.user.id) || (call.attendant_id != user.user.id && call.user_id != user.user.id)){
+  || (call.attendant_id != 0 && call.attendant_id == user.user.id) || 
+(call.attendant_id != user.user.id && call.user_id != user.user.id)){
     if(call.status != 'FINALIZADO'){%>
     <hr style="width: 95%;">
     <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
@@ -144,7 +145,7 @@
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
               <%}%>
-              <%if(call.attendant_id == user.user.id || call.user_id == user.user.id){%>
+              <%if(call.attendant_id == user.user.id || call.user_id == user.user.id || call.attendant_id == 0){%>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
               <textarea class="form-control" name="message"  style="min-height:110px !important" required placeholder="Digite sua resposta"></textarea>
               <hr style="width: 90%;">

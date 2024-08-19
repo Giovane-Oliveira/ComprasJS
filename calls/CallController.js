@@ -47,6 +47,7 @@ let transporter = nodemailer.createTransport({
 router.get('/call/dashboard', adminAuth, async (req, res) => {
   var lastCalls, lastCallsManager, departament;
   var pending, inservice, finished;
+  var message = req.flash('message');
 
   if (req.session.user.profile.description.includes('leaders') ||
     req.session.user.profile.description.includes('directors') ||
@@ -157,11 +158,11 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
     req.session.user.profile.description.includes('directors') ||
     req.session.user.profile.description.includes('managers')) {
 
-    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCallsManager });
+    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCallsManager, message: message });
 
   } else {
 
-    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCalls });
+    res.render('call/dashboard', { user: req.session.user, pending: pending, inservice: inservice, finished: finished, lastCalls: lastCalls, message: message });
 
   }
 
@@ -239,7 +240,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       const newPersonRequest = await Employee.findOne({
         where: {
-          id: newCall.employee_id
+          id: newCall.attendant_id
         }
       })
 
@@ -303,7 +304,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       const newPersonRequest = await Employee.findOne({
         where: {
-          id: newCall.attendant_id
+          id: newCall.employee_id
         }
       });
 
@@ -650,6 +651,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
     }
   });
 
+  req.flash('message', 'Chamado criado com sucesso!')
   res.redirect('/call/dashboard');
 
 });
@@ -883,7 +885,7 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
   sender = { user: user, employee: employee };
 
 
-  if (employeeNames.length > 0) {
+  if (employeeNames != undefined ) {
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
