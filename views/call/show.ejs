@@ -9,9 +9,9 @@
       </label></h6>
     <h6>Id do chamado: <label>#<%= call.id %>
       </label></h6>
-      <h6>Status: <label><%= call.status %>
+    <h6>Status: <label><%= call.status %>
       </label></h6>
-      <h6>Assunto: <label><%= call.subject %>
+    <h6>Assunto: <label><%= call.subject %>
       </label></h6>
     <p>Data: <label name="data">
         <%= formattedDate %>
@@ -133,21 +133,21 @@
             </button>
           </div>
           <div class="modal-body">
-            <form action="/call/reply" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+            <form id="reply" action="/call/reply" method="post" enctype="multipart/form-data" accept-charset="utf-8">
               <%if(call.attendant_id != 0 && call.attendant_id != user.user.id && call.user_id != user.user.id){ %>
-                <select name="newAttendant" class="form-control">
-                  <option value="" disabled="disabled" selected="selected">Alterar o atendente</option>
+              <select name="newAttendant" class="form-control">
+                <option value="" disabled="disabled" selected="selected">Alterar o atendente</option>
                 <% employeeNames.forEach(employeeName => {%>
                 <option value="<%= employeeName.id %>"><%= employeeName.name %></option>
-              <% });} %>  
-            </select>
-            <%if(call.attendant_id == user.user.id){%>
+                <% });} %>
+              </select>
+              <%if(call.attendant_id == user.user.id){%>
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
               <%}%>
               <%if(call.attendant_id == user.user.id || call.user_id == user.user.id || call.attendant_id == 0){%>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
-              <textarea class="form-control" name="message"  style="min-height:110px !important" required placeholder="Digite sua resposta"></textarea>
+              <textarea class="form-control" name="message" style="min-height:110px !important" required placeholder="Digite sua resposta"></textarea>
               <hr style="width: 90%;">
               <label for="files" style="margin-top: 1%; display: block; font-weight: bold;">Anexo:</label>
               <input type="file" name="files" size="50" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple />
@@ -165,9 +165,38 @@
     </div>
 
     <script>
+      
+      $("#reply").submit(function() {
+        $(document).ready(function() {
+          $('#loadingModal').modal('show');
+        })
+      });
+
       function answercall() {
         $('#answercall').modal('show');
       };
     </script>
+
+    <!-- Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Aguarde...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
     <%- include('../partials/footer.ejs') %>

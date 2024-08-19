@@ -360,7 +360,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
     }
 
   }
-
+  req.flash('message', 'Reposta enviada com sucesso!');
   res.redirect('/call/dashboard');
 
 });
