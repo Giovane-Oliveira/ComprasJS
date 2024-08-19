@@ -80,7 +80,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
       {
         include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
-        limit: 3,
+        limit: 6,
         where: {
           user_id: req.session.user.user.id,
         }
@@ -139,7 +139,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
       {
         include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
-        limit: 3,
+        limit: 6,
         where: {
           [Op.or]: [
             { departament: departament },
