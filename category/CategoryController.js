@@ -24,13 +24,19 @@ const Category = require('../category/Category');
 
 router.get('/category',adminAuth, (req, res) => {
 
+  var message = req.flash('message');
+
+  console.log("Mensagem" + message);
+
+
+
     const departaments = [{name:'SAC', profile:'sac'}, {name:'T.I', profile:'ti'}, {name:'RH', profile:'rh'},
         {name:'FINANCEIRO', profile:'financial'}, {name:'MARKETING', profile:'marketing'}, {name:'COMPRAS', profile:'purchases'}    
      ];
 
      Category.findAll().then(categories => {
 
-      res.render('call/categories', { user: req.session.user, departaments: departaments, categories: categories });
+      res.render('call/categories', { user: req.session.user, departaments: departaments, categories: categories, message: message });
 
      }).catch(err => console.log(err));    
 
@@ -65,6 +71,7 @@ router.post('/create/category', adminAuth, (req, res) => {
 
   }).catch(err => console.log(err));
 
+  req.flash('message', 'Categoria criada com sucesso!')
   
  // After creating the category, wait for 2 seconds before redirecting
  setTimeout(() => {
@@ -83,6 +90,7 @@ Category.destroy({
     }
   });
 
+  req.flash('message', 'Categoria deletada com sucesso!')
   res.redirect('/category');
 
 });
