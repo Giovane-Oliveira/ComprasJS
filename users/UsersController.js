@@ -1161,7 +1161,7 @@ router.post('/registration/create', async (req, res) => {
     const phone = req.body?.phone;
     const city = req.body?.city;
     var description = req.body?.description;
-    const status = 1;
+   
     const profile = req.body?.profile;
     const token = req.body?.token;
 
