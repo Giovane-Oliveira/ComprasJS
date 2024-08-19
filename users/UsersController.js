@@ -1165,15 +1165,6 @@ router.post('/registration/create', async (req, res) => {
     const profile = req.body?.profile;
     const token = req.body?.token;
 
-    var open_request; // abrir requisição
-    var attach_nf; // anexar nota fiscal
-    var attach_doc; // anexar documento
-    var attach_charge; // anexar cobrança
-    var receipt_attachment; // anexar comprovante
-    var commercial_authorization; // autorização comercial
-    var financial_authorization; // autorização financeira
-    var validation; // validação
-    var closure; // encerramento
     var user_registration; // cadastro de usuário
     var supplier_registration; // cadastro de fornecedor
 
@@ -1190,132 +1181,42 @@ router.post('/registration/create', async (req, res) => {
     switch (profile) {
 
         case 'managers': //gerentes
-            open_request = 1; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'leaders': //gestores
-            open_request = 0; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 0; // anexar documento
-            attach_charge = 0; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 1; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 1; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'directors': //diretores
-            open_request = 0; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 0; // anexar documento
-            attach_charge = 0; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 1; // autorização financeira
-            validation = 0; // validação
-            closure = 1; // encerramento
             user_registration = 1; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'purchases': //compras
-            open_request = 0; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 0; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 1; // validação
-            closure = 1; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
             break;
         case 'financial': //financeiro
-            open_request = 0; // abrir requisição
-            attach_nf = 1; // anexar nota fiscal
-            attach_doc = 0; // anexar documento
-            attach_charge = 0; // anexar cobrança
-            receipt_attachment = 1; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 1; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'ti': //T.I
-            open_request = 1; // abrir requisição
-            attach_nf = 1; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 1; // anexar comprovante
-            commercial_authorization = 1; // autorização comercial
-            financial_authorization = 1; // autorização financeira
-            validation = 1; // validação
-            closure = 1; // encerramento
             user_registration = 1; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
             break;
         case 'marketing': //gerentes
-            open_request = 1; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'sau': //gerentes
-            open_request = 1; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'sac': //gerentes
-            open_request = 1; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
         case 'rh': //gerentes
-            open_request = 1; // abrir requisição
-            attach_nf = 0; // anexar nota fiscal
-            attach_doc = 1; // anexar documento
-            attach_charge = 1; // anexar cobrança
-            receipt_attachment = 0; // anexar comprovante
-            commercial_authorization = 0; // autorização comercial
-            financial_authorization = 0; // autorização financeira
-            validation = 0; // validação
-            closure = 0; // encerramento
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             break;
@@ -1414,16 +1315,7 @@ router.post('/registration/create', async (req, res) => {
                 });
 
                 // Create Permissions
-                await Permissions.create({
-                    open_request: open_request,
-                    attach_nf: attach_nf,
-                    attach_doc: attach_doc,
-                    attach_charge: attach_charge,
-                    receipt_attachment: receipt_attachment,
-                    commercial_authorization: commercial_authorization,
-                    financial_authorization: financial_authorization,
-                    validation: validation,
-                    closure: closure,
+                await Permissions.create({         
                     user_registration: user_registration,
                     supplier_registration: supplier_registration,
                     employee_id: newEmployee.id,

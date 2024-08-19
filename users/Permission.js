@@ -5,51 +5,6 @@ const User = require('./User')
 
 
 const Permission = connection.define('Permission', {
-    open_request: { //abrir pedido
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    attach_nf: { // anexo documento fiscal
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    attach_doc: { //anexar documento
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    attach_charge: { //anexar cobrança
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    receipt_attachment: { //anexar recibo
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    commercial_authorization: {  //autorização comercial
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    financial_authorization: { //autorização financeira
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    validation: { //validação
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    closure: { //fechamento
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
     user_registration: { //cadastro de usuário
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -83,6 +38,7 @@ User.hasMany(Permission, { foreignKey: 'user_id', as: 'permission' });
 
 
 //Permission.sync({force: false})
+
 /*
 (async () => {
     try {
