@@ -240,7 +240,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       const newPersonRequest = await Employee.findOne({
         where: {
-          id: newCall.attendant_id
+          id: newCall.employee_id
         }
       })
 
@@ -279,7 +279,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       }
 
-
+//solicitante
     } else if (req.session.user.user.id == findCall.user_id) {
 
       await Message.create({
@@ -304,7 +304,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       const newPersonRequest = await Employee.findOne({
         where: {
-          id: newCall.employee_id
+          id: newCall.attendant_id
         }
       });
 
