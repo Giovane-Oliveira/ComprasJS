@@ -308,27 +308,33 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         }
       });
 
-      let from = "nao-responda@provida.med.br";
-      let to = newPersonRequest.email;
-      let subject = `Chamado ${situation} #${call_id}`;
-      let text = "Resposta: " + message;
-      let mail_employee = "Solicitante: " + req.session.user.employee.name;
-      let mail_email = "E-mail: " + req.session.user.employee.email;
-      let link = "http://52.156.72.125:3001";
+      if(newPersonRequest != undefined){
 
-      let mailOptions = {
-        from,
-        to,
-        subject,
-        html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
-      };
+        let from = "nao-responda@provida.med.br";
+        let to = newPersonRequest.email;
+        let subject = `Chamado ${situation} #${call_id}`;
+        let text = "Resposta: " + message;
+        let mail_employee = "Solicitante: " + req.session.user.employee.name;
+        let mail_email = "E-mail: " + req.session.user.employee.email;
+        let link = "http://52.156.72.125:3001";
+  
+        let mailOptions = {
+          from,
+          to,
+          subject,
+          html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+        };
+  
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log('Email sent successfully!');
+        } catch (error) {
+          console.log("Erro ao enviar o email: " + error);
+        }
 
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!');
-      } catch (error) {
-        console.log("Erro ao enviar o email: " + error);
       }
+
+   
 
     }
 
