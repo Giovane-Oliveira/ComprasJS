@@ -30,6 +30,13 @@
         <%= attendant.employee.name %>
       </label></p>
     <% } %>
+
+    <% if(call.channel_service != undefined) {%>
+      <p>Canal de Atendimento: <label name="canal">
+          <%= call.channel_service %>
+        </label></p>
+      <% } %>
+
   </div>
   <hr>
   <br>
@@ -141,7 +148,18 @@
                 <option value="<%= employeeName.id %>"><%= employeeName.name %></option>
                 <% });} %>
               </select>
-              <%if(call.attendant_id == user.user.id){%>
+              <%if(call.user_id != user.user.id){%>
+                <%if(call.channel_service == undefined){%>
+              <label for="channel_service">Canal de atendimento</label>
+              <select class="form-control" name="channel_service" required>
+                <option value="" disabled="disabled" selected="selected">Selecione o canal</option>
+                <option value="Whatsapp">Whatsapp</option>
+                <option value="E-mail">E-mail</option>
+                <option value="Teams">Teams</option>
+                <option value="Chat 3CX">Chat 3CX</option>
+                <option value="Comunicação Direta">Comunicação Direta</option>
+              </select>
+              <%}%>
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
               <%}%>
@@ -165,7 +183,6 @@
     </div>
 
     <script>
-      
       $("#reply").submit(function() {
         $(document).ready(function() {
           $('#loadingModal').modal('show');
@@ -178,24 +195,24 @@
     </script>
 
     <!-- Modal -->
-<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Aguarde...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Aviso</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Aguarde...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
 

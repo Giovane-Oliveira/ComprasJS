@@ -37,7 +37,11 @@ const Call = connection.define('Call', {
     status: { 
         type: Sequelize.ENUM('PENDENTE', 'EM ATENDIMENTO', 'FINALIZADO'),
         allowNull: false     
-    }
+    },
+    channel_service: { 
+        type: Sequelize.INTEGER,
+        allowNull: true     
+    },
 });
 
 //1-1 user_id

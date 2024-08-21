@@ -291,6 +291,9 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
   const finishcall = req.body.finishcall;
   var status = 'EM ATENDIMENTO';
   var newAttendant = req.body.newAttendant;
+  const channel_service = req.body.channel_service;
+
+  console.log('channel service' + channel_service)
 
   if (message == undefined) {
 
@@ -340,7 +343,8 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
       await Call.update(
         {
           attendant_id: req.session.user.user.id,
-          status: status
+          status: status,
+          channel_service: channel_service
         }, {
         where: {
           id: call_id
@@ -357,7 +361,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         where: {
           id: newCall.employee_id
         }
-      })
+      });
 
 
       if (newCall.active_mail == 1) {
