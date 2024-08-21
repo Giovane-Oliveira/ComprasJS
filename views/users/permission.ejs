@@ -11,7 +11,9 @@
           <tr>
             <th>Id</th>
             <th>Gerenciar Usuários</th>
-            <th>Cadastrar Fornecedores</th>        
+            <th>Cadastrar Fornecedores</th> 
+            <th>Criar Chamado</th>    
+            <th>Criar Categoria</th>           
           </tr>
         </thead>
         <tbody>
@@ -22,16 +24,29 @@
               </td>
              
               <% if(permissions.user_registration == 1){%>
-                <td> <input name="user_registration" id=<%=permissions.id %>  type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                <td> <input name="user_registration" id=<%=user.user.id %>  type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                 <% }else{ %>
-                  <td> <input name="user_registration" id=<%=permissions.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                  <td> <input name="user_registration" id=<%=user.user.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                   <% } %>
 
               <% if(permissions.supplier_registration == 1){%>
-                <td> <input name="supplier_registration" id=<%=permissions.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                <td> <input name="supplier_registration" id=<%=user.user.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                 <% }else{ %>
-                  <td> <input name="supplier_registration" id=<%=permissions.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                  <td> <input name="supplier_registration" id=<%=user.user.id  %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
                   <% } %>
+
+                  <% if(permissions.create_call == 1){%>
+                    <td> <input name="create_call" id=<%=user.user.id  %>  type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                    <% }else{ %>
+                      <td> <input name="create_call" id=<%=user.user.id  %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                      <% } %>
+    
+                  <% if(permissions.create_category == 1){%>
+                    <td> <input name="create_category" id=<%=user.user.id  %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                    <% }else{ %>
+                      <td> <input name="create_category" id=<%=user.user.id  %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                      <% } %> 
+                
 
             </tr>
 

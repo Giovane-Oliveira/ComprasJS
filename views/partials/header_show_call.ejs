@@ -87,15 +87,26 @@
                 <div class="dashimg"><a href=" /suppliers_register"><img src="../../images/addforn.png">Cadastrar Fornecedor</a></div>
               </li>
               <% } %>
-                <li>
-                  <div class="dashimg"><a href="/call/dashboard" style="text-align: center;">Chamados</a></div>
-                </li>
-                <li>
-                  <div class="dashimg"><a href=" /call/create"><img src="../../images/logout.png">Criar Chamado</a></div>
-                </li>
-                <li>
-                  <div class="dashimg"><a href="/category"><img src="../../images/logout.png">Criar Categoria</a></div>
-                </li>
+               
+                <%if(user.permissions.create_call == 1 || user.permissions.create_category == 1){%>
+                  <li>
+                    <div class="dashimg"><a href="/call/dashboard" style="text-align: center;">Chamados</a></div>
+                  </li>
+                  <%}%>
+  
+                <%if(user.permissions.create_call == 1 ){%>
+                 
+                  <li>
+                    <div class="dashimg"><a href=" /call/create"><img src="../../images/logout.png">Criar Chamado</a></div>
+                  </li>
+                 <%}%> 
+  
+                 <%if(user.permissions.create_category == 1 ){%> 
+                  <li>
+                    <div class="dashimg"><a href="/category"><img src="../../images/logout.png">Criar Categoria</a></div>
+                  </li>
+                 <%}%> 
+               
                 <li>
                   <div class="dashimg"><a href=" /logout"><img src="../../images/logout.png">Sair</a></div>
                 </li>

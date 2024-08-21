@@ -39,7 +39,7 @@ router.get('/permission/:id', adminAuth, async (req, res) => {
 
     const permissions = await Permissions.findOne({
         where: {
-            id: id
+            user_id: id
         }
     }).catch((err) => {
         console.log(err);
@@ -61,7 +61,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
             user_registration: 1
         }, {
             where: {
-                id: id
+                user_id: id
             }
         }).catch((err) => {
             console.log(err);
@@ -73,7 +73,29 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
             supplier_registration: 1
         }, {
             where: {
-                id: id
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }else if (name == 'create_call') {
+
+        Permissions.update({
+            create_call: 1
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }else if (name == 'create_category') {
+
+        Permissions.update({
+            create_category: 1
+        }, {
+            where: {
+                user_id: id
             }
         }).catch((err) => {
             console.log(err);
@@ -98,7 +120,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
             user_registration: 0
         }, {
             where: {
-                id: id
+                user_id: id
             }
         }).catch((err) => {
             console.log(err);
@@ -110,7 +132,29 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
             supplier_registration: 0
         }, {
             where: {
-                id: id
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }else if (name == 'create_call') {
+
+        Permissions.update({
+            create_call: 0
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }else if (name == 'create_category') {
+
+        Permissions.update({
+            create_category: 0
+        }, {
+            where: {
+                user_id: id
             }
         }).catch((err) => {
             console.log(err);
@@ -723,6 +767,252 @@ function generateToken(length) {
     return token;
 }
 
+// SSE endpoint for dashboard table data
+router.get('/dashboard/table', adminAuth, async (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+  
+    // Function to update table data
+    const updateTableData = async () => {
+      try {
+        // Get payments and purchases based on user's role
+        let payments, purchases;
+        if (req.session.user.profile.description.includes('managers') ||
+            req.session.user.profile.description.includes('marketing') ||
+            req.session.user.profile.description.includes('rh') ||
+            req.session.user.profile.description.includes('sac') ||
+            req.session.user.profile.description.includes('sau')) {
+          payments = await Payment.findAll({
+            order: [['id', 'DESC']],
+            limit: 10, // Adjust limit as needed
+            where: {
+              employee_id: req.session.user.employee.id,
+            }
+          });
+          purchases = await Purchase.findAll({
+            order: [['id', 'DESC']],
+            limit: 10, // Adjust limit as needed
+            where: {
+              employee_id: req.session.user.employee.id,
+            }
+          });
+        } else if (req.session.user.profile.description.includes('leaders') ||
+            req.session.user.profile.description.includes('directors') ||
+            req.session.user.profile.description.includes('ti') ||
+            req.session.user.profile.description.includes('purchases') ||
+            req.session.user.profile.description.includes('financial')) {
+          payments = await Payment.findAll({
+            order: [['id', 'DESC']],
+            limit: 10, // Adjust limit as needed
+          });
+          purchases = await Purchase.findAll({
+            order: [['id', 'DESC']],
+            limit: 10, // Adjust limit as needed
+          });
+        }
+  
+        // Send table data as SSE event
+        res.write(`data: ${JSON.stringify({ payments, purchases })}\n\n`);
+      } catch (error) {
+        console.error('Error updating table data:', error);
+      }
+    };
+  
+    // Get initial table data
+    await updateTableData();
+  
+    // Set up interval to update table data every 5 seconds
+    const interval = setInterval(updateTableData, 5000);
+  
+    // Close connection on client disconnect
+    req.on('close', () => {
+      clearInterval(interval);
+      console.log('SSE connection closed');
+    });
+  });
+
+
+
+
+
+router.get('/dashboard/badges', adminAuth, async (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+  
+    // Function to update badges
+    const updateBadges = async () => {
+      try {
+        // Get pending, reproved, and approved counts
+        const pending = await getPendingCount(req.session.user);
+        const reproved = await getReprovedCount(req.session.user);
+        const approved = await getApprovedCount(req.session.user);
+  
+        // Send badge data as SSE event
+        res.write(`data: ${JSON.stringify({ pending, reproved, approved })}\n\n`);
+      } catch (error) {
+        console.error('Error updating badges:', error);
+      }
+    };
+  
+    // Get initial badge counts
+    await updateBadges();
+  
+    // Set up interval to update badges every 5 seconds
+    const interval = setInterval(updateBadges, 5000);
+  
+    // Close connection on client disconnect
+    req.on('close', () => {
+      clearInterval(interval);
+      console.log('SSE connection closed');
+    });
+  });
+  
+  // Helper functions to get badge counts
+  const getPendingCount = async (user) => {
+    // Logic to get pending count based on user's role
+    // Example:
+    if (user.profile.description.includes('managers') ||
+  user.profile.description.includes('marketing') ||
+  user.profile.description.includes('rh') ||
+  user.profile.description.includes('sac') ||
+  user.profile.description.includes('sau')) {
+      const pendingPayments = await Payment.count({
+        where: {
+          employee_id: user.employee.id,
+          [Op.or]: [
+            { status: "Em análise pelo gestor" },
+            { status: "Em análise pelo diretor" },
+            { status: "Em análise pelo compras" },
+            { status: "Pagamento em andamento" }
+          ]
+        }
+      });
+      const pendingPurchases = await Purchase.count({
+        where: {
+          employee_id: user.employee.id,
+          [Op.or]: [
+            { status: "Em análise pelo gestor" },
+            { status: "Em análise pelo diretor" },
+            { status: "Em análise pelo compras" },
+            { status: "Pagamento em andamento" }
+          ]
+        }
+      });
+      return pendingPayments + pendingPurchases;
+    } else if (user.profile.description.includes('leaders') ||
+      user.profile.description.includes('directors') ||
+      user.profile.description.includes('ti') ||
+      user.profile.description.includes('purchases') ||
+      user.profile.description.includes('financial')) {
+          const pendingPayments = await Payment.count({
+              where: {
+                [Op.or]: [
+                  { status: "Em análise pelo gestor" },
+                  { status: "Em análise pelo diretor" },
+                  { status: "Em análise pelo compras" },
+                  { status: "Pagamento em andamento" }
+                ]
+              }
+            });
+            const pendingPurchases = await Purchase.count({
+              where: {
+                [Op.or]: [
+                  { status: "Em análise pelo gestor" },
+                  { status: "Em análise pelo diretor" },
+                  { status: "Em análise pelo compras" },
+                  { status: "Pagamento em andamento" }
+                ]
+              }
+            });
+      return pendingPayments + pendingPurchases;
+    }
+    return 0;
+  };
+  
+  const getReprovedCount = async (user) => {
+    // Logic to get reproved count based on user's role
+    // Example:
+    if (user.profile.description.includes('managers') ||
+   user.profile.description.includes('marketing') ||
+    user.profile.description.includes('rh') ||
+    user.profile.description.includes('sac') ||
+   user.profile.description.includes('sau')) {
+      const reprovedPayments = await Payment.count({
+        where: {
+          employee_id: user.employee.id,
+          status: "REPROVADO"
+        }
+      });
+      const reprovedPurchases = await Purchase.count({
+        where: {
+          employee_id: user.employee.id,
+          status: "REPROVADO"
+        }
+      });
+      return reprovedPayments + reprovedPurchases;
+    } else if (user.profile.description.includes('leaders') ||
+      user.profile.description.includes('directors') ||
+      user.profile.description.includes('ti') ||
+      user.profile.description.includes('purchases') ||
+      user.profile.description.includes('financial')) {
+          const reprovedPayments = await Payment.count({
+              where: {
+                status: "REPROVADO"
+              }
+            });
+            const reprovedPurchases = await Purchase.count({
+              where: {
+                status: "REPROVADO"
+              }
+            });
+            return reprovedPayments + reprovedPurchases;
+    }
+    return 0;
+  };
+  
+  const getApprovedCount = async (user) => {
+    // Logic to get approved count based on user's role
+    // Example:
+    if (user.profile.description.includes('managers') ||
+   user.profile.description.includes('marketing') ||
+   user.profile.description.includes('rh') ||
+  user.profile.description.includes('sac') ||
+   user.profile.description.includes('sau'))  {
+      const approvedPayments = await Payment.count({
+        where: {
+          employee_id: user.employee.id,
+          status: "APROVADO"
+        }
+      });
+      const approvedPurchases = await Purchase.count({
+        where: {
+          employee_id: user.employee.id,
+          status: "APROVADO"
+        }
+      });
+      return approvedPayments + approvedPurchases;
+    } else if (user.profile.description.includes('leaders') ||
+      user.profile.description.includes('directors') ||
+      user.profile.description.includes('ti') ||
+      user.profile.description.includes('purchases') ||
+      user.profile.description.includes('financial')) {
+          const approvedPayments = await Payment.count({
+              where: {
+                status: "APROVADO"
+              }
+            });
+            const approvedPurchases = await Purchase.count({
+              where: {
+                status: "APROVADO"
+              }
+            });
+            return approvedPayments + approvedPurchases;
+    }
+    return 0;
+  };
+
 //gerar token e encaminhar e-mail para o usuário solicitante
 router.post('/generate_token', adminAuth, async (req, res) => {
     const tokenLength = req.body.length || 5; // Get length from query parameter
@@ -1167,6 +1457,8 @@ router.post('/registration/create', async (req, res) => {
 
     var user_registration; // cadastro de usuário
     var supplier_registration; // cadastro de fornecedor
+    var create_call; // abrir chamado
+    var create_category; // create category
 
     if (sector == undefined) {
 
@@ -1183,42 +1475,62 @@ router.post('/registration/create', async (req, res) => {
         case 'managers': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'leaders': //gestores
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'directors': //diretores
             user_registration = 1; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'purchases': //compras
             user_registration = 0; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'financial': //financeiro
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'ti': //T.I
             user_registration = 1; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
+            create_call = 1;
+            create_category = 1;
             break;
         case 'marketing': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'sau': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'sac': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
         case 'rh': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
+            create_call = 0;
+            create_category = 0;
             break;
     }
 
@@ -1320,6 +1632,8 @@ router.post('/registration/create', async (req, res) => {
                     supplier_registration: supplier_registration,
                     employee_id: newEmployee.id,
                     profile_id: newProfile.id,
+                    create_call: create_call,
+                    create_category: create_category,
                     user_id: newUser.id // Use the newly created user's ID
                 }).catch((err) => {
                     console.log(err);

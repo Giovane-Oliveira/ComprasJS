@@ -99,58 +99,66 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
               (req.session.user.profile.description == 'purchases') ? 'purchases' :
                 (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
 
-    console.log('Departamento: ' + departament);
+    if (departament != undefined) {
 
-    pending = await Call.findAll({
-      where: {
-        [Op.or]: [
-          { departament: departament },
-          { user_id: req.session.user.user.id },
+      console.log('Departamento: ' + departament);
 
-        ],
-        status: 'PENDENTE'
-      }
-    });
-
-    inservice = await Call.findAll({
-      where: {
-        [Op.or]: [
-          { departament: departament },
-          { user_id: req.session.user.user.id },
-
-        ],
-        status: 'EM ATENDIMENTO'
-      }
-
-    });
-
-    finished = await Call.findAll({
-      where: {
-        [Op.or]: [
-          { departament: departament },
-          { user_id: req.session.user.user.id },
-
-        ],
-        status: 'FINALIZADO'
-      }
-    });
-
-    lastCalls = await Call.findAll(
-      {
-        include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
-        order: [['id', 'DESC']],
-        limit: 6,
+      pending = await Call.findAll({
         where: {
           [Op.or]: [
             { departament: departament },
             { user_id: req.session.user.user.id },
 
-          ]
+          ],
+          status: 'PENDENTE'
         }
-      }
-    ).catch((err) => {
-      console.log(err);
-    });
+      });
+
+      inservice = await Call.findAll({
+        where: {
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id },
+
+          ],
+          status: 'EM ATENDIMENTO'
+        }
+
+      });
+
+      finished = await Call.findAll({
+        where: {
+          [Op.or]: [
+            { departament: departament },
+            { user_id: req.session.user.user.id },
+
+          ],
+          status: 'FINALIZADO'
+        }
+      });
+
+      lastCalls = await Call.findAll(
+        {
+          include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
+          order: [['id', 'DESC']],
+          limit: 6,
+          where: {
+            [Op.or]: [
+              { departament: departament },
+              { user_id: req.session.user.user.id },
+
+            ]
+          }
+        }
+      ).catch((err) => {
+        console.log(err);
+      });
+
+    } else {
+
+      console.log('Departamento Indefinido: ' + departament);
+
+    }
 
   }
 
@@ -167,6 +175,113 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
   }
 
 });
+
+
+router.get('/call/sse', adminAuth, async (req, res) => {
+
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  var departament;
+  var pendingCount;
+  var inServiceCount;
+  var finishedCount;
+  var call;
+
+
+
+  const updateTableData = async () => {
+    try {
+      if (req.session.user.profile.description.includes('leaders') ||
+        req.session.user.profile.description.includes('directors') ||
+        req.session.user.profile.description.includes('managers')) {
+
+        // Simulate data updates (replace with your actual logic)
+
+
+        pendingCount = await Call.count({ where: { status: 'PENDENTE', user_id: req.session.user.user.id } })
+
+        inServiceCount = await Call.count({ where: { status: 'EM ATENDIMENTO', user_id: req.session.user.user.id } })
+
+        finishedCount = await Call.count({ where: { status: 'FINALIZADO', user_id: req.session.user.user.id } })
+
+
+        call = await Call.findAll({
+          include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
+          order: [['id', 'DESC']],
+          limit: 6,
+          where: {
+            user_id: req.session.user.user.id,
+          }
+        });
+
+
+      } else {
+        departament = (req.session.user.profile.description == 'ti') ? 'ti' :
+          (req.session.user.profile.description == 'rh') ? 'rh' :
+            (req.session.user.profile.description == 'sac') ? 'sac' :
+              (req.session.user.profile.description == 'financial') ? 'financial' :
+                (req.session.user.profile.description == 'marketing') ? 'marketing' :
+                  (req.session.user.profile.description == 'purchases') ? 'purchases' :
+                    (req.session.user.profile.description == 'sau') ? 'sau' : undefined;
+
+
+        if (departament != undefined) {
+
+
+          pendingCount = await Call.count({ where: { status: 'PENDENTE', departament: departament } })
+
+          inServiceCount = await Call.count({ where: { status: 'EM ATENDIMENTO', departament: departament } })
+
+          finishedCount = await Call.count({ where: { status: 'FINALIZADO', departament: departament } })
+
+          call = await Call.findAll({
+            include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
+            order: [['id', 'DESC']],
+            limit: 6,
+            where: {
+              [Op.or]: [
+                { departament: departament },
+                { user_id: req.session.user.user.id },
+              ]
+            }
+          });
+
+
+        } else {
+
+          console.log('Departamento Indefinido: ' + departament);
+
+        }
+
+      }
+      
+      res.write(`data: ${JSON.stringify({ pending: pendingCount, inService: inServiceCount, finished: finishedCount, lastCalls: call })}\n\n`);
+
+    } catch (error) {
+      console.error('Error updating table data:', error);
+    }
+
+  };
+
+  // Get initial table data
+  await updateTableData();
+
+  // Set up interval to update table data every 5 seconds
+  const interval = setInterval(updateTableData, 5000);
+
+  // Close connection on client disconnect
+  req.on('close', () => {
+    clearInterval(interval);
+    console.log('SSE connection closed');
+  });
+
+});
+
+
+
 
 router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) => {
 
@@ -279,7 +394,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       }
 
-//solicitante
+      //solicitante
     } else if (req.session.user.user.id == findCall.user_id) {
 
       await Message.create({
@@ -308,7 +423,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         }
       });
 
-      if(newPersonRequest != undefined){
+      if (newPersonRequest != undefined) {
 
         let from = "nao-responda@provida.med.br";
         let to = newPersonRequest.email;
@@ -317,14 +432,14 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         let mail_employee = "Solicitante: " + req.session.user.employee.name;
         let mail_email = "E-mail: " + req.session.user.employee.email;
         let link = "http://52.156.72.125:3001";
-  
+
         let mailOptions = {
           from,
           to,
           subject,
           html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
         };
-  
+
         try {
           await transporter.sendMail(mailOptions);
           console.log('Email sent successfully!');
@@ -334,7 +449,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       }
 
-   
+
 
     }
 
@@ -891,7 +1006,7 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
   sender = { user: user, employee: employee };
 
 
-  if (employeeNames != undefined ) {
+  if (employeeNames != undefined) {
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,

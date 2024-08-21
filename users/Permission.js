@@ -14,6 +14,16 @@ const Permission = connection.define('Permission', {
         type: Sequelize.INTEGER,
         allowNull: false,
         default: 0
+    },
+    create_call: { //cadastro de fornecedor
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      default: 0
+    },
+    create_category: { //cadastro de fornecedor
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    default: 0
     }
 });
 

@@ -9,7 +9,73 @@
   <% } %>
 
   <a href="#"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px; margin-bottom: -50px;"></a>
+  
 
+
+   
+<script>
+   
+  const eventSource = new EventSource('/call/sse'); // Update the SSE endpoint
+
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    const calls = data.lastCalls;
+    document.getElementById('pendingBadge').textContent = data.pending;
+    document.getElementById('inServiceBadge').textContent = data.inService;
+    document.getElementById('finishedBadge').textContent = data.finished;
+
+
+    // Update the table with lastCalls data
+    const table = document.getElementById('myTable');
+    myTable.innerHTML = ''; // Clear existing table content
+
+     // Add the table header
+    const headerRow = table.insertRow();
+    headerRow.style.backgroundColor = '#9e9e9e'; // Add background color to headerRow
+    headerRow.style.fontWeight = 'bold'; // Add bold style to headerRow
+    headerRow.insertCell().textContent = '#';
+    headerRow.insertCell().textContent = 'Departamento';
+    headerRow.insertCell().textContent = 'Status';
+    headerRow.insertCell().textContent = 'Categoria';
+    headerRow.insertCell().textContent = 'Solicitante';
+    headerRow.insertCell().textContent = 'Prioridade';
+    headerRow.insertCell().textContent = 'Data de Criação';
+    headerRow.insertCell().textContent = 'Detalhes';
+       
+        calls.forEach(call => {
+      const row = myTable.insertRow();
+      row.insertCell().textContent = call.id;
+      row.insertCell().textContent = call.departament.toUpperCase();
+      row.insertCell().textContent = call.status;
+      row.insertCell().textContent = call.category;
+      row.insertCell().textContent = call.employee.name;
+      row.insertCell().textContent = call.priority;
+      row.insertCell().textContent = new Date(call.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+  
+      // Create the anchor element and set its attributes
+      const detailsLink = document.createElement('a');
+      detailsLink.href = `/call/show/${call.id}`;
+      detailsLink.textContent = 'Detalhes';
+      //detailsLink.classList.add('table', 'table-responsive-sm'); // Add classes to detailsLink
+
+      // Append the anchor element to the cell
+      row.insertCell().appendChild(detailsLink);
+
+      // Add other payment details as needed
+    });
+
+    sse.onerror = (error) => {
+   console.error('SSE connection error:', error);
+ };
+  }
+</script>  
+ 
+
+  
   <h3 class='display-4 mb-4 mt-5' style="text-align: center;">Meus Chamados</h3>
   <div class="form-row justify-content-center">
     <div class="form-group col-md-3">
@@ -17,35 +83,32 @@
         <img class="card-img-top" src="../images/danied-cuate.png" alt="Card image cap">
         <div class="card-body">
           <h5 class="card-title">PENDENTES</h5>
-          <a href="/call/pending" class="btn btn-danger">Visualizar <span class="badge badge-light"><%= pending.length %>
-            </span></a>
+          <a href="/call/pending" class="btn btn-danger">Visualizar <span class="badge badge-light" id="pendingBadge"><%= pending.length %></span></a>
         </div>
       </div>
     </div>
-
+  
     <div class="form-group col-md-3">
       <div class="card" style="width: 96%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px;">
         <img class="card-img-top" src="../images/pendent-folder-cuate.png" alt="Card image cap">
         <div class="card-body">
           <h5 class="card-title">EM ATENDIMENTO</h5>
-          <a href="/call/inservice" class="btn btn-warning">Visualizar <span class="badge badge-light"><%= inservice.length %>
-            </span></a>
+          <a href="/call/inservice" class="btn btn-warning">Visualizar <span class="badge badge-light" id="inServiceBadge"><%= inservice.length %></span></a>
         </div>
       </div>
     </div>
-
+  
     <div class="form-group col-md-3">
       <div class="card" style="width: 96%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px;">
         <img class="card-img-top" src="../images/aproved-rafiki.png" alt="Card image cap">
         <div class="card-body">
           <h5 class="card-title">FINALIZADOS</h5>
-          <a href="/call/finished" class="btn btn-success">Visualizar <span class="badge badge-light"><%= finished.length %>
-            </span></a>
+          <a href="/call/finished" class="btn btn-success">Visualizar <span class="badge badge-light" id="finishedBadge"><%= finished.length %></span></a>
         </div>
       </div>
     </div>
   </div>
-
+  
   <hr width="75%">
   <h3 class="display-4" style="text-align: center; margin-top: 20px;">Últimos Chamados</h3>
   <table id="myTable" class="table table-responsive-sm" style="margin-left: auto !important; margin-right: auto !important;">
@@ -62,26 +125,6 @@
       </tr>
     </thead>
     <tbody>
-      
-        <% if(lastCalls != undefined){
-           lastCalls.forEach(call => { 
-           let formattedDate = new Date(call.createdAt).toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-            }); 
-          %>
-          <tr>
-          <td><%= call.id  %></td>
-          <td><%= call.departament.toUpperCase() %></td>
-          <td><%= call.status %></td>
-          <td><%= call.category %></td>
-          <td><%= call.employee.name %></td>
-          <td><%= call.priority %></td>
-          <td><%= formattedDate %></td>
-          <td><a href="/call/show/<%= call.id %>" class="btn btn-success">Detalhes</a></td>
-        </tr>
-     <%  }); } %>   
     </tbody>
   </table> 
 
