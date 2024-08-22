@@ -55,8 +55,12 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     pending = await Call.findAll({
       where: {
-        status: 'AGUARDANDO ATENDIMENTO',
-        user_id: req.session.user.user.id
+        employee_id: req.session.user.employee.id,
+        [Op.or]: [
+          { status: "AGUARDANDO ATENDIMENTO" },
+          { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" },
+          { status: "AGUARDANDO RESPOSTA DE TERCEIROS" }
+        ]
       }
     });
 
@@ -110,7 +114,13 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
             { user_id: req.session.user.user.id },
 
           ],
-          status: 'AGUARDANDO ATENDIMENTO'
+
+          [Op.or]: [
+            { status: "AGUARDANDO ATENDIMENTO" },
+            { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" },
+            { status: "AGUARDANDO RESPOSTA DE TERCEIROS" }
+          ]
+
         }
       });
 
@@ -257,7 +267,7 @@ router.get('/call/sse', adminAuth, async (req, res) => {
         }
 
       }
-      
+
       res.write(`data: ${JSON.stringify({ pending: pendingCount, inService: inServiceCount, finished: finishedCount, lastCalls: call })}\n\n`);
 
     } catch (error) {
@@ -292,8 +302,10 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
   var status = 'EM ATENDIMENTO';
   var newAttendant = req.body.newAttendant;
   const channel_service = req.body.channel_service;
+  const situacao = req.body.status;
 
-  console.log('channel service' + channel_service)
+  console.log("SITUAÇÃO: " + situacao);
+  console.log('channel service: ' + channel_service)
 
   if (message == undefined) {
 
@@ -319,12 +331,6 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
   } else {
 
-    if (finishcall == 'on') {
-
-      status = 'FINALIZADO';
-
-    }
-
     const findCall = await Call.findOne({
       where: {
         id: call_id
@@ -340,16 +346,56 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         call_id: call_id
       }).catch(error => console.log('Error creating message:', error));
 
-      await Call.update(
-        {
-          attendant_id: req.session.user.user.id,
-          status: status,
-          channel_service: channel_service
-        }, {
+      const call = await Call.findOne({
+
         where: {
           id: call_id
         }
-      }).catch(error => console.log('Error updating call:', error));
+
+      });
+
+      if(call.attendant_id != 0 && situacao != undefined){
+
+        await Call.update(
+          {
+            attendant_id: req.session.user.user.id,
+            status: situacao,
+            channel_service: channel_service
+          }, {
+          where: {
+            id: call_id
+          }
+        }).catch(error => console.log('Error updating call:', error));
+
+      }
+      
+      if(call.attendant_id == 0 && finishcall != 'on'){
+
+        await Call.update(
+          {
+            attendant_id: req.session.user.user.id,
+            status: 'EM ATENDIMENTO',
+            channel_service: channel_service
+          }, {
+          where: {
+            id: call_id
+          }
+        }).catch(error => console.log('Error updating call:', error));
+
+      }else if(call.attendant_id != 0 && finishcall == 'on'){
+
+        await Call.update(
+          {
+            attendant_id: req.session.user.user.id,
+            status: 'FINALIZADO',
+            channel_service: channel_service
+          }, {
+          where: {
+            id: call_id
+          }
+        }).catch(error => console.log('Error updating call:', error));
+
+      }
 
       const newCall = await Call.findOne({
         where: {
@@ -505,8 +551,12 @@ router.get('/call/pending', adminAuth, async (req, res) => {
         include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
-          status: 'AGUARDANDO ATENDIMENTO',
-          employee_id: req.session.user.user.id,
+          employee_id: req.session.user.employee.id,
+          [Op.or]: [
+            { status: "AGUARDANDO ATENDIMENTO" },
+            { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" },
+            { status: "AGUARDANDO RESPOSTA DE TERCEIROS" }
+          ]
         }
       }
     ).catch((err) => {
@@ -533,10 +583,14 @@ router.get('/call/pending', adminAuth, async (req, res) => {
         where: {
           [Op.or]: [
             { departament: departament },
-            { user_id: req.session.user.user.id },
-
+            { user_id: req.session.user.user.id }
           ],
-          status: 'AGUARDANDO ATENDIMENTO'
+          [Op.or]: [
+            { status: "AGUARDANDO ATENDIMENTO" },
+            { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" },
+            { status: "AGUARDANDO RESPOSTA DE TERCEIROS" }
+          ]
+
         }
 
 
