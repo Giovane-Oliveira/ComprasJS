@@ -270,7 +270,7 @@ router.get('/call/sse', adminAuth, async (req, res) => {
   await updateTableData();
 
   // Set up interval to update table data every 5 seconds
-  const interval = setInterval(updateTableData, 5000);
+  const interval = setInterval(updateTableData, 60000);
 
   // Close connection on client disconnect
   req.on('close', () => {

@@ -823,7 +823,7 @@ router.get('/dashboard/table', adminAuth, async (req, res) => {
     await updateTableData();
   
     // Set up interval to update table data every 5 seconds
-    const interval = setInterval(updateTableData, 5000);
+    const interval = setInterval(updateTableData, 60000);
   
     // Close connection on client disconnect
     req.on('close', () => {
@@ -860,7 +860,7 @@ router.get('/dashboard/badges', adminAuth, async (req, res) => {
     await updateBadges();
   
     // Set up interval to update badges every 5 seconds
-    const interval = setInterval(updateBadges, 5000);
+    const interval = setInterval(updateBadges, 60000);
   
     // Close connection on client disconnect
     req.on('close', () => {
