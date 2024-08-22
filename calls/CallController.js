@@ -55,7 +55,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     pending = await Call.findAll({
       where: {
-        status: 'PENDENTE',
+        status: 'AGUARDANDO ATENDIMENTO',
         user_id: req.session.user.user.id
       }
     });
@@ -110,7 +110,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
             { user_id: req.session.user.user.id },
 
           ],
-          status: 'PENDENTE'
+          status: 'AGUARDANDO ATENDIMENTO'
         }
       });
 
@@ -201,7 +201,7 @@ router.get('/call/sse', adminAuth, async (req, res) => {
         // Simulate data updates (replace with your actual logic)
 
 
-        pendingCount = await Call.count({ where: { status: 'PENDENTE', user_id: req.session.user.user.id } })
+        pendingCount = await Call.count({ where: { status: 'AGUARDANDO ATENDIMENTO', user_id: req.session.user.user.id } })
 
         inServiceCount = await Call.count({ where: { status: 'EM ATENDIMENTO', user_id: req.session.user.user.id } })
 
@@ -231,7 +231,7 @@ router.get('/call/sse', adminAuth, async (req, res) => {
         if (departament != undefined) {
 
 
-          pendingCount = await Call.count({ where: { status: 'PENDENTE', departament: departament } })
+          pendingCount = await Call.count({ where: { status: 'AGUARDANDO ATENDIMENTO', departament: departament } })
 
           inServiceCount = await Call.count({ where: { status: 'EM ATENDIMENTO', departament: departament } })
 
@@ -505,7 +505,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
         include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
         order: [['id', 'DESC']],
         where: {
-          status: 'PENDENTE',
+          status: 'AGUARDANDO ATENDIMENTO',
           employee_id: req.session.user.user.id,
         }
       }
@@ -525,7 +525,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
 
     console.log('Departamento: ' + departament);
 
-    //chamados PENDENTES
+    //chamados AGUARDANDO ATENDIMENTO
     callPending = await Call.findAll(
       {
         include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
@@ -536,7 +536,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
             { user_id: req.session.user.user.id },
 
           ],
-          status: 'PENDENTE'
+          status: 'AGUARDANDO ATENDIMENTO'
         }
 
 
@@ -546,7 +546,7 @@ router.get('/call/pending', adminAuth, async (req, res) => {
     });
   }
 
-  res.render('call/status', { user: req.session.user, calls: callPending, tipo: 'Pendentes' });
+  res.render('call/status', { user: req.session.user, calls: callPending, tipo: 'AGUARDANDO ATENDIMENTO' });
 
 });
 
@@ -688,7 +688,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
     subject: subject,
     priority: priority,
     attendant_id: 0,
-    status: 'PENDENTE',
+    status: 'AGUARDANDO ATENDIMENTO',
     user_id: user_id,
     employee_id: employee_id
   })
