@@ -9,6 +9,10 @@
       </label></h6>
     <h6>Id do chamado: <label>#<%= call.id %>
       </label></h6>
+      <% if(call.situation != undefined){ %>
+      <h6>Situação: <label><%= call.situation %>
+      </label></h6>
+      <% } %>
     <h6>Status: <label><%= call.status %>
       </label></h6>
     <h6>Assunto: <label><%= call.subject %>
@@ -63,7 +67,9 @@
         </tr>
       </thead>
       <tbody>
-        <% files.forEach(file=> { %>
+        <% 
+          if(files.length > 0){
+          files.forEach(file=> { %>
         <tr>
           <% if(file.user_id == sender.user.id){%>
           <td>
@@ -83,7 +89,7 @@
           </td>
           <td><a href="/payment/download/<%= file.fileName %>" target="_blank" class="btn btn-success">Abrir</a></td>
         </tr>
-        <% }); %>
+        <% });} %>
       </tbody>
     </table>
 

@@ -66,9 +66,15 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
     inservice = await Call.findAll({
       where: {
-        status: 'EM ATENDIMENTO',
-        user_id: req.session.user.user.id
+       user_id: req.session.user.user.id, 
+        [Op.or]: [
+          { status: 'EM ATENDIMENTO' },
+          { status: "AGUARDANDO RESPOSTA DE TERCEIROS" },
+          { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" }
+        ]
+        
       }
+
     });
 
     finished = await Call.findAll({
@@ -116,9 +122,7 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
           ],
 
           [Op.or]: [
-            { status: "AGUARDANDO ATENDIMENTO" },
-            { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" },
-            { status: "AGUARDANDO RESPOSTA DE TERCEIROS" }
+            { status: "AGUARDANDO ATENDIMENTO" }
           ]
 
         }
@@ -126,12 +130,14 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
 
       inservice = await Call.findAll({
         where: {
+          departament: departament,
+          user_id: req.session.user.user.id,
           [Op.or]: [
-            { departament: departament },
-            { user_id: req.session.user.user.id },
-
-          ],
-          status: 'EM ATENDIMENTO'
+            { status: 'EM ATENDIMENTO' },
+            { status: "AGUARDANDO RESPOSTA DE TERCEIROS" },
+            { status: "AGUARDANDO RESPOSTA DO SOLICITANTE" }
+          ]
+          
         }
 
       });
@@ -241,11 +247,34 @@ router.get('/call/sse', adminAuth, async (req, res) => {
         if (departament != undefined) {
 
 
-          pendingCount = await Call.count({ where: { status: 'AGUARDANDO ATENDIMENTO', departament: departament } })
+          pendingCount = await Call.count({ 
+            where: { status: 'AGUARDANDO ATENDIMENTO',
+              [Op.or]: [
+                { departament: departament},
+                { user_id: req.session.user.user.id }
+              ]
+            } 
+          })
 
-          inServiceCount = await Call.count({ where: { status: 'EM ATENDIMENTO', departament: departament } })
+          inServiceCount = await Call.count({ 
+            where: { status: 'EM ATENDIMENTO',
+              [Op.or]: [
+                { departament: departament},
+                { user_id: req.session.user.user.id }
+              ]
+            } 
+          
+          })
 
-          finishedCount = await Call.count({ where: { status: 'FINALIZADO', departament: departament } })
+          finishedCount = await Call.count({ 
+            where: { status: 'FINALIZADO', 
+              [Op.or]: [
+                { departament: departament},
+                { user_id: req.session.user.user.id }
+              ]
+             } 
+         
+          })
 
           call = await Call.findAll({
             include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
@@ -359,7 +388,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         await Call.update(
           {
             attendant_id: req.session.user.user.id,
-            status: situacao,
+            situation: situacao,
             channel_service: channel_service
           }, {
           where: {
@@ -375,6 +404,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
           {
             attendant_id: req.session.user.user.id,
             status: 'EM ATENDIMENTO',
+            situation: (situacao) ? situacao : undefined,
             channel_service: channel_service
           }, {
           where: {
@@ -388,6 +418,21 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
           {
             attendant_id: req.session.user.user.id,
             status: 'FINALIZADO',
+            situation: 'FINALIZADO',
+            channel_service: channel_service
+          }, {
+          where: {
+            id: call_id
+          }
+        }).catch(error => console.log('Error updating call:', error));
+
+      }else if(call.attendant_id == 0 && finishcall == 'on'){
+
+        await Call.update(
+          {
+            attendant_id: req.session.user.user.id,
+            status: 'FINALIZADO',
+            situation: 'FINALIZADO',
             channel_service: channel_service
           }, {
           where: {

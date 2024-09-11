@@ -35,11 +35,16 @@ const Call = connection.define('Call', {
         allowNull: true     
     },
     status: { 
-        type: Sequelize.ENUM('AGUARDANDO ATENDIMENTO', 'EM ATENDIMENTO', 'AGUARDANDO RESPOSTA DO SOLICITANTE', 'AGUARDANDO RESPOSTA DE TERCEIROS', 'FINALIZADO'),
+        type: Sequelize.ENUM('AGUARDANDO ATENDIMENTO', 'EM ATENDIMENTO', 'FINALIZADO'),
         allowNull: false     
     },
+    situation: { 
+        type: Sequelize.ENUM('AGUARDANDO RESPOSTA DO SOLICITANTE', 'AGUARDANDO RESPOSTA DE TERCEIROS', 'FINALIZADO'),
+        allowNull: true     
+    },
+
     channel_service: { 
-        type: Sequelize.INTEGER,
+        type: Sequelize.ENUM('Whatsapp', 'E-mail', 'Teams', 'Chat 3CX', 'Comunicação Direta'),
         allowNull: true     
     },
 });
