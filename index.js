@@ -15,17 +15,15 @@ const usersController = require('./users/UsersController');
 const callController = require('./calls/CallController');
 const categoryController = require('./category/CategoryController');
 
-
-
 // Redis setup
-/*
-const redisClient = new Redis({
+/*const redisClient = new Redis({
     host: '127.0.0.1', // Or your Redis server's IP address
     port: 6379 // Or the port Redis is running on
   });
 const RedisStore = connectRedis(session);
 const sessionStore = new RedisStore({ client: redisClient });
 */
+
 // View engine setup
 app.set('view engine', 'ejs');
 
