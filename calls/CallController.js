@@ -33,16 +33,32 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage: storage }); // Create the upload middleware
-
+/*
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
   secure: false, // Use TLS ou SSL
   auth: {
-    user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+    user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
     pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
   }
-});
+});*/
+
+let transporter = nodemailer.createTransport({
+  host: 'smtp-mail.outlook.com', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  tls: {
+    ciphers:'SSLv3',
+    rejectUnauthorized: false,
+ },
+  auth: {
+      user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
+      pass: 'adminPV@2024' // Substitua pela senha do seu email corporativo
+  },
+  debug: true,
+  logger:true
+}); 
 
 router.get('/call/dashboard', adminAuth, async (req, res) => {
   var lastCalls, lastCallsManager, departament;
@@ -465,7 +481,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
         }
 
-        let from = "nao-responda@provida.med.br";
+        let from = "suporte.ti@grupoprovida.com.br";
         let to = newPersonRequest.email;
         let subject = `Chamado ${situation} #${call_id}`;
         let text = "Resposta: " + message;
@@ -520,7 +536,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       if (newPersonRequest != undefined) {
 
-        let from = "nao-responda@provida.med.br";
+        let from = "suporte.ti@grupoprovida.com.br";
         let to = newPersonRequest.email;
         let subject = `Chamado ${situation} #${call_id}`;
         let text = "Resposta: " + message;
@@ -852,7 +868,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email.login;
     let subject = `Chamado #${newCall.id}`;
     let text = "Novo chamado gerado.";

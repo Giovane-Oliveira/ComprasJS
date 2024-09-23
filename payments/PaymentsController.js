@@ -19,16 +19,33 @@ const adminAuth = require('../middlewares/adminAuth');
 const Payment_Condition = require('../payments/Payment_condition')
 const Movement = require('../movements/Movement');
 const pug = require('pug');
-
+/*
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
   secure: false, // Use TLS ou SSL
   auth: {
-    user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+    user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
     pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
   }
 });
+*/
+
+let transporter = nodemailer.createTransport({
+  host: 'smtp-mail.outlook.com', // Substitua pelo endereço do seu servidor SMTP
+  port: 587, // Substitua pela porta do seu servidor SMTP
+  secure: false, // Use TLS ou SSL
+  tls: {
+    ciphers:'SSLv3',
+    rejectUnauthorized: false,
+ },
+  auth: {
+      user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
+      pass: 'adminPV@2024' // Substitua pela senha do seu email corporativo
+  },
+  debug: true,
+  logger:true
+}); 
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -102,7 +119,7 @@ router.post('/payment/accept/financial', upload.array('files'), adminAuth, async
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Financeiro efetuou o pagamento.";
@@ -245,7 +262,7 @@ router.get('/payment/accept/purchases/:id', adminAuth, async (req, res) => {
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Compras aceitou a solicitação de pagamento.";
@@ -338,7 +355,7 @@ if(leader == undefined){
 
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Setor de compras recusou a solicitação de pagamento.";
@@ -429,7 +446,7 @@ router.get('/payment/accept/directors/:id', adminAuth, async (req, res) => {
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Diretor(a) aceitou a solicitação de pagamento.";
@@ -519,7 +536,7 @@ router.post('/payment/reprove/directors', adminAuth, async (req, res) => {
 
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Diretor(a) recusou a solicitação de pagamento.";
@@ -595,7 +612,7 @@ router.get('/payment/accept/leaders/:id', adminAuth, async (req, res) => {
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Gestor(a) aceitou a solicitação de pagamento.";
@@ -689,7 +706,7 @@ router.post('/payment/reprove/leaders', adminAuth, async (req, res) => {
 
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${id}`;
     let text = "Gestor(a) recusou a solicitação de pagamento.";
@@ -1058,7 +1075,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   // Send emails to all recipients
   emails.forEach(async (email) => {
  
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
     let text = "Nova solicitação de pagamento gerada.";
@@ -1189,7 +1206,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
     let text = "Nova solicitação de pagamento gerada.";
@@ -1320,7 +1337,7 @@ router.post('/upload/payments', upload.array('files'), adminAuth, async (req, re
   // Send emails to all recipients
   emails.forEach(async (email) => {
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = email;
     let subject = `Solicitação #${newPayment.id}`;
     let text = "Nova solicitação de pagamento gerada.";

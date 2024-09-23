@@ -16,14 +16,20 @@ const Purchase = require('../purchaseAndServices/Purchase');
 const pug = require('pug');
 
 let transporter = nodemailer.createTransport({
-    host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
+    host: 'smtp-mail.outlook.com', // Substitua pelo endereço do seu servidor SMTP
     port: 587, // Substitua pela porta do seu servidor SMTP
     secure: false, // Use TLS ou SSL
+    tls: {
+      ciphers:'SSLv3',
+      rejectUnauthorized: false,
+   },
     auth: {
-        user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
-        pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
-    }
-});
+        user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
+        pass: 'AdminPV@2024' // Substitua pela senha do seu email corporativo
+    },
+    debug: true,
+    logger:true
+  }); 
 
 //Encaminhamento para a página de registros
 router.get('/registration', (req, res) => {
@@ -1184,7 +1190,7 @@ router.post('/generate_token', adminAuth, async (req, res) => {
             break;
     }
 
-    let from = "nao-responda@provida.med.br";
+    let from = "suporte.ti@grupoprovida.com.br";
     let to = req.body.email;
     let subject = "Cadastro";
     let text = "Clique no botão para completar seu cadastro:";
@@ -1404,7 +1410,7 @@ router.post('/recover/alter_password', async (req, res) => {
                 financial: "",
             });
 
-            let from = "nao-responda@provida.med.br";
+            let from = "suporte.ti@grupoprovida.com.br";
             let to = email;
             let subject = "Recuperação da Conta";
             let text = "Clique no botão abaixo para alterar sua senha:";
