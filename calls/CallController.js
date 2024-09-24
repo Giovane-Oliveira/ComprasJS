@@ -22,6 +22,7 @@ const pug = require('pug');
 const Category = require('../category/Category');
 const Call = require('../calls/Call');
 const Message = require('../calls/Message');
+const { underscoredIf } = require('sequelize/lib/utils');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -59,6 +60,27 @@ let transporter = nodemailer.createTransport({
   debug: true,
   logger:true
 }); 
+
+router.get('/employees/search', async (req, res) => {
+  const query = req.query.q; // Get the search query from the request parameters
+
+  try {
+    // Query your database for matching employees
+    const results = await Employee.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${query}%`
+        }
+      }
+    });
+
+
+    res.json(results); // Send the results as JSON
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch employees' });
+  }
+});
 
 router.get('/call/dashboard', adminAuth, async (req, res) => {
   var lastCalls, lastCallsManager, departament;
@@ -779,6 +801,7 @@ router.get('/call/finished', adminAuth, async (req, res) => {
 
 router.post('/call/create/call', upload.array('files'), adminAuth, async (req, res) => {
 
+  const client = req.body.client;
   const departament = req.body.departament;
   const priority = req.body.priority;
   const category = req.body.category;
@@ -788,6 +811,8 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   const employee_id = req.session.user.employee.id;
   const files = req.files;
   const mail = (req.body.subscribe == 'on') ? 1 : 0;
+  var clientEmployee = undefined;
+  var clientUser = undefined;
 
   console.log("Departament: " + departament);
   console.log("Priority: " + priority);
@@ -795,6 +820,26 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   console.log("Subject: " + subject);
   console.log("Message: " + message);
   console.log("Checkbox: " + mail);
+
+  
+
+  if(client.length > 0)
+  {
+    console.log("Client: " + client);
+
+    clientEmployee = await Employee.findOne({
+      where: {
+        name: client
+      }
+    });
+
+    clientUser = await User.findOne({
+      where: {
+        login: clientEmployee.email
+      }
+    });   
+
+  }
 
   const newCall = await Call.create({
     active_mail: mail,
@@ -804,15 +849,15 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
     priority: priority,
     attendant_id: 0,
     status: 'AGUARDANDO ATENDIMENTO',
-    user_id: user_id,
-    employee_id: employee_id
+    user_id: client.length > 0 ? clientUser.id : user_id,
+    employee_id: client.length > 0 ? clientEmployee.id : employee_id
   })
     .catch(error => {
       console.error('Error creating call:', error);
     });
 
   await Message.create({
-    sender_id: user_id,
+    sender_id: client.length > 0 ? clientUser.id : user_id,
     message: message,
     call_id: newCall.id
   }).catch(error => {
@@ -837,7 +882,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
       File.create({
         fileName: uniqueFileName,
         call_id: newCall.id,
-        user_id: req.session.user.user.id
+        user_id: client.length > 0 ? clientUser.id : req.session.user.user.id
       }).catch(error => {
         console.error('Error creating file:', error);
       });

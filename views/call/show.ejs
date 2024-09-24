@@ -75,7 +75,7 @@
           <td>
             <%= sender.employee.name %>
           </td>
-          <% }else{%>
+          <% }else if(file.user_id == attendant.user.id){%>
           <td>
             <%= attendant.employee.name %>
           </td>

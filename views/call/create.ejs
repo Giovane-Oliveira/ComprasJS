@@ -8,6 +8,11 @@
 <br>
 <br>
 <form id="call-form" action="/call/create/call" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
+  
+  <label for="client" style="margin-top: 1%">Cliente</label>
+  <input type="text" class="form-control" name="client" id="client" style="min-height:40px !important;width:40% !important"></textarea>
+  <ul id="suggestions"></ul> 
+  
   <label for="departament">Departamento</label>
   <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
     <option value="" disabled="disabled" selected="selected" required>Selecione o departamento</option>
@@ -217,6 +222,49 @@ $("#call-form").submit(function() {
     </div>
   </div>
 </div>
+
+
+<script>
+  $(document).ready(function() {
+  $("#client").on("input", function() {
+    const query = $(this).val();
+
+    if (query.length > 2) {
+      // Replace $.ajax() with fetch()
+      fetch(`/employees/search?q=${query}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json(); // Parse response as JSON
+        })
+        .then(data => {
+          $("#suggestions").empty();
+          if (data.length > 0) {
+            data.forEach(employee => {
+              $("#suggestions").append(`<li>${employee.name}</li>`);
+            });
+          } else {
+            $("#suggestions").append("<li>No matching employees found</li>");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching employee suggestions:", error);
+        });
+    } else {
+      $("#suggestions").empty();
+    }
+  });
+  $(document).on("click", "#suggestions li", function() {
+    $("#client").val($(this).text()); // Set input value
+    $("#suggestions").empty();       // Clear suggestions
+  });
+});
+
+
+</script>
+
+
 
 
 <%- include('../partials/footer.ejs') %>
