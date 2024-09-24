@@ -8,11 +8,11 @@
 <br>
 <br>
 <form id="call-form" action="/call/create/call" method="post" enctype="multipart/form-data" accept-charset="utf-8" style="border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); margin-top:20px; padding: 40px 15px 10px 20px;">
-  
+  <% if(user.profile.description == "ti"){ %>
   <label for="client" style="margin-top: 1%">Cliente</label>
-  <input type="text" class="form-control" name="client" id="client" style="min-height:40px !important;width:40% !important"></textarea>
+  <input type="text" class="form-control" name="client" id="client" style="min-height:40px !important;width:40% !important"></input>
   <ul id="suggestions"></ul> 
-  
+  <%  } %>
   <label for="departament">Departamento</label>
   <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
     <option value="" disabled="disabled" selected="selected" required>Selecione o departamento</option>
