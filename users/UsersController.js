@@ -263,8 +263,8 @@ router.post("/authenticate", async (req, res) => {
                         unit: unit
 
                     }
-
-                    res.redirect("/dashboard");
+                    //redireciona para o dashboard dos chamados
+                    res.redirect("/call/dashboard");
                     return;
 
 

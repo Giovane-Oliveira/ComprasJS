@@ -21,8 +21,8 @@ const categoryController = require('./category/CategoryController');
     port: 6379 // Or the port Redis is running on
   });
 const RedisStore = connectRedis(session);
-const sessionStore = new RedisStore({ client: redisClient });
-*/
+const sessionStore = new RedisStore({ client: redisClient });*/
+
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -52,6 +52,13 @@ app.use(session({
 
 app.use(flash());
 
+app.use('/', usersController);
+app.use('/', suppliersController);
+app.use('/', paymentsController);
+app.use('/', purchasesController);
+app.use('/', callController);
+app.use('/', categoryController);
+
 // Routes
 app.get('/', (req, res) => {
 
@@ -73,20 +80,13 @@ if(success != ''){
 
     if(req.session.user != undefined){
 
-        res.redirect('/dashboard')
+        res.redirect('/call/dashboard')
 
     }else{
         res.render('users/login.ejs', {message: message});
     }
    
 });
-
-app.use('/', usersController);
-app.use('/', suppliersController);
-app.use('/', paymentsController);
-app.use('/', purchasesController);
-app.use('/', callController);
-app.use('/', categoryController);
 
 // Database connection
 connection

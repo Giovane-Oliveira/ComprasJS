@@ -2,7 +2,8 @@ function adminAuth(req, res, next){
     if(req.session.user != undefined){
         next();
     }else{
-        res.redirect('/');
+        //redireciona para o dashboard dos chamados
+        res.redirect('/call/dashboard');
     }   
 }
 
