@@ -51,6 +51,7 @@ router.get('/permission/:id', adminAuth, async (req, res) => {
         console.log(err);
     });
 
+
     res.render('users/permission.ejs', { user: req.session.user, permissions: permissions });
 
 });
@@ -108,7 +109,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         });
     }
 
-    res.redirect('/permission/' + id);
+    res.redirect('/users');
 
 });
 
@@ -167,7 +168,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         });
     }
 
-    res.redirect('/permission/' + id);
+    res.redirect('/users');
 
 });
 
@@ -175,11 +176,16 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 //listar usuários
 router.get('/users', adminAuth, async (req, res) => {
 
-    const user = await User.findAll().catch(err => {
+   /* const user = await User.findAll().catch(err => {
         console.log(err);
-    });
+    });*/
 
-    res.render('users/index.ejs', { user: req.session.user, listusers: user });
+    const permissions = await Permissions.findAll({
+        include: [{ model: User, as: 'user' }]
+      });
+
+      //permissions.employee.name
+    res.render('users/index.ejs', { user: req.session.user, permissions: permissions });
 
 });
 

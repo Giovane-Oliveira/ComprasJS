@@ -37,7 +37,7 @@ let transporter = nodemailer.createTransport({
  },
   auth: {
       user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
-      pass: 'adminPV@2024' // Substitua pela senha do seu email corporativo
+      pass: 'AdminPV@2024' // Substitua pela senha do seu email corporativo
   },
   debug: true,
   logger:true

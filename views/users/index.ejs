@@ -1,7 +1,8 @@
 <%- include('../partials/header.ejs') %>
 
 
-  <a href="/dashboard"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
+  <a href="/dashboard"><img src="../images/icon-white.svg"
+      style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
 
   <h2 class='mb-4' style="margin-top:25px;font-weight:lighter !important">Gerenciamento de Usuários</h2>
 
@@ -12,31 +13,68 @@
         <th>Id</th>
         <th>Login</th>
         <th>Status</th>
-        <th>Permissões</th>
+        <th>Gerenciar Usuários</th>
+        <th>Cadastrar Fornecedores</th>
+        <th>Criar Chamado</th>
+        <th>Criar Categoria</th>
       </tr>
     </thead>
     <tbody>
 
 
-      <% listusers.forEach(usuario=> { %>
+      <% permissions.forEach(permission=> { %>
 
         <tr>
           <td>
-            <%= usuario.id %>
+            <%= permission.user.id %>
           </td>
           <td>
-            <%= usuario.login %>
+            <%= permission.user.login %>
           </td>
 
-          <% if(usuario.active==1){%>
-            <td> <input id=<%=usuario.id %> type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+          <% if(permission.user.active==1){%>
+            <td> <input id=<%=permission.user.id %> name="activate_user" type="checkbox" checked data-toggle="toggle"
+              data-onstyle="success" data-size="xs"></td>
             <% }else{ %>
-              <td> <input id=<%=usuario.id %> type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+              <td> <input id=<%=permission.user.id %> name="activate_user" type="checkbox" unchecked
+                data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
               <% } %>
 
-                <td>
-                  <a href="/permission/<%= usuario.id %>" class="btn btn-warning">Abrir</a>
-                </td>
+
+                <% if(permission.user_registration==1){%>
+                  <td> <input name="user_registration" id=<%=permission.user.id %>  type="checkbox" checked
+                    data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                  <% }else{ %>
+                    <td> <input name="user_registration" id=<%=permission.user.id %> type="checkbox"
+                      unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                    <% } %>
+
+                      <% if(permission.supplier_registration==1){%>
+                        <td> <input name="supplier_registration" id=<%=permission.user.id %> 
+                          type="checkbox" checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                        <% }else{ %>
+                          <td> <input name="supplier_registration" id=<%=permission.user.id %> 
+                            type="checkbox" unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                          <% } %>
+
+                            <% if(permission.create_call==1){%>
+                              <td> <input name="create_call" id=<%=permission.user.id %>  type="checkbox"
+                                checked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                              <% }else{ %>
+                                <td> <input name="create_call" id=<%=permission.user.id %> type="checkbox"
+                                  unchecked data-toggle="toggle" data-onstyle="success" data-size="xs"></td>
+                                <% } %>
+
+                                  <% if(permission.create_category==1){%>
+                                    <td> <input name="create_category" id=<%=permission.user.id %> 
+                                      type="checkbox" checked data-toggle="toggle" data-onstyle="success"
+                                      data-size="xs"></td>
+                                    <% }else{ %>
+                                      <td> <input name="create_category" id=<%=permission.user.id %> 
+                                        type="checkbox" unchecked data-toggle="toggle" data-onstyle="success"
+                                        data-size="xs"></td>
+                                      <% } %>
+
 
         </tr>
 
@@ -45,7 +83,7 @@
           <script type="text/javascript">
 
 
-            $('input:checkbox').change(
+            $('input:checkbox[name="activate_user"]').change(
               function () {
                 if ($(this).is(':checked')) {
                   // alert($(this).attr("id"));
@@ -56,6 +94,24 @@
                   window.location.href = "/desactivate_user/" + $(this).attr("id");
                 }
               });
+
+            $('input:checkbox[name="user_registration"],input:checkbox[name="supplier_registration"],input:checkbox[name="create_call"],input:checkbox[name="create_category"]').change(
+              function () {
+
+                if ($(this).is(':checked')) {
+                  // alert($(this).attr("id"));
+                  window.location.href = "/activate/permission/" + $(this).attr("name") + "/" + $(this).attr("id");
+                } else {
+
+                  //alert($(this).attr("id"));
+                  window.location.href = "/desactivate/permission/" + $(this).attr("name") + "/" + $(this).attr("id");
+                }
+              });
+
+
+
+
+
 
           </script>
 

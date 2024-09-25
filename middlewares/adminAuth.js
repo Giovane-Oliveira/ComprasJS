@@ -3,7 +3,7 @@ function adminAuth(req, res, next){
         next();
     }else{
         //redireciona para o dashboard dos chamados
-        res.redirect('/call/dashboard');
+        res.redirect('/');
     }   
 }
 
