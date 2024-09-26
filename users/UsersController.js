@@ -6,6 +6,7 @@ const Sector = require('../users/Sector')
 const Unit = require('../users/Unit')
 const Employee = require('../employees/Employee')
 const Profile = require('../users/Profile')
+const Departament = require('../users/Departament')
 const Permissions = require('../users/Permission')
 const Token = require('../users/Token')
 const { Op, where } = require('sequelize');
@@ -20,16 +21,16 @@ let transporter = nodemailer.createTransport({
     port: 587, // Substitua pela porta do seu servidor SMTP
     secure: false, // Use TLS ou SSL
     tls: {
-      ciphers:'SSLv3',
-      rejectUnauthorized: false,
-   },
+        ciphers: 'SSLv3',
+        rejectUnauthorized: false,
+    },
     auth: {
         user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
         pass: 'AdminPV@2024' // Substitua pela senha do seu email corporativo
     },
     debug: true,
-    logger:true
-  }); 
+    logger: true
+});
 
 //Encaminhamento para a página de registros
 router.get('/registration', (req, res) => {
@@ -85,7 +86,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'create_call') {
+    } else if (name == 'create_call') {
 
         Permissions.update({
             create_call: 1
@@ -96,7 +97,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'create_category') {
+    } else if (name == 'create_category') {
 
         Permissions.update({
             create_category: 1
@@ -107,7 +108,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'answer_call') {
+    } else if (name == 'answer_call') {
 
         Permissions.update({
             answer_call: 1
@@ -118,7 +119,7 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    } 
+    }
 
     res.redirect('/users');
 
@@ -155,7 +156,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'create_call') {
+    } else if (name == 'create_call') {
 
         Permissions.update({
             create_call: 0
@@ -166,7 +167,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'create_category') {
+    } else if (name == 'create_category') {
 
         Permissions.update({
             create_category: 0
@@ -177,7 +178,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }else if (name == 'answer_call') {
+    } else if (name == 'answer_call') {
 
         Permissions.update({
             answer_call: 0
@@ -188,7 +189,7 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    } 
+    }
 
     res.redirect('/users');
 
@@ -198,15 +199,15 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 //listar usuários
 router.get('/users', adminAuth, async (req, res) => {
 
-   /* const user = await User.findAll().catch(err => {
-        console.log(err);
-    });*/
+    /* const user = await User.findAll().catch(err => {
+         console.log(err);
+     });*/
 
     const permissions = await Permissions.findAll({
         include: [{ model: User, as: 'user' }]
-      });
+    });
 
-      //permissions.employee.name
+    //permissions.employee.name
     res.render('users/index.ejs', { user: req.session.user, permissions: permissions });
 
 });
@@ -806,65 +807,65 @@ router.get('/dashboard/table', adminAuth, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-  
+
     // Function to update table data
     const updateTableData = async () => {
-      try {
-        // Get payments and purchases based on user's role
-        let payments, purchases;
-        if (req.session.user.profile.description.includes('managers') ||
-            req.session.user.profile.description.includes('marketing') ||
-            req.session.user.profile.description.includes('rh') ||
-            req.session.user.profile.description.includes('sac') ||
-            req.session.user.profile.description.includes('sau')) {
-          payments = await Payment.findAll({
-            order: [['id', 'DESC']],
-            limit: 10, // Adjust limit as needed
-            where: {
-              employee_id: req.session.user.employee.id,
+        try {
+            // Get payments and purchases based on user's role
+            let payments, purchases;
+            if (req.session.user.profile.description.includes('managers') ||
+                req.session.user.profile.description.includes('marketing') ||
+                req.session.user.profile.description.includes('rh') ||
+                req.session.user.profile.description.includes('sac') ||
+                req.session.user.profile.description.includes('sau')) {
+                payments = await Payment.findAll({
+                    order: [['id', 'DESC']],
+                    limit: 10, // Adjust limit as needed
+                    where: {
+                        employee_id: req.session.user.employee.id,
+                    }
+                });
+                purchases = await Purchase.findAll({
+                    order: [['id', 'DESC']],
+                    limit: 10, // Adjust limit as needed
+                    where: {
+                        employee_id: req.session.user.employee.id,
+                    }
+                });
+            } else if (req.session.user.profile.description.includes('leaders') ||
+                req.session.user.profile.description.includes('directors') ||
+                req.session.user.profile.description.includes('ti') ||
+                req.session.user.profile.description.includes('purchases') ||
+                req.session.user.profile.description.includes('financial')) {
+                payments = await Payment.findAll({
+                    order: [['id', 'DESC']],
+                    limit: 10, // Adjust limit as needed
+                });
+                purchases = await Purchase.findAll({
+                    order: [['id', 'DESC']],
+                    limit: 10, // Adjust limit as needed
+                });
             }
-          });
-          purchases = await Purchase.findAll({
-            order: [['id', 'DESC']],
-            limit: 10, // Adjust limit as needed
-            where: {
-              employee_id: req.session.user.employee.id,
-            }
-          });
-        } else if (req.session.user.profile.description.includes('leaders') ||
-            req.session.user.profile.description.includes('directors') ||
-            req.session.user.profile.description.includes('ti') ||
-            req.session.user.profile.description.includes('purchases') ||
-            req.session.user.profile.description.includes('financial')) {
-          payments = await Payment.findAll({
-            order: [['id', 'DESC']],
-            limit: 10, // Adjust limit as needed
-          });
-          purchases = await Purchase.findAll({
-            order: [['id', 'DESC']],
-            limit: 10, // Adjust limit as needed
-          });
+
+            // Send table data as SSE event
+            res.write(`data: ${JSON.stringify({ payments, purchases })}\n\n`);
+        } catch (error) {
+            console.error('Error updating table data:', error);
         }
-  
-        // Send table data as SSE event
-        res.write(`data: ${JSON.stringify({ payments, purchases })}\n\n`);
-      } catch (error) {
-        console.error('Error updating table data:', error);
-      }
     };
-  
+
     // Get initial table data
     await updateTableData();
-  
+
     // Set up interval to update table data every 5 seconds
     const interval = setInterval(updateTableData, 60000);
-  
+
     // Close connection on client disconnect
     req.on('close', () => {
-      clearInterval(interval);
-      console.log('SSE connection closed');
+        clearInterval(interval);
+        console.log('SSE connection closed');
     });
-  });
+});
 
 
 
@@ -874,178 +875,178 @@ router.get('/dashboard/badges', adminAuth, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-  
+
     // Function to update badges
     const updateBadges = async () => {
-      try {
-        // Get pending, reproved, and approved counts
-        const pending = await getPendingCount(req.session.user);
-        const reproved = await getReprovedCount(req.session.user);
-        const approved = await getApprovedCount(req.session.user);
-  
-        // Send badge data as SSE event
-        res.write(`data: ${JSON.stringify({ pending, reproved, approved })}\n\n`);
-      } catch (error) {
-        console.error('Error updating badges:', error);
-      }
+        try {
+            // Get pending, reproved, and approved counts
+            const pending = await getPendingCount(req.session.user);
+            const reproved = await getReprovedCount(req.session.user);
+            const approved = await getApprovedCount(req.session.user);
+
+            // Send badge data as SSE event
+            res.write(`data: ${JSON.stringify({ pending, reproved, approved })}\n\n`);
+        } catch (error) {
+            console.error('Error updating badges:', error);
+        }
     };
-  
+
     // Get initial badge counts
     await updateBadges();
-  
+
     // Set up interval to update badges every 5 seconds
     const interval = setInterval(updateBadges, 60000);
-  
+
     // Close connection on client disconnect
     req.on('close', () => {
-      clearInterval(interval);
-      console.log('SSE connection closed');
+        clearInterval(interval);
+        console.log('SSE connection closed');
     });
-  });
-  
-  // Helper functions to get badge counts
-  const getPendingCount = async (user) => {
+});
+
+// Helper functions to get badge counts
+const getPendingCount = async (user) => {
     // Logic to get pending count based on user's role
     // Example:
     if (user.profile.description.includes('managers') ||
-  user.profile.description.includes('marketing') ||
-  user.profile.description.includes('rh') ||
-  user.profile.description.includes('sac') ||
-  user.profile.description.includes('sau')) {
-      const pendingPayments = await Payment.count({
-        where: {
-          employee_id: user.employee.id,
-          [Op.or]: [
-            { status: "Em análise pelo gestor" },
-            { status: "Em análise pelo diretor" },
-            { status: "Em análise pelo compras" },
-            { status: "Pagamento em andamento" }
-          ]
-        }
-      });
-      const pendingPurchases = await Purchase.count({
-        where: {
-          employee_id: user.employee.id,
-          [Op.or]: [
-            { status: "Em análise pelo gestor" },
-            { status: "Em análise pelo diretor" },
-            { status: "Em análise pelo compras" },
-            { status: "Pagamento em andamento" }
-          ]
-        }
-      });
-      return pendingPayments + pendingPurchases;
+        user.profile.description.includes('marketing') ||
+        user.profile.description.includes('rh') ||
+        user.profile.description.includes('sac') ||
+        user.profile.description.includes('sau')) {
+        const pendingPayments = await Payment.count({
+            where: {
+                employee_id: user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+        const pendingPurchases = await Purchase.count({
+            where: {
+                employee_id: user.employee.id,
+                [Op.or]: [
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
+                ]
+            }
+        });
+        return pendingPayments + pendingPurchases;
     } else if (user.profile.description.includes('leaders') ||
-      user.profile.description.includes('directors') ||
-      user.profile.description.includes('ti') ||
-      user.profile.description.includes('purchases') ||
-      user.profile.description.includes('financial')) {
-          const pendingPayments = await Payment.count({
-              where: {
+        user.profile.description.includes('directors') ||
+        user.profile.description.includes('ti') ||
+        user.profile.description.includes('purchases') ||
+        user.profile.description.includes('financial')) {
+        const pendingPayments = await Payment.count({
+            where: {
                 [Op.or]: [
-                  { status: "Em análise pelo gestor" },
-                  { status: "Em análise pelo diretor" },
-                  { status: "Em análise pelo compras" },
-                  { status: "Pagamento em andamento" }
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
                 ]
-              }
-            });
-            const pendingPurchases = await Purchase.count({
-              where: {
+            }
+        });
+        const pendingPurchases = await Purchase.count({
+            where: {
                 [Op.or]: [
-                  { status: "Em análise pelo gestor" },
-                  { status: "Em análise pelo diretor" },
-                  { status: "Em análise pelo compras" },
-                  { status: "Pagamento em andamento" }
+                    { status: "Em análise pelo gestor" },
+                    { status: "Em análise pelo diretor" },
+                    { status: "Em análise pelo compras" },
+                    { status: "Pagamento em andamento" }
                 ]
-              }
-            });
-      return pendingPayments + pendingPurchases;
+            }
+        });
+        return pendingPayments + pendingPurchases;
     }
     return 0;
-  };
-  
-  const getReprovedCount = async (user) => {
+};
+
+const getReprovedCount = async (user) => {
     // Logic to get reproved count based on user's role
     // Example:
     if (user.profile.description.includes('managers') ||
-   user.profile.description.includes('marketing') ||
-    user.profile.description.includes('rh') ||
-    user.profile.description.includes('sac') ||
-   user.profile.description.includes('sau')) {
-      const reprovedPayments = await Payment.count({
-        where: {
-          employee_id: user.employee.id,
-          status: "REPROVADO"
-        }
-      });
-      const reprovedPurchases = await Purchase.count({
-        where: {
-          employee_id: user.employee.id,
-          status: "REPROVADO"
-        }
-      });
-      return reprovedPayments + reprovedPurchases;
+        user.profile.description.includes('marketing') ||
+        user.profile.description.includes('rh') ||
+        user.profile.description.includes('sac') ||
+        user.profile.description.includes('sau')) {
+        const reprovedPayments = await Payment.count({
+            where: {
+                employee_id: user.employee.id,
+                status: "REPROVADO"
+            }
+        });
+        const reprovedPurchases = await Purchase.count({
+            where: {
+                employee_id: user.employee.id,
+                status: "REPROVADO"
+            }
+        });
+        return reprovedPayments + reprovedPurchases;
     } else if (user.profile.description.includes('leaders') ||
-      user.profile.description.includes('directors') ||
-      user.profile.description.includes('ti') ||
-      user.profile.description.includes('purchases') ||
-      user.profile.description.includes('financial')) {
-          const reprovedPayments = await Payment.count({
-              where: {
+        user.profile.description.includes('directors') ||
+        user.profile.description.includes('ti') ||
+        user.profile.description.includes('purchases') ||
+        user.profile.description.includes('financial')) {
+        const reprovedPayments = await Payment.count({
+            where: {
                 status: "REPROVADO"
-              }
-            });
-            const reprovedPurchases = await Purchase.count({
-              where: {
+            }
+        });
+        const reprovedPurchases = await Purchase.count({
+            where: {
                 status: "REPROVADO"
-              }
-            });
-            return reprovedPayments + reprovedPurchases;
+            }
+        });
+        return reprovedPayments + reprovedPurchases;
     }
     return 0;
-  };
-  
-  const getApprovedCount = async (user) => {
+};
+
+const getApprovedCount = async (user) => {
     // Logic to get approved count based on user's role
     // Example:
     if (user.profile.description.includes('managers') ||
-   user.profile.description.includes('marketing') ||
-   user.profile.description.includes('rh') ||
-  user.profile.description.includes('sac') ||
-   user.profile.description.includes('sau'))  {
-      const approvedPayments = await Payment.count({
-        where: {
-          employee_id: user.employee.id,
-          status: "APROVADO"
-        }
-      });
-      const approvedPurchases = await Purchase.count({
-        where: {
-          employee_id: user.employee.id,
-          status: "APROVADO"
-        }
-      });
-      return approvedPayments + approvedPurchases;
+        user.profile.description.includes('marketing') ||
+        user.profile.description.includes('rh') ||
+        user.profile.description.includes('sac') ||
+        user.profile.description.includes('sau')) {
+        const approvedPayments = await Payment.count({
+            where: {
+                employee_id: user.employee.id,
+                status: "APROVADO"
+            }
+        });
+        const approvedPurchases = await Purchase.count({
+            where: {
+                employee_id: user.employee.id,
+                status: "APROVADO"
+            }
+        });
+        return approvedPayments + approvedPurchases;
     } else if (user.profile.description.includes('leaders') ||
-      user.profile.description.includes('directors') ||
-      user.profile.description.includes('ti') ||
-      user.profile.description.includes('purchases') ||
-      user.profile.description.includes('financial')) {
-          const approvedPayments = await Payment.count({
-              where: {
+        user.profile.description.includes('directors') ||
+        user.profile.description.includes('ti') ||
+        user.profile.description.includes('purchases') ||
+        user.profile.description.includes('financial')) {
+        const approvedPayments = await Payment.count({
+            where: {
                 status: "APROVADO"
-              }
-            });
-            const approvedPurchases = await Purchase.count({
-              where: {
+            }
+        });
+        const approvedPurchases = await Purchase.count({
+            where: {
                 status: "APROVADO"
-              }
-            });
-            return approvedPayments + approvedPurchases;
+            }
+        });
+        return approvedPayments + approvedPurchases;
     }
     return 0;
-  };
+};
 
 //gerar token e encaminhar e-mail para o usuário solicitante
 router.post('/generate_token', adminAuth, async (req, res) => {
@@ -1484,14 +1485,9 @@ router.post('/registration/create', async (req, res) => {
     const phone = req.body?.phone;
     const city = req.body?.city;
     var description = req.body?.description;
-   
+
     const profile = req.body?.profile;
     const token = req.body?.token;
-
-    var user_registration; // cadastro de usuário
-    var supplier_registration; // cadastro de fornecedor
-    var create_call; // abrir chamado
-    var create_category; // create category
 
     if (sector == undefined) {
 
@@ -1503,79 +1499,9 @@ router.post('/registration/create', async (req, res) => {
         description = city;
     }
 
-    switch (profile) {
+    console.log("Profile", profile);
 
-        case 'managers': //gerentes
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'leaders': //gestores
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'directors': //diretores
-            user_registration = 1; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'purchases': //compras
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 1; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'financial': //financeiro
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'ti': //T.I
-            user_registration = 1; // cadastro de usuário
-            supplier_registration = 1; // cadastro de fornecedor
-            create_call = 1;
-            create_category = 1;
-            answer_call = 1;
-            break;
-        case 'marketing': //gerentes
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'sau': //gerentes
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'sac': //gerentes
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-        case 'rh': //gerentes
-            user_registration = 0; // cadastro de usuário
-            supplier_registration = 0; // cadastro de fornecedor
-            create_call = 0;
-            create_category = 0;
-            answer_call = 1;
-            break;
-    }
+
 
     User.findOne({ where: { login: email } }).then(async user => {
 
@@ -1658,6 +1584,13 @@ router.post('/registration/create', async (req, res) => {
 
                 }
 
+                const newDepartament = await Departament.findOne({ where: { profile_id: newProfile.id } }).catch((err) => {
+                    console.log(err);
+                });
+
+                
+
+
                 // Create User
                 const newUser = await User.create({
                     login: email,
@@ -1669,14 +1602,16 @@ router.post('/registration/create', async (req, res) => {
                     console.log(err);
                 });
 
+
                 // Create Permissions
-                await Permissions.create({         
-                    user_registration: user_registration,
-                    supplier_registration: supplier_registration,
+                await Permissions.create({
+                    user_registration: newDepartament.user_registration,
+                    supplier_registration: newDepartament.supplier_registration,
                     employee_id: newEmployee.id,
-                    profile_id: newProfile.id,
-                    create_call: create_call,
-                    create_category: create_category,
+                    profile_id: newDepartament.profile_id,
+                    create_call: newDepartament.create_call,
+                    answer_call: newDepartament.answer_call,
+                    create_category: newDepartament.create_category,
                     user_id: newUser.id // Use the newly created user's ID
                 }).catch((err) => {
                     console.log(err);

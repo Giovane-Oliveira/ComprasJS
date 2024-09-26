@@ -14,6 +14,7 @@ const suppliersController = require('./suppliers/SuppliersController');
 const usersController = require('./users/UsersController');
 const callController = require('./calls/CallController');
 const categoryController = require('./category/CategoryController');
+const Departament = require('./users/Departament');
 
 // Redis setup
 /*const redisClient = new Redis({
@@ -105,6 +106,7 @@ const models = {
     Profile: require('./users/Profile'),
     User: require('./users/User'),
     Permission: require('./users/Permission'),
+    Departament: require('./users/Departament'),
     Supplier: require('./suppliers/Supplier'),
     Company: require('./companies/Company'),
     Payment: require('./payments/Payment'),
