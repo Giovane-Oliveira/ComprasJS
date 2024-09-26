@@ -53,7 +53,15 @@
         <%= category.id %>
       </td>
       <td>
-        <%= category.departament %>
+        <%= category.departament == "ti" ? "T.I":
+        category.departament == "managers" ? "Gerentes":
+        category.departament == "directors" ? "Diretores":
+        category.departament == "leaders" ? "Gestores":
+        category.departament == "sac" ? "SAC":
+        category.departament == "financial" ? "Financeiro":
+        category.departament == "purchases" ? "Compras":
+        category.departament == "marketing" ? "Marketing":
+        category.departament == "rh" ? "RH": category.departament %>
       </td>
       <td>
         <%= category.description %>

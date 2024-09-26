@@ -61,7 +61,7 @@ router.post('/create/category', adminAuth, (req, res) => {
   
       Category.create({
         departament: departament,
-        description: description,
+        description: description.toUpperCase(),
         profile_id: findProfile.id
       }).catch(err => console.log(err));
     } else {
