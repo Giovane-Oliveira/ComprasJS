@@ -83,18 +83,27 @@
 
 
 
-            $('input:checkbox[name="user_registration"],input:checkbox[name="supplier_registration"],input:checkbox[name="create_call"],input:checkbox[name="answer_call"],input:checkbox[name="create_category"]').change(
-              function () {
+$('input:checkbox[name="user_registration"],input:checkbox[name="supplier_registration"],input:checkbox[name="create_call"],input:checkbox[name="answer_call"],input:checkbox[name="create_category"]').change(
+  function () {
+    if ($(this).is(':checked')) {
+      // Se o checkbox estiver sendo marcado
+      if (confirm("Tem certeza que deseja ativar essa permissão?")) {
+        window.location.href = "/activate/permission/departament/" + $(this).attr("name") + "/" + $(this).attr("id");
+      } else {
+        // Se o usuário cancelar, desmarque o checkbox
+        $(this).prop('checked', false);
+      }
+    } else {
+      // Se o checkbox estiver sendo desmarcado
+      if (confirm("Tem certeza que deseja desativar essa permissão?")) {
+        window.location.href = "/desactivate/permission/departament/" + $(this).attr("name") + "/" + $(this).attr("id");
+      } else {
+        // Se o usuário cancelar, marque o checkbox novamente
+        $(this).prop('checked', true);
+      }
+    }
+  });
 
-                if ($(this).is(':checked')) {
-                  // alert($(this).attr("id"));
-                  window.location.href = "/activate/permission/departament/" + $(this).attr("name") + "/" + $(this).attr("id");
-                } else {
-
-                  //alert($(this).attr("id"));
-                  window.location.href = "/desactivate/permission/departament/" + $(this).attr("name") + "/" + $(this).attr("id");
-                }
-              });
 
 
 
