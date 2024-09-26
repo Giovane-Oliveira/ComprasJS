@@ -10,7 +10,7 @@
 
     <thead>
       <tr>
-        <th>Id</th>
+        <th>Departamento</th>
         <th>Login</th>
         <th>Status</th>
         <th>Gerenciar Usuários</th>
@@ -27,7 +27,15 @@
 
         <tr>
           <td>
-            <%= permission.user.id %>
+        <%= permission.profile.description == "ti" ? "T.I":
+            permission.profile.description == "managers" ? "Gerentes":
+            permission.profile.description == "directors" ? "Diretores":
+            permission.profile.description == "leaders" ? "Gestores":
+            permission.profile.description == "sac" ? "SAC":
+            permission.profile.description == "financial" ? "Financeiro":
+            permission.profile.description == "purchases" ? "Compras":
+            permission.profile.description == "marketing" ? "Marketing":
+            permission.profile.description == "rh" ? "RH": permission.profile.description %>
           </td>
           <td>
             <%= permission.user.login %>

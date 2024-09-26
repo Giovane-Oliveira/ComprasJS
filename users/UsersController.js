@@ -448,7 +448,7 @@ router.get('/users', adminAuth, async (req, res) => {
      });*/
 
     const permissions = await Permissions.findAll({
-        include: [{ model: User, as: 'user' }]
+        include: [{ model: User, as: 'user' }, { model: Profile, as: 'profile' }]
     });
 
     //permissions.employee.name

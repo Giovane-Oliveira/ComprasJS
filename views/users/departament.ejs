@@ -29,7 +29,15 @@
             <%= departament.id %>
           </td>
           <td>
-            <%= departament.profile.description %>
+        <%= departament.profile.description == "ti" ? "T.I":
+            departament.profile.description == "managers" ? "Gerentes":
+            departament.profile.description == "directors" ? "Diretores":
+            departament.profile.description == "leaders" ? "Gestores":
+            departament.profile.description == "sac" ? "SAC":
+            departament.profile.description == "financial" ? "Financeiro":
+            departament.profile.description == "purchases" ? "Compras":
+            departament.profile.description == "marketing" ? "Marketing":
+            departament.profile.description == "rh" ? "RH": departament.profile.description %>
           </td>
 
                 <% if(departament.user_registration==1){%>
