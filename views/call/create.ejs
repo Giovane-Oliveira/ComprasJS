@@ -17,9 +17,23 @@
   <label for="departament">Departamento</label>
   <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
     <option value="" disabled="disabled" selected="selected" required>Selecione o departamento</option>
-    <% departaments.forEach(departament => { %>
-    <option value="<%= departament.profile %>"><%= departament.name %></option>
-    <%  }); %>
+    <% departaments.forEach(departament => {
+      if (departament.profile.description != "managers" &&
+          departament.profile.description != "directors" &&
+          departament.profile.description != "leaders"
+         ) {
+        %>
+    <option value="<%= departament.profile.description %>"><%= 
+      departament.profile.description == "ti" ? "T.I":
+      departament.profile.description == "sac" ? "SAC":
+      departament.profile.description == "financial" ? "Financeiro":
+      departament.profile.description == "purchases" ? "Compras":
+      departament.profile.description == "marketing" ? "Marketing":
+      departament.profile.description == "rh" ? "RH": departament.profile.description
+      
+      
+      %></option>
+    <%  }}); %>
   </select>
   <div id="selectProfile">
 

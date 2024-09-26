@@ -6,6 +6,7 @@ const Payment = require('../payments/Payment');
 const { where } = require('sequelize');
 const { Op } = require('sequelize');
 const Supplier = require('../suppliers/Supplier');
+const Departament = require('../users/Departament');
 const Company = require('../companies/Company');
 const Payment_Method = require('../payments/Payment_method');
 const File = require('../users/File');
@@ -965,9 +966,16 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
 
 router.get('/call/create', adminAuth, async (req, res) => {
 
-  const departaments = [{ name: 'SAC', profile: 'sac' }, { name: 'T.I', profile: 'ti' }, { name: 'RH', profile: 'rh' },
-  { name: 'FINANCEIRO', profile: 'financial' }, { name: 'MARKETING', profile: 'marketing' }, { name: 'COMPRAS', profile: 'purchases' }
-  ]
+ 
+
+  const departaments = await Departament.findAll(
+    {
+      include: [{ model: Profile, as: 'profile' }],
+      where: { answer_call: 1 } 
+      
+    });
+
+
   //ti
   const profile_ti = await Profile.findOne({
     where: {
