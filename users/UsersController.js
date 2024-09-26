@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcryptjs');
 const User = require('../users/User')
+const Departament = require('../users/Departament')
+const Profile = require('../users/Profile')
 const Sector = require('../users/Sector')
 const Unit = require('../users/Unit')
 const Employee = require('../employees/Employee')
-const Profile = require('../users/Profile')
-const Departament = require('../users/Departament')
 const Permissions = require('../users/Permission')
 const Token = require('../users/Token')
 const { Op, where } = require('sequelize');
@@ -56,6 +56,250 @@ router.get('/permission/:id', adminAuth, async (req, res) => {
     res.render('users/permission.ejs', { user: req.session.user, permissions: permissions });
 
 });
+
+
+//ativar permissões departamento
+router.get('/activate/permission/departament/:name/:id', adminAuth, (req, res) => {
+
+    const profile_id = req.params.id;
+    const name = req.params.name;
+
+    if (name == 'user_registration') {
+
+        Permissions.update({
+            user_registration: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            user_registration: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'supplier_registration') {
+
+        Permissions.update({
+            supplier_registration: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            supplier_registration: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'create_call') {
+
+        Permissions.update({
+            create_call: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            create_call: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    } else if (name == 'create_category') {
+
+        Permissions.update({
+            create_category: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            create_category: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'answer_call') {
+
+        Permissions.update({
+            answer_call: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            answer_call: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
+    res.redirect('/departaments');
+
+});
+
+//desativar permissões departamento
+router.get('/desactivate/permission/departament/:name/:id', adminAuth, (req, res) => {
+
+    const profile_id = req.params.id;
+    const name = req.params.name;
+
+    if (name == 'user_registration') {
+
+        Permissions.update({
+            user_registration: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            user_registration: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'supplier_registration') {
+
+        Permissions.update({
+            supplier_registration: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            supplier_registration: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'create_call') {
+
+        Permissions.update({
+            create_call: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            create_call: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    } else if (name == 'create_category') {
+
+        Permissions.update({
+            create_category: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            create_category: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    } else if (name == 'answer_call') {
+
+        Permissions.update({
+            answer_call: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            answer_call: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
+    res.redirect('/departaments');
+
+});
+
+
+
 
 //ativar permissões do usuário
 router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
@@ -211,6 +455,23 @@ router.get('/users', adminAuth, async (req, res) => {
     res.render('users/index.ejs', { user: req.session.user, permissions: permissions });
 
 });
+
+//listar departamentos
+router.get('/departaments', adminAuth, async (req, res) => {
+
+    /* const user = await User.findAll().catch(err => {
+         console.log(err);
+     });*/
+
+    const departaments = await Departament.findAll({
+        include: [{ model: Profile, as: 'profile' }]
+    });
+
+    //permissions.employee.name
+    res.render('users/departament.ejs', { user: req.session.user, departaments: departaments });
+
+});
+
 
 //ativar usuário
 router.get('/activate_user/:id', adminAuth, (req, res) => {
