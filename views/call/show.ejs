@@ -96,10 +96,15 @@
     <% if((call.user_id == user.user.id) || (call.attendant_id == 0 && call.user_id != user.user.id)
   || (call.attendant_id != 0 && call.attendant_id == user.user.id) || 
 (call.attendant_id != user.user.id && call.user_id != user.user.id)){
-    if(call.status != 'FINALIZADO'){%>
+    if(call.status != 'FINALIZADO'){
+      if(call.user_id != user.user.id && user.permissions.answer_call == 1){%>
+
     <hr style="width: 95%;">
     <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
-    <% }} %>
+    <% }else if(call.user_id == user.user.id){ %>
+      <hr style="width: 95%;">
+      <button class="btn accept" onclick="answercall()" style="display:flex; margin-left: auto; margin-right: auto;">Responder</button>
+   <% }}} %>
     <% if(messageAll.length > 1){%>
 
     <% 

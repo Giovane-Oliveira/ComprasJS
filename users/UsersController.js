@@ -107,7 +107,18 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }
+    }else if (name == 'answer_call') {
+
+        Permissions.update({
+            answer_call: 1
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    } 
 
     res.redirect('/users');
 
@@ -166,7 +177,18 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
-    }
+    }else if (name == 'answer_call') {
+
+        Permissions.update({
+            answer_call: 0
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    } 
 
     res.redirect('/users');
 
@@ -1399,7 +1421,6 @@ router.get('/recover/alter_password/:email/:token', async (req, res) => {
 });
 
 
-
 //Gerar token para alterar a senha e encaminhar por e-mail
 router.post('/recover/alter_password', async (req, res) => {
     var email = req.body?.email;
@@ -1489,60 +1510,70 @@ router.post('/registration/create', async (req, res) => {
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'leaders': //gestores
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'directors': //diretores
             user_registration = 1; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'purchases': //compras
             user_registration = 0; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'financial': //financeiro
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'ti': //T.I
             user_registration = 1; // cadastro de usuário
             supplier_registration = 1; // cadastro de fornecedor
             create_call = 1;
             create_category = 1;
+            answer_call = 1;
             break;
         case 'marketing': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'sau': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'sac': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
         case 'rh': //gerentes
             user_registration = 0; // cadastro de usuário
             supplier_registration = 0; // cadastro de fornecedor
             create_call = 0;
             create_category = 0;
+            answer_call = 1;
             break;
     }
 

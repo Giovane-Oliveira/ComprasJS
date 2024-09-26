@@ -495,7 +495,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
       if (newCall.active_mail == 1) {
 
-        let situation = 'Respondido';
+        let situation = 'respondido';
 
         if (status == 'FINALIZADO') {
 
@@ -505,17 +505,17 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
         let from = "suporte.ti@grupoprovida.com.br";
         let to = newPersonRequest.email;
-        let subject = `Chamado ${situation} #${call_id}`;
+        let subject = `Chamado #${call_id} ${situation}`;
         let text = "Resposta: " + message;
         let mail_employee = "Atendente: " + req.session.user.employee.name;
-        let mail_email = "E-mail: " + req.session.user.employee.email;
-        let link = "http://52.156.72.125:3001";
+        let subject_call = `Assunto: ${newCall.subject}`;
+        let link = "http://52.156.72.125:3001/call/show/" + call_id;
 
         let mailOptions = {
           from,
           to,
           subject,
-          html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+          html: pug.renderFile('views/pugs/create_call.pug', { text: text, employee: mail_employee, link: link, subject_call: subject_call })
         };
 
         try {
@@ -536,7 +536,7 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
         call_id: call_id
       }).catch(error => console.log('Error creating message:', error));
 
-      let situation = 'Respondido';
+      let situation = 'respondido';
 
       if (status == 'FINALIZADO') {
 
@@ -560,17 +560,17 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
 
         let from = "suporte.ti@grupoprovida.com.br";
         let to = newPersonRequest.email;
-        let subject = `Chamado ${situation} #${call_id}`;
+        let subject = `Chamado #${call_id} ${situation}`;
         let text = "Resposta: " + message;
         let mail_employee = "Solicitante: " + req.session.user.employee.name;
-        let mail_email = "E-mail: " + req.session.user.employee.email;
-        let link = "http://52.156.72.125:3001";
+        let subject_call = `Assunto: ${newCall.subject}`;
+        let link = "http://52.156.72.125:3001/call/show/" + call_id;
 
         let mailOptions = {
           from,
           to,
           subject,
-          html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
+          html: pug.renderFile('views/pugs/create_call.pug', { text: text, employee: mail_employee, link: link, subject_call: subject_call })
         };
 
         try {
@@ -813,6 +813,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   const mail = (req.body.subscribe == 'on') ? 1 : 0;
   var clientEmployee = undefined;
   var clientUser = undefined;
+  const clientId = req.body.clientId;
 
   console.log("Departament: " + departament);
   console.log("Priority: " + priority);
@@ -820,124 +821,144 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   console.log("Subject: " + subject);
   console.log("Message: " + message);
   console.log("Checkbox: " + mail);
-
-  
+  console.log("ClientId: " + clientId); //employee
 
   if(client.length > 0)
-  {
-    console.log("Client: " + client);
-
-    clientEmployee = await Employee.findOne({
-      where: {
-        name: client
-      }
-    });
-
-    clientUser = await User.findOne({
-      where: {
-        login: clientEmployee.email
-      }
-    });   
-
-  }
-
-  const newCall = await Call.create({
-    active_mail: mail,
-    departament: departament,
-    category: category,
-    subject: subject,
-    priority: priority,
-    attendant_id: 0,
-    status: 'AGUARDANDO ATENDIMENTO',
-    user_id: client.length > 0 ? clientUser.id : user_id,
-    employee_id: client.length > 0 ? clientEmployee.id : employee_id
-  })
-    .catch(error => {
-      console.error('Error creating call:', error);
-    });
-
-  await Message.create({
-    sender_id: client.length > 0 ? clientUser.id : user_id,
-    message: message,
-    call_id: newCall.id
-  }).catch(error => {
-    console.error('Error creating message:', error);
-  });
-
-
-  // Check if any files were uploaded
-  if (files && files.length > 0) {
-    // Processar os dados e o arquivo aqui
-    //console.log(`Nome: ${nome}`);
-    // Processar arquivos
-    for (const file of files) {
-      // Salvar o arquivo
-      const fileName = file.originalname;
-      const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
-      const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
-      fs.moveSync(file.path, filePath);
-      console.log(`Arquivo recebido: ${file.originalname}`);
-      // Salvar arquivo no diretório de destino 
-
-      File.create({
-        fileName: uniqueFileName,
-        call_id: newCall.id,
-        user_id: client.length > 0 ? clientUser.id : req.session.user.user.id
-      }).catch(error => {
-        console.error('Error creating file:', error);
+    {
+      console.log("Client: " + client);
+  
+      clientEmployee = await Employee.findOne({
+        where: {
+          name: client
+        }
       });
-
+  
+      clientUser = await User.findOne({
+        where: {
+          login: clientEmployee.email
+        }
+      });   
+  
     }
-  } else {
-    console.error('No files were uploaded.');
-  }
-
-
-  const newProfile = await Profile.findOne({
-    where: {
-      description: departament
+  
+    const newCall = await Call.create({
+      active_mail: mail,
+      departament: departament,
+      category: category,
+      subject: subject,
+      priority: priority,
+      attendant_id: 0,
+      status: 'AGUARDANDO ATENDIMENTO',
+      user_id: client.length > 0 ? clientUser.id : user_id,
+      employee_id: client.length > 0 ? clientEmployee.id : employee_id
+    })
+      .catch(error => {
+        console.error('Error creating call:', error);
+      });
+  
+    await Message.create({
+      sender_id: client.length > 0 ? clientUser.id : user_id,
+      message: message,
+      call_id: newCall.id
+    }).catch(error => {
+      console.error('Error creating message:', error);
+    });
+  
+  
+    // Check if any files were uploaded
+    if (files && files.length > 0) {
+      // Processar os dados e o arquivo aqui
+      //console.log(`Nome: ${nome}`);
+      // Processar arquivos
+      for (const file of files) {
+        // Salvar o arquivo
+        const fileName = file.originalname;
+        const uniqueFileName = Date.now() + '_' + fileName; // Generate a unique filename
+        const filePath = `uploads/${uniqueFileName}`; // Use the unique filename
+        fs.moveSync(file.path, filePath);
+        console.log(`Arquivo recebido: ${file.originalname}`);
+        // Salvar arquivo no diretório de destino 
+  
+        File.create({
+          fileName: uniqueFileName,
+          call_id: newCall.id,
+          user_id: client.length > 0 ? clientUser.id : req.session.user.user.id
+        }).catch(error => {
+          console.error('Error creating file:', error);
+        });
+  
+      }
+    } else {
+      console.error('No files were uploaded.');
     }
-  });
-
-  const emails = await User.findAll({
-    where: {
-      profile_id: newProfile.id
-    }
-  });
-
-  emails.forEach(email => {
-
-    console.log("Login: " + email.login);
-  });
-
-  // Send emails to all recipients
-  emails.forEach(async (email) => {
-
-    let from = "suporte.ti@grupoprovida.com.br";
-    let to = email.login;
-    let subject = `Chamado #${newCall.id}`;
-    let text = "Novo chamado gerado.";
-    let mail_employee = "Solicitante: " + req.session.user.employee.name;
-    let mail_email = "E-mail: " + req.session.user.employee.email;
-    let link = "http://52.156.72.125:3001";
-
-    let mailOptions = {
-      from,
-      to,
-      subject,
-      html: pug.renderFile('views/pugs/accept_requests.pug', { text: text, employee: mail_employee, email: mail_email, link: link })
-    };
-
-    try {
-      await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully!');
-    } catch (error) {
-      console.log("Erro ao enviar o email: " + error);
-    }
-  });
-
-  req.flash('message', 'Chamado criado com sucesso!')
-  res.redirect('/call/dashboard');
+  
+  
+    const newProfile = await Profile.findOne({
+      where: {
+        description: departament
+      }
+    });
+  
+    const emails = await User.findAll({
+      where: {
+        profile_id: newProfile.id
+      }
+    });
+  
+    emails.forEach(email => {
+  
+      console.log("Login: " + email.login);
+    });
+  /*
+  Faltou isso
+  Enviar e-mail para o cliente */
+  
+    // Send emails to all recipients
+    emails.forEach(async (email) => {
+  
+      let from = "suporte.ti@grupoprovida.com.br";
+      let to = email.login;
+      let subject = `Chamado #${newCall.id}`;
+      let text = `Novo chamado #${newCall.id} gerado.`;
+      let subject_call = `Assunto: ${newCall.subject}`;
+      let mail_employee = client.length > 0 ? "Aberto por: " + req.session.user.employee.name 
+      : "Solicitante: " + req.session.user.employee.name;
+      let solicitante = "Solicitante: " + client;
+      let link = `http://52.156.72.125:3001/call/show/${newCall.id}`;
+  
+      let mailOptions;
+  
+      if(client.length > 0)
+        {
+          mailOptions = {
+            from,
+            to,
+            subject,
+            html: pug.renderFile('views/pugs/create_call_client.pug', { text: text, employee: mail_employee, link: link, subject_call: subject_call, solicitante: solicitante })
+          };
+        }
+        else
+        {
+          mailOptions = {
+            from,
+            to,
+            subject,
+            html: pug.renderFile('views/pugs/create_call.pug', { text: text, employee: mail_employee, link: link, subject_call: subject_call })
+          };
+        }
+  
+   
+  
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+      } catch (error) {
+        console.log("Erro ao enviar o email: " + error);
+      }
+    });
+  
+    req.flash('message', 'Chamado criado com sucesso!')
+    res.redirect('/call/dashboard');
 
 });
 

@@ -12,6 +12,7 @@
   <label for="client" style="margin-top: 1%">Cliente</label>
   <input type="text" class="form-control" name="client" id="client" style="min-height:40px !important;width:40% !important"></input>
   <ul id="suggestions"></ul> 
+  <input type="hidden" id="clientId" name="clientId" value="">
   <%  } %>
   <label for="departament">Departamento</label>
   <select class="form-control" id="departament" name="departament" style="width:30%; margin-bottom:1%">
@@ -226,43 +227,52 @@ $("#call-form").submit(function() {
 
 <script>
   $(document).ready(function() {
-  $("#client").on("input", function() {
-    const query = $(this).val();
+    $("#client").on("input", function() {
+      const query = $(this).val();
 
-    if (query.length > 2) {
-      // Replace $.ajax() with fetch()
-      fetch(`/employees/search?q=${query}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json(); // Parse response as JSON
-        })
-        .then(data => {
-          $("#suggestions").empty();
-          if (data.length > 0) {
-            data.forEach(employee => {
-              $("#suggestions").append(`<li>${employee.name}</li>`);
-            });
-          } else {
-            $("#suggestions").append("<li>No matching employees found</li>");
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching employee suggestions:", error);
-        });
-    } else {
-      $("#suggestions").empty();
-    }
+      if (query.length > 2) {
+        fetch(`/employees/search?q=${query}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            $("#suggestions").empty();
+            if (data.length > 0) {
+              data.forEach(employee => {
+                // Include employee ID in the suggestion list item
+                $("#suggestions").append(`<li data-employee-id="${employee.id}">${employee.name}</li>`);
+              });
+            } else {
+              $("#suggestions").append("<li>No matching employees found</li>");
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching employee suggestions:", error);
+          });
+      } else {
+        $("#suggestions").empty();
+      }
+    });
+
+    // Add a hidden input field for the client ID
+    $("#call-form").append('<input type="hidden" id="clientId" name="clientId" value="">');
+
+    $(document).on("click", "#suggestions li", function() {
+      $("#client").val($(this).text()); 
+      $("#suggestions").empty();       
+      
+      // Get the employee ID from the clicked suggestion
+      const clientId = $(this).data('employee-id');
+      
+      // Set the hidden input field value to the client ID
+      $("#clientId").val(clientId);
+    });
   });
-  $(document).on("click", "#suggestions li", function() {
-    $("#client").val($(this).text()); // Set input value
-    $("#suggestions").empty();       // Clear suggestions
-  });
-});
-
-
 </script>
+
 
 
 

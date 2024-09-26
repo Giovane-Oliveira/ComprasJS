@@ -5,26 +5,30 @@ const User = require('./User')
 
 
 const Permission = connection.define('Permission', {
-    user_registration: { //cadastro de usuário
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    supplier_registration: { //cadastro de fornecedor
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        default: 0
-    },
-    create_call: { //cadastro de fornecedor
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      default: 0
-    },
-    create_category: { //cadastro de fornecedor
+  user_registration: { //cadastro de usuário
     type: Sequelize.INTEGER,
     allowNull: false,
     default: 0
-    }
+  },
+  supplier_registration: { //cadastro de fornecedor
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    default: 0
+  },
+  create_call: { //cadastro de fornecedor
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    default: 0
+  },
+  create_category: { //cadastro de fornecedor
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    default: 0
+  },
+  answer_call: {
+    type: Sequelize.INTEGER,
+    allowNull: true
+  }
 });
 
 /*
