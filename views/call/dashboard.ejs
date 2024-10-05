@@ -32,6 +32,7 @@
     headerRow.style.fontWeight = 'bold'; // Add bold style to headerRow
     headerRow.insertCell().textContent = '#';
     headerRow.insertCell().textContent = 'Departamento';
+    headerRow.insertCell().textContent = 'Assunto';
     headerRow.insertCell().textContent = 'Status';
     headerRow.insertCell().textContent = 'Categoria';
     headerRow.insertCell().textContent = 'Solicitante';
@@ -43,6 +44,7 @@
       const row = myTable.insertRow();
       row.insertCell().textContent = call.id;
       row.insertCell().textContent = call.departament.toUpperCase();
+      row.insertCell().textContent = call.subject.substring(0, 30);
       row.insertCell().textContent = call.status;
       row.insertCell().textContent = call.category;
       row.insertCell().textContent = call.employee.name;
