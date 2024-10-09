@@ -24,6 +24,8 @@ const Category = require('../category/Category');
 const Call = require('../calls/Call');
 const Message = require('../calls/Message');
 const { underscoredIf } = require('sequelize/lib/utils');
+const Type = require('../typesCauses/Type');
+
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -374,6 +376,9 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
   const channel_service = req.body.channel_service;
   const situacao = req.body.status;
 
+  const type_id = req.body.type;
+
+
   console.log("SITUAÇÃO: " + situacao);
   console.log('channel service: ' + channel_service)
 
@@ -460,12 +465,14 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
             attendant_id: req.session.user.user.id,
             status: 'FINALIZADO',
             situation: 'FINALIZADO',
-            channel_service: channel_service
+            channel_service: channel_service,
+            type_id: type_id
           }, {
           where: {
             id: call_id
           }
         }).catch(error => console.log('Error updating call:', error));
+        
 
       }else if(call.attendant_id == 0 && finishcall == 'on'){
 
@@ -474,7 +481,8 @@ router.post('/call/reply', upload.array('files'), adminAuth, async (req, res) =>
             attendant_id: req.session.user.user.id,
             status: 'FINALIZADO',
             situation: 'FINALIZADO',
-            channel_service: channel_service
+            channel_service: channel_service,
+            type_id: type_id
           }, {
           where: {
             id: call_id
@@ -1099,6 +1107,12 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
   var attendant;
   var sender;
   var employeeNames;
+  
+  const Types = await Type.findAll({
+    where:{
+      profile_id: req.session.user.profile.id
+    }
+  });
 
   const call = await Call.findOne({
     where: {
@@ -1207,14 +1221,14 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender, employeeNames, voltar: voltar
+      sender: sender, employeeNames, voltar: voltar, types: Types
     });
   } else {
 
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender, voltar
+      sender: sender, voltar, types: Types
     });
 
   }

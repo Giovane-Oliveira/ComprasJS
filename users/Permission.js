@@ -28,6 +28,10 @@ const Permission = connection.define('Permission', {
   answer_call: {
     type: Sequelize.INTEGER,
     allowNull: true
+  },
+  type_cause: {
+    type: Sequelize.INTEGER,
+    allowNull: true
   }
 });
 

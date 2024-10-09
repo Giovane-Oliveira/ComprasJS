@@ -17,6 +17,7 @@
         <th>Criar Chamado</th>
         <th>Atender Chamado</th>
         <th>Criar Categoria</th>
+        <th>Tipo Causa</th>
       </tr>
     </thead>
     <tbody>
@@ -81,6 +82,15 @@
                                               type="checkbox" unchecked data-toggle="toggle" data-onstyle="success"
                                               data-size="xs"></td>
                                             <% } %>
+                                            <% if(departament.type_cause==1){%>
+                                              <td> <input name="type_cause" id=<%=departament.profile_id %>
+                                                type="checkbox" checked data-toggle="toggle" data-onstyle="success"
+                                                data-size="xs"></td>
+                                              <% }else{ %>
+                                                <td> <input name="type_cause" id=<%=departament.profile_id %>
+                                                  type="checkbox" unchecked data-toggle="toggle" data-onstyle="success"
+                                                  data-size="xs"></td>
+                                                <% } %>
 
 
         </tr>
@@ -89,9 +99,7 @@
 
           <script type="text/javascript">
 
-
-
-$('input:checkbox[name="user_registration"],input:checkbox[name="supplier_registration"],input:checkbox[name="create_call"],input:checkbox[name="answer_call"],input:checkbox[name="create_category"]').change(
+$('input:checkbox[name="user_registration"],input:checkbox[name="supplier_registration"],input:checkbox[name="create_call"],input:checkbox[name="answer_call"],input:checkbox[name="create_category"],input:checkbox[name="type_cause"]').change(
   function () {
     if ($(this).is(':checked')) {
       // Se o checkbox estiver sendo marcado

@@ -172,6 +172,27 @@ router.get('/activate/permission/departament/:name/:id', adminAuth, (req, res) =
         }).catch((err) => {
             console.log(err);
         });
+    } else if (name == 'type_cause') {
+
+        Permissions.update({
+            type_cause: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            type_cause: 1
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 
     res.redirect('/departaments');
@@ -292,6 +313,27 @@ router.get('/desactivate/permission/departament/:name/:id', adminAuth, (req, res
         }).catch((err) => {
             console.log(err);
         });
+    } else if (name == 'type_cause') {
+
+        Permissions.update({
+            type_cause: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+
+        Departament.update({
+            type_cause: 0
+        }, {
+            where: {
+                profile_id: profile_id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 
     res.redirect('/departaments');
@@ -363,6 +405,17 @@ router.get('/activate/permission/:name/:id', adminAuth, (req, res) => {
         }).catch((err) => {
             console.log(err);
         });
+    }else if (name == 'type_cause') {
+
+        Permissions.update({
+            type_cause: 1
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 
     res.redirect('/users');
@@ -426,6 +479,17 @@ router.get('/desactivate/permission/:name/:id', adminAuth, (req, res) => {
 
         Permissions.update({
             answer_call: 0
+        }, {
+            where: {
+                user_id: id
+            }
+        }).catch((err) => {
+            console.log(err);
+        });
+    } else if (name == 'type_cause') {
+
+        Permissions.update({
+            type_cause: 0
         }, {
             where: {
                 user_id: id

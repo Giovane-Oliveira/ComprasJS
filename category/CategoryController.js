@@ -91,7 +91,11 @@ Category.destroy({
   });
 
   req.flash('message', 'Categoria deletada com sucesso!')
+  
+   // After creating the category, wait for 2 seconds before redirecting
+ setTimeout(() => {
   res.redirect('/category');
+}, 2000); // 2000 milliseconds = 2 seconds
 
 });
 

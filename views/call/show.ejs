@@ -186,6 +186,17 @@
   
               <label for="checkbox">Finalizar chamado</label>
               <input type="checkbox" id="finishcall" name="finishcall" style="margin-top: 1%;"><br>
+              <div id="checado" style="display: none;">
+              
+                <select class="form-control" name="type" required>
+                <option value="" disabled="disabled" selected="selected">Selecione o tipo/causa</option>
+                <% types.forEach(type => {%>
+                <option value='<%= type.id %>'><%= type.type %></option>
+                <% }); %>
+              </select>
+                
+              </div>
+
               <%}%>
               <%if(call.attendant_id == user.user.id || call.user_id == user.user.id || call.attendant_id == 0){%>
               <label for="message" style="margin-top: 1%; font-weight: bold;">Resposta:</label>
@@ -216,6 +227,25 @@
       function answercall() {
         $('#answercall').modal('show');
       };
+
+      // Get references to the checkbox and the div
+const finishCallCheckbox = document.getElementById('finishcall');
+const checadoDiv = document.getElementById('checado');
+
+// Add an event listener to the checkbox
+finishCallCheckbox.addEventListener('change', () => {
+  // Check if the checkbox is checked
+  if (finishCallCheckbox.checked) {
+    // If checked, make the div visible
+    checadoDiv.style.display = 'block';
+  } else {
+    // If unchecked, hide the div
+    checadoDiv.style.display = 'none';
+  }
+});
+
+
+
     </script>
 
     <!-- Modal -->

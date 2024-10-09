@@ -112,8 +112,15 @@
                   <li>
                     <div class="dashimg"><a href="/category"><img src="../../images/logout.png">Criar Categoria</a></div>
                   </li>
-                 <%}%> 
-               
+                 <%}%>                
+
+                <%if(user.permissions.type_cause == 1){%>
+                  <li>
+                    <div class="dashimg"><a href="/typesCauses"><img src="../images/logout.png">Criar Tipos/Causas</a>
+                    </div>
+                  </li>
+                  <%}%>
+ 
                 <li>
                   <div class="dashimg"><a href=" /logout"><img src="../../images/logout.png">Sair</a></div>
                 </li>

@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const connection = require('../database/database')
 const User = require('../users/User');
 const Employee = require('../employees/Employee');
-
+const Type = require('../typesCauses/Type');
 
 const Call = connection.define('Call', {
 
@@ -61,6 +61,12 @@ Call.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
 
 //1-N
 Employee.hasMany(Call, { foreignKey: 'employee_id', as: 'call' });
+
+//1-1 user_id
+Call.belongsTo(Type, { foreignKey: 'type_id', as: 'type' });
+
+//1-N
+Type.hasMany(Call, { foreignKey: 'type_id', as: 'call' });
 
 //Call.sync({force: false})
 /*
