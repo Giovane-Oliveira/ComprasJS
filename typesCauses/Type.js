@@ -5,7 +5,11 @@ const Profile = require("../users/Profile");
 const Type = connection.define("Type", {
   type: {
     type: Sequelize.TEXT,
-    allowNull: true,
+    allowNull: true
+  },
+  departament: {
+    type: Sequelize.TEXT,
+    allowNull: true
   }
 });
 
@@ -15,7 +19,7 @@ Type.belongsTo(Profile, { foreignKey: 'profile_id', as: 'profile' });
 //1-N
 Profile.hasMany(Type, { foreignKey: 'profile_id', as: 'type' });
 
-//Type.sync({force: false})
+Type.sync({force: false})
 /*
 (async () => {
     try {

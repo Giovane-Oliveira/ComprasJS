@@ -33,7 +33,8 @@ router.get('/typesCauses',adminAuth, (req, res) => {
 
     res.render('call/type', { user: req.session.user, types: types, message: message, departaments: departaments });
     
-  });
+  }).catch(err => console.log("Erro aqui: " + err));
+
 
 
 });
@@ -55,6 +56,7 @@ router.post('/create/type', adminAuth, (req, res) => {
           console.log("Profile ID" + findProfile.id);
       
           Type.create({
+            departament: departament,
             type: type,
             profile_id: findProfile.id
           }).catch(err => console.log(err));

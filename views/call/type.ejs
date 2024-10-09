@@ -39,6 +39,7 @@
   <thead>
     <tr class="destaque">
       <th>ID</th>
+      <th>Departamento</th>
       <th>Tipo/Causa</th>
       <th>Excluir</th>
     </tr>
@@ -48,6 +49,17 @@
         <tr>
           <td>
             <%= type.id %>
+          </td>
+          <td>
+            <%= type.departament == "ti" ? "T.I":
+            type.departament == "managers" ? "Gerentes":
+            type.departament == "directors" ? "Diretores":
+            type.departament == "leaders" ? "Gestores":
+            type.departament == "sac" ? "SAC":
+            type.departament == "financial" ? "Financeiro":
+            type.departament == "purchases" ? "Compras":
+            type.departament == "marketing" ? "Marketing":
+            type.departament == "rh" ? "RH": type.departament %>
           </td>
           <td>
             <%= type.type %>
