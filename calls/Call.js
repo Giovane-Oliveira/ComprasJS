@@ -46,7 +46,8 @@ const Call = connection.define('Call', {
     channel_service: { 
         type: Sequelize.ENUM('Whatsapp', 'E-mail', 'Teams', 'Chat 3CX', 'Comunicação Direta'),
         allowNull: true     
-    },
+    }
+
 });
 
 //1-1 user_id
