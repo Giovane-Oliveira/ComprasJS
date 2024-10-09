@@ -195,14 +195,15 @@ router.get('/call/dashboard', adminAuth, async (req, res) => {
       lastCalls = await Call.findAll(
         {
           include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
-          order: [['id', 'DESC']],
+          order: [['id', 'ASC']],
           limit: 6,
           where: {
             [Op.or]: [
               { departament: departament },
               { user_id: req.session.user.user.id },
 
-            ]
+            ],
+            status: { [Op.ne]: 'FINALIZADO' } 
           }
         }
       ).catch((err) => {
@@ -317,13 +318,14 @@ router.get('/call/sse', adminAuth, async (req, res) => {
 
           call = await Call.findAll({
             include: [{ model: User, as: 'user' }, { model: Employee, as: 'employee' }],
-            order: [['id', 'DESC']],
+            order: [['id', 'ASC']],
             limit: 6,
             where: {
               [Op.or]: [
                 { departament: departament },
                 { user_id: req.session.user.user.id },
-              ]
+              ],
+              status: { [Op.ne]: 'FINALIZADO' } 
             }
           });
 
@@ -1092,6 +1094,8 @@ router.get('/call/create', adminAuth, async (req, res) => {
 });
 
 router.get('/call/show/:id', adminAuth, async (req, res) => {
+
+  var voltar = (req.query.voltar != undefined) ? req.query.voltar : null;
   var attendant;
   var sender;
   var employeeNames;
@@ -1203,14 +1207,14 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender, employeeNames
+      sender: sender, employeeNames, voltar: voltar
     });
   } else {
 
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender
+      sender: sender, voltar
     });
 
   }

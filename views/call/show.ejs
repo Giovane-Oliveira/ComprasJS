@@ -40,8 +40,13 @@
           <%= call.channel_service %>
         </label></p>
       <% } %>
-
   </div>
+  <div style="text-align: center;"> <a href="/call/<%= 
+  
+    voltar != null ? voltar:
+    call.status == 'AGUARDANDO ATENDIMENTO' ? 'pending':
+    call.status == 'EM ATENDIMENTO' ? 'inservice':
+    call.status == 'FINALIZADO' ? 'finished': 'null'  %>" class="btn accept">Voltar</a> </div>
   <hr>
   <br>
   <div class="conteudo">

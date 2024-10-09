@@ -21,7 +21,6 @@
     document.getElementById('inServiceBadge').textContent = data.inService;
     document.getElementById('finishedBadge').textContent = data.finished;
 
-
     // Update the table with lastCalls data
     const table = document.getElementById('myTable');
     myTable.innerHTML = ''; // Clear existing table content
@@ -34,18 +33,20 @@
     headerRow.insertCell().textContent = 'Departamento';
     headerRow.insertCell().textContent = 'Assunto';
     headerRow.insertCell().textContent = 'Status';
+    headerRow.insertCell().textContent = 'Situação';
     headerRow.insertCell().textContent = 'Categoria';
     headerRow.insertCell().textContent = 'Solicitante';
     headerRow.insertCell().textContent = 'Prioridade';
     headerRow.insertCell().textContent = 'Data de Criação';
     headerRow.insertCell().textContent = 'Detalhes';
        
-        calls.forEach(call => {
+      calls.forEach(call => {
       const row = myTable.insertRow();
       row.insertCell().textContent = call.id;
       row.insertCell().textContent = call.departament.toUpperCase();
       row.insertCell().textContent = call.subject.substring(0, 30);
       row.insertCell().textContent = call.status;
+      row.insertCell().textContent = call.situation ? call.situation : '--';
       row.insertCell().textContent = call.category;
       row.insertCell().textContent = call.employee.name;
       row.insertCell().textContent = call.priority;
@@ -57,7 +58,7 @@
   
       // Create the anchor element and set its attributes
       const detailsLink = document.createElement('a');
-      detailsLink.href = `/call/show/${call.id}`;
+      detailsLink.href = `/call/show/${call.id}?voltar=dashboard`;
       detailsLink.textContent = 'Detalhes';
       //detailsLink.classList.add('table', 'table-responsive-sm'); // Add classes to detailsLink
 
