@@ -61,7 +61,7 @@
             </a>
           </li>
         </div>
-        <!--
+        
         <li>
           <div class="dashimg"><a href="/dashboard" style="text-align: center;">Compras e Pagamentos</a></div>
         </li>
@@ -71,7 +71,7 @@
         <li>
           <div class="dashimg"><a href="/payments"><img src="../../images/dolar.png">Pagamentos</a></div>
         </li>
-        -->
+        
        
         <% if(user.permissions.user_registration==1){ %>
           <li>
@@ -82,18 +82,18 @@
           </li>
           <% } %>
 
-          <!-- 
+      
           
-          <% //if(user.permissions.supplier_registration==1){ %>
+          <% if(user.permissions.supplier_registration==1){ %>
             <li>
               <div class="dashimg"><a href=" /suppliers"><img src="../../images/pacote.png">Fornecedores</a></div>
             </li>
             <li>
               <div class="dashimg"><a href=" /suppliers_register"><img src="../../images/addforn.png">Cadastrar Fornecedor</a></div>
             </li>
-            <% //} %>
+            <% } %>
           
-          -->
+          
                         
                 <%if(user.permissions.create_call == 1 || user.permissions.create_category == 1){%>
                   <li>
@@ -123,7 +123,7 @@
 
                   <% if(user.profile.description == "ti"){%>
                     <li>
-                      <div class="dashimg"><a href="/situations"><img src="../images/logout.png">Criar Tipos/Causas</a>
+                      <div class="dashimg"><a href="/situations"><img src="../../images/logout.png">Criar Situações</a>
                       </div>
                     </li>
                     <%}%>
