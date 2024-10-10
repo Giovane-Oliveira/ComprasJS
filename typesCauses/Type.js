@@ -19,7 +19,7 @@ Type.belongsTo(Profile, { foreignKey: 'profile_id', as: 'profile' });
 //1-N
 Profile.hasMany(Type, { foreignKey: 'profile_id', as: 'type' });
 
-Type.sync({force: false})
+//Type.sync({force: false})
 /*
 (async () => {
     try {

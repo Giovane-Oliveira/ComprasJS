@@ -17,6 +17,9 @@ const categoryController = require('./category/CategoryController');
 const Departament = require('./users/Departament');
 const Type = require('./typesCauses/Type');
 const typeCauseController = require('./typesCauses/typeCauseController');
+const Situation = require('./situation/Situation');
+const situationController = require('./situation/SituationController');
+
 
 
 // Redis setup
@@ -63,6 +66,8 @@ app.use('/', purchasesController);
 app.use('/', callController);
 app.use('/', categoryController);
 app.use('/', typeCauseController);
+app.use('/', situationController);
+
 
 // Routes
 app.get('/', (req, res) => {
@@ -124,7 +129,8 @@ const models = {
     Call: require('./calls/Call'),
     Category: require('./category/Category'),
     Message: require('./calls/Message'),
-    Type: require('./typesCauses/Type')
+    Type: require('./typesCauses/Type'),
+    Situation: require('./situation/Situation')
 
 };
 

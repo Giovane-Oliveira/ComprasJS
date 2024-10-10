@@ -10,21 +10,13 @@
 
 <a href="#"><img src="../images/icon-white.svg" style="width:180px; height:180px; margin-top:-102px; margin-left: -25px"></a>
 <div class="sobreposicaoFormToken" style="width: 310px;margin-top:25px; margin-bottom: -48px; margin-left: 32% !important;background-color:#fff !important">
-  <h2 style="font-weight:lighter !important">Cadastro de categoria</h2>
+  <h2 style="font-weight:lighter !important">Cadastro de situações</h2>
 </div>
 
 <div class="container">
-  <form id="create" action="/create/category" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important; margin-bottom: 2%;">
-    <label for="departament">Departamento</label>
-    <select class="form-control" name="departament" style="margin-bottom: 2%;">
-      <% departaments.forEach(departament=> { %>
-      <option value="<%= departament.profile %>">
-        <%= departament.name %>
-      </option>
-      <% }); %>
-
-      <input type="text" name="describe" style="margin-bottom: 2%;">
-
+  <form id="create" action="/create/situation" method="post" style="width: 48%; border: 1px solid #66666646; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.349); padding: 40px 15px 10px 20px; margin-left: 20% !important;margin-top: 2% !important; margin-bottom: 2%;">
+    <label for="situation">Situação</label>
+      <input type="text" name="situation" style="margin-bottom: 2%;">
       <button class="btn accept" type="submit" style="display: block;">Enviar</button>
   </form>
 </div>
@@ -41,32 +33,20 @@
   <thead>
     <tr class="destaque">
       <th>ID</th>
-      <th>Departamento</th>
-      <th>Descrição</th>
+      <th>Situação</th>
       <th>Excluir</th>
     </tr>
   </thead>
   <tbody>
-    <% categories.forEach(category=> { %>
+    <% situations.forEach(situation=> { %>
     <tr>
       <td>
-        <%= category.id %>
+        <%= situation.id %>
       </td>
       <td>
-        <%= category.departament == "ti" ? "T.I":
-        category.departament == "managers" ? "Gerentes":
-        category.departament == "directors" ? "Diretores":
-        category.departament == "leaders" ? "Gestores":
-        category.departament == "sac" ? "SAC":
-        category.departament == "financial" ? "Financeiro":
-        category.departament == "purchases" ? "Compras":
-        category.departament == "marketing" ? "Marketing":
-        category.departament == "rh" ? "RH": category.departament %>
+        <%= situation.situation %>
       </td>
-      <td>
-        <%= category.description %>
-      </td>
-      <td> <a href="/delete/category/<%= category.id %>" class="btn btn-danger">Excluir</a></td>
+      <td> <a href="/delete/situation/<%= situation.id %>" class="btn btn-danger">Excluir</a></td>
     </tr>
     <% }); %>
   </tbody>

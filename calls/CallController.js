@@ -25,6 +25,7 @@ const Call = require('../calls/Call');
 const Message = require('../calls/Message');
 const { underscoredIf } = require('sequelize/lib/utils');
 const Type = require('../typesCauses/Type');
+const Situation = require( '../situation/Situation');
 
 
 // Configure multer for file uploads
@@ -1216,19 +1217,22 @@ router.get('/call/show/:id', adminAuth, async (req, res) => {
 
   sender = { user: user, employee: employee };
 
+  const situations = await Situation.findAll();
+
+
 
   if (employeeNames != undefined) {
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender, employeeNames, voltar: voltar, types: Types
+      sender: sender, employeeNames, voltar: voltar, types: Types, situations: situations
     });
   } else {
 
     res.render('call/show', {
       user: req.session.user, call: call, employee: employee, sector: sector, unit: unit, files: files,
       messageFirst: messageFirst, messageAll: messageAll, attendant: attendant,
-      sender: sender, voltar, types: Types
+      sender: sender, voltar, types: Types, situations: situations
     });
 
   }

@@ -176,12 +176,13 @@
                 <option value="Comunicação Direta">Comunicação Direta</option>
               </select>
               <%}%>
-     //busar no banco de dados a situação
+    
               <label for="status">Situação</label>
               <select class="form-control" name="status">
                 <option value="" disabled="disabled" selected="selected">Selecione a situação</option>
-                <option value="AGUARDANDO RESPOSTA DO SOLICITANTE">AGUARDANDO RESPOSTA DO SOLICITANTE</option>
-                <option value="AGUARDANDO RESPOSTA DE TERCEIROS">AGUARDANDO RESPOSTA DE TERCEIROS</option>
+                <% situations.forEach(situation => {%>
+                <option value="<%situation.situation%>"><%= situation.situation %></option>
+                <%});%>
               </select>
   
               <label for="checkbox">Finalizar chamado</label>
