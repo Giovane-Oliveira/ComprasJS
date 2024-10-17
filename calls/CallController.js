@@ -835,7 +835,7 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
   console.log("Checkbox: " + mail);
   console.log("ClientId: " + clientId); //employee
 
-  if(client.length > 0)
+  if(client && client.length > 0)
     {
       console.log("Client: " + client);
   
@@ -861,15 +861,15 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
       priority: priority,
       attendant_id: 0,
       status: 'AGUARDANDO ATENDIMENTO',
-      user_id: client.length > 0 ? clientUser.id : user_id,
-      employee_id: client.length > 0 ? clientEmployee.id : employee_id
+      user_id: client && client.length > 0 ? clientUser.id : user_id,
+      employee_id: client && client.length > 0 ? clientEmployee.id : employee_id
     })
       .catch(error => {
         console.error('Error creating call:', error);
       });
   
     await Message.create({
-      sender_id: client.length > 0 ? clientUser.id : user_id,
+      sender_id: client && client.length > 0 ? clientUser.id : user_id,
       message: message,
       call_id: newCall.id
     }).catch(error => {
@@ -933,14 +933,14 @@ router.post('/call/create/call', upload.array('files'), adminAuth, async (req, r
       let subject = `Chamado #${newCall.id}`;
       let text = `Novo chamado #${newCall.id} gerado.`;
       let subject_call = `Assunto: ${newCall.subject}`;
-      let mail_employee = client.length > 0 ? "Aberto por: " + req.session.user.employee.name 
+      let mail_employee = client && client.length > 0 ? "Aberto por: " + req.session.user.employee.name 
       : "Solicitante: " + req.session.user.employee.name;
       let solicitante = "Solicitante: " + client;
       let link = `http://52.156.72.125:3001/call/show/${newCall.id}`;
   
       let mailOptions;
   
-      if(client.length > 0)
+      if(client && client.length > 0)
         {
           mailOptions = {
             from,
