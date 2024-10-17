@@ -15,18 +15,18 @@ const Profile = require('../users/Profile');
 const User = require('../users/User');
 const Movement = require('../movements/Movement');
 const pug = require('pug');
-/*
+
 let transporter = nodemailer.createTransport({
   host: 'mail.provida.med.br', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
   secure: false, // Use TLS ou SSL
   auth: {
-    user: 'suporte.ti@grupoprovida.com.br', // Substitua pelo seu email corporativo
-    pass: 'HJ^c+4_gAwiF' // Substitua pela senha do seu email corporativo
+    user: 'nao-responda@provida.med.br', // Substitua pelo seu email corporativo
+    pass: 'FRbHXf=YBV}E' // Substitua pela senha do seu email corporativo
   }
-});*/
+});
 
-
+/*
 let transporter = nodemailer.createTransport({
   host: 'smtp-mail.outlook.com', // Substitua pelo endereço do seu servidor SMTP
   port: 587, // Substitua pela porta do seu servidor SMTP
@@ -42,6 +42,7 @@ let transporter = nodemailer.createTransport({
   debug: true,
   logger:true
 }); 
+*/
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({

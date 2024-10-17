@@ -49,7 +49,7 @@ app.use(session({
     //store: sessionStore,
     secret: process.env.SESSION_SECRET || 'default_secret',
     cookie: {
-        maxAge: 60 * 60 * 1000, // 15 minutes
+        maxAge: 30 * 60 * 1000, // 30 minutes
         httpOnly: true,
         secure: false  //process.env.NODE_ENV === 'production'
     },
